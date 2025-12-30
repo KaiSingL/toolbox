@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chrome Extension Promo Image Cropper</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #111827;
+            }
+        }
+        #crop-overlay {
+            border: 4px solid rgba(59, 130, 246, 0.9);
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+            pointer-events: none;
+            position: absolute;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+        #image {
+            touch-action: none;
+            user-select: none;
+            cursor: grab;
+            /* Ensure image renders sharply */
+            image-rendering: -webkit-optimize-contrast;
+        }
+        #image.dragging {
+            cursor: grabbing;
+        }
+        #drop-zone.drag-over {
+            border-color: #3b82f6;
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+        #zoom-info {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            pointer-events: none;
+            z-index: 20;
+        }
+        /* Improve contrast for dark mode text */
+        .dark\:text-gray-400 {
+            color: #9ca3af;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex h-screen">
+    <!-- Side Panel -->
+    <div class="w-80 bg-white dark:bg-gray-800 shadow-2xl flex flex-col p-6 overflow-y-auto z-30">
+        <h1 class="text-2xl font-bold mb-8 text-center">Chrome Promo Cropper</h1>
+        
+        <div class="mb-8">
+            <label class="block text-sm font-medium mb-3">Upload Image</label>
+            <div id="drop-zone" class="border-4 border-dashed border-gray-400 dark:border-gray-600 rounded-xl p-10 text-center cursor-pointer transition hover:border-blue-500 dark:hover:border-blue-400">
+                <input type="file" id="upload" accept="image/*" class="hidden">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">Click or drag & drop image here</p>
+            </div>
+        </div>
+        
+        <div class="mb-8">
+            <label for="size" class="block text-sm font-medium mb-3">Target Size</label>
+            <select id="size" class="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 focus:outline-none">
+                <option value="440x280">Small Promo (440×280) - Required</option>
+                <option value="1400x560">Marquee (1400×560)</option>
+                <option value="1280x800">Screenshot Large (1280×800)</option>
+                <option value="640x400">Screenshot Small (640×400)</option>
+                <option value="128x128">Icon (128×128)</option>
+            </select>
+        </div>
+        
+        <button id="confirm" class="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-4 rounded-lg transition mb-4">Generate Preview</button>
+        
+        <div id="preview-container" class="hidden">
+            <label class="block text-sm font-medium mb-3">Final Preview</label>
+            <canvas id="preview" class="w-full border-4 border-blue-500 rounded-lg shadow-lg"></canvas>
+        </div>
+        
+        <button id="download" class="w-full bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white font-bold py-4 rounded-lg mt-6 hidden transition">Download PNG</button>
+    </div>
+
+    <!-- Main Working Stage -->
+    <div class="flex-1 relative bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
+        <div id="crop-container" class="relative">
+            <img id="image" src="" class="absolute block" draggable="false">
+            <div id="crop-overlay"></div>
+        </div>
+        <p id="placeholder" class="text-center text-gray-500 dark:text-gray-400 text-lg absolute pointer-events-none">Upload an image to start cropping<br><span class="text-sm">Blue frame = exact crop area • Scroll to zoom • Drag to move</span></p>
+        <div id="zoom-info" class="hidden">Zoom: <span id="zoom-percent">100</span>%</div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const uploadInput = document.getElementById('upload');
+        const img = document.getElementById('image');
+        const container = document.getElementById('crop-container');
+        const overlay = document.getElementById('crop-overlay');
+        const sizeSelect = document.getElementById('size');
+        const previewCanvas = document.getElementById('preview');
+        const previewContainer = document.getElementById('preview-container');
+        const downloadBtn = document.getElementById('download');
+        const confirmBtn = document.getElementById('confirm');
+        const placeholder = document.getElementById('placeholder');
+        const zoomInfo = document.getElementById('zoom-info');
+        const zoomPercent = document.getElementById('zoom-percent');
+
+        let isDragging = false;
+        let startX, startY;
+        let imgLeft = 0, imgTop = 0;
+        let scale = 1;
+        let targetW = 440;
+        let targetH = 280;
+
+        // Drag & Drop File Handling
+        ['dragenter', 'dragover'].forEach(e => {
+            dropZone.addEventListener(e, ev => {
+                ev.preventDefault();
+                ev.stopPropagation();
+                dropZone.classList.add('drag-over');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(e => {
+            dropZone.addEventListener(e, ev => {
+                ev.preventDefault();
+                ev.stopPropagation();
+                dropZone.classList.remove('drag-over');
+            });
+        });
+
+        dropZone.addEventListener('drop', e => {
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/')) loadImage(file);
+        });
+
+        dropZone.addEventListener('click', () => uploadInput.click());
+        uploadInput.addEventListener('change', e => {
+            if (e.target.files[0]) loadImage(e.target.files[0]);
+        });
+
+        function loadImage(file) {
+            const reader = new FileReader();
+            reader.onload = ev => {
+                img.src = ev.target.result;
+                img.onload = initializeCrop;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function initializeCrop() {
+            [targetW, targetH] = sizeSelect.value.split('x').map(Number);
+
+            overlay.style.width = `${targetW}px`;
+            overlay.style.height = `${targetH}px`;
+            container.style.width = `${targetW}px`;
+            container.style.height = `${targetH}px`;
+
+            // Initial scale to cover the crop area (fill the frame, preserve aspect, overflow if needed)
+            const scaleX = targetW / img.naturalWidth;
+            const scaleY = targetH / img.naturalHeight;
+            scale = Math.max(scaleX, scaleY);
+
+            const displayW = img.naturalWidth * scale;
+            const displayH = img.naturalHeight * scale;
+            img.style.width = `${displayW}px`;
+            img.style.height = `${displayH}px`;
+
+            // Center the image
+            imgLeft = (targetW - displayW) / 2;
+            imgTop = (targetH - displayH) / 2;
+            updateImagePosition();
+
+            updateZoomDisplay();
+
+            placeholder.style.display = 'none';
+            zoomInfo.classList.remove('hidden');
+            previewContainer.classList.add('hidden');
+            downloadBtn.classList.add('hidden');
+        }
+
+        function updateImagePosition() {
+            img.style.left = `${imgLeft}px`;
+            img.style.top = `${imgTop}px`;
+        }
+
+        function updateZoomDisplay() {
+            zoomPercent.textContent = Math.round(scale * 100);
+        }
+
+        sizeSelect.addEventListener('change', () => {
+            if (img.src) initializeCrop();
+        });
+
+        // Dragging Logic
+        function startDrag(clientX, clientY) {
+            isDragging = true;
+            startX = clientX - imgLeft;
+            startY = clientY - imgTop;
+            img.classList.add('dragging');
+        }
+
+        function drag(clientX, clientY) {
+            if (!isDragging) return;
+            imgLeft = clientX - startX;
+            imgTop = clientY - startY;
+            updateImagePosition();
+        }
+
+        function endDrag() {
+            isDragging = false;
+            img.classList.remove('dragging');
+        }
+
+        // Attach mousedown to container so we can drag even if clicking empty space (when image is zoomed out)
+        container.addEventListener('mousedown', e => startDrag(e.clientX, e.clientY));
+        
+        // Also keep image listener for specific cases where bubbling might behave differently, 
+        // though container listener covers it. This ensures robustness.
+        img.addEventListener('mousedown', e => {
+            e.stopPropagation(); // Prevent triggering container logic twice if needed, though logic is idempotent
+            startDrag(e.clientX, e.clientY);
+        });
+
+        document.addEventListener('mousemove', e => drag(e.clientX, e.clientY));
+        document.addEventListener('mouseup', endDrag);
+
+        // Touch support
+        img.addEventListener('touchstart', e => {
+            const t = e.touches[0];
+            startDrag(t.clientX, t.clientY);
+            e.preventDefault();
+        }, { passive: false });
+        
+        container.addEventListener('touchstart', e => {
+            // Only handle touch on container if it's not on the image (handled by image listener)
+            if (e.target !== img) {
+                const t = e.touches[0];
+                startDrag(t.clientX, t.clientY);
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        document.addEventListener('touchmove', e => {
+            if (e.touches.length === 1) {
+                const t = e.touches[0];
+                drag(t.clientX, t.clientY);
+                e.preventDefault();
+            }
+        }, { passive: false });
+        
+        document.addEventListener('touchend', endDrag);
+
+        // Zoom with mouse wheel — zoom toward cursor
+        // Added passive: false to ensure preventDefault works
+        container.addEventListener('wheel', e => {
+            if (!img.src) return;
+            e.preventDefault();
+
+            const zoomIn = e.deltaY < 0;
+            const factor = zoomIn ? 1.1 : 0.9;
+            const oldScale = scale;
+            scale *= factor;
+            scale = Math.max(0.05, Math.min(scale, 50));
+
+            if (Math.abs(scale - oldScale) > 0.001) {
+                const rect = container.getBoundingClientRect();
+                let mouseX = e.clientX - rect.left;
+                let mouseY = e.clientY - rect.top;
+
+                // FIX: Removed the clamping (Math.min/max) that caused the "moving left" bug.
+                // The mouse coordinates can be outside the container bounds if the image is zoomed in.
+                // The math below handles negative or large values correctly.
+
+                const displayW = img.naturalWidth * scale;
+                const displayH = img.naturalHeight * scale;
+                img.style.width = `${displayW}px`;
+                img.style.height = `${displayH}px`;
+
+                const ratio = scale / oldScale;
+                imgLeft = mouseX - (mouseX - imgLeft) * ratio;
+                imgTop = mouseY - (mouseY - imgTop) * ratio;
+
+                updateImagePosition();
+                updateZoomDisplay();
+            }
+        }, { passive: false });
+
+        confirmBtn.addEventListener('click', () => {
+            previewCanvas.width = targetW;
+            previewCanvas.height = targetH;
+
+            const ctx = previewCanvas.getContext('2d');
+            ctx.clearRect(0, 0, targetW, targetH);
+
+            const sourceX = -imgLeft / scale;
+            const sourceY = -imgTop / scale;
+            const sourceW = targetW / scale;
+            const sourceH = targetH / scale;
+
+            ctx.drawImage(img, sourceX, sourceY, sourceW, sourceH, 0, 0, targetW, targetH);
+
+            previewContainer.classList.remove('hidden');
+            downloadBtn.classList.remove('hidden');
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = `chrome-promo-${sizeSelect.value}.png`;
+            link.href = previewCanvas.toDataURL('image/png');
+            link.click();
+        });
+    </script>
+</body>
+</html>
