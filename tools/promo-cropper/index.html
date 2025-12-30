@@ -274,7 +274,7 @@
             e.preventDefault();
 
             const zoomIn = e.deltaY < 0;
-            const factor = zoomIn ? 1.1 : 0.9;
+            const factor = zoomIn ? 1.01 : 0.99;
             const oldScale = scale;
             scale *= factor;
             scale = Math.max(0.05, Math.min(scale, 50));
