@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chrome Extension Promo Image Cropper</title>
+    <title>Chrome Promo Cropper - DevTools Hub</title>
     <link rel="icon" type="image/png" sizes="32x32" href="../../assets/icons/icon.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -13,10 +13,18 @@
             padding: 0;
             overflow: hidden;
         }
-        @media (prefers-color-scheme: dark) {
-            body {
-                background-color: #111827;
-            }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
         }
         #crop-overlay {
             border: 4px solid rgba(59, 130, 246, 0.9);
@@ -30,8 +38,11 @@
             touch-action: none;
             user-select: none;
             cursor: grab;
-            /* Ensure image renders sharply */
             image-rendering: -webkit-optimize-contrast;
+            max-width: none;
+            max-height: none;
+            min-width: 0;
+            min-height: 0;
         }
         #image.dragging {
             cursor: grabbing;
@@ -45,65 +56,187 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0,0,0,0.7);
+            background: rgba(17, 24, 39, 0.9);
             color: white;
             padding: 8px 16px;
             border-radius: 8px;
             font-size: 14px;
-            pointer-events: none;
+            pointer-events: auto;
             z-index: 20;
+            border: 1px solid #374151;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        /* Improve contrast for dark mode text */
-        .dark\:text-gray-400 {
-            color: #9ca3af;
+        #zoom-info button {
+            background: #374151;
+            border: none;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        #zoom-info button:hover {
+            background: #4b5563;
+        }
+        @media (max-width: 768px) {
+            #sidebar {
+                position: fixed;
+                left: -100%;
+                top: 73px;
+                width: 100%;
+                max-width: 320px;
+                height: calc(100% - 73px);
+                z-index: 40;
+                transition: left 0.3s ease;
+            }
+            #sidebar.open {
+                left: 0;
+            }
+            #sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 30;
+            }
+            #sidebar-overlay.show {
+                display: block;
+            }
+            .back-text {
+                display: none;
+            }
+            .title-text {
+                font-size: 16px;
+            }
+            #zoom-info {
+                bottom: 80px;
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+            #zoom-info button {
+                width: 24px;
+                height: 24px;
+                font-size: 14px;
+            }
+            .p-6 {
+                padding: 16px;
+            }
+            .space-y-8 > * + * {
+                margin-top: 16px;
+            }
+            .text-lg {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 flex h-screen">
-    <!-- Side Panel -->
-    <div class="w-80 bg-white dark:bg-gray-800 shadow-2xl flex flex-col p-6 overflow-y-auto z-30">
-        <h1 class="text-2xl font-bold mb-8 text-center">Chrome Promo Cropper</h1>
-        
-        <div class="mb-8">
-            <label class="block text-sm font-medium mb-3">Upload Image</label>
-            <div id="drop-zone" class="border-4 border-dashed border-gray-400 dark:border-gray-600 rounded-xl p-10 text-center cursor-pointer transition hover:border-blue-500 dark:hover:border-blue-400">
-                <input type="file" id="upload" accept="image/*" class="hidden">
-                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+<body class="bg-gray-900 text-gray-100 flex flex-col h-screen">
+    <header class="border-b border-gray-800 bg-gray-900/80 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-3 md:px-6 md:py-4 flex items-center gap-4">
+            <button id="menu-toggle" class="md:hidden text-gray-400 hover:text-white p-1">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                 </svg>
-                <p class="mt-3 text-sm text-gray-600 dark:text-gray-400">Click or drag & drop image here</p>
+            </button>
+            <a href="../.." class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group">
+                <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                <span class="text-sm font-medium back-text hidden md:block">Back to Tools</span>
+            </a>
+            <div class="flex-1 text-center">
+                <div class="flex items-center justify-center gap-3">
+                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg shadow-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-xl font-bold tracking-tight title-text md:text-xl">Chrome Promo Cropper</h1>
+                </div>
             </div>
         </div>
-        
-        <div class="mb-8">
-            <label for="size" class="block text-sm font-medium mb-3">Target Size</label>
-            <select id="size" class="w-full p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 rounded-lg focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800 focus:outline-none">
-                <option value="440x280">Small Promo (440×280) - Required</option>
-                <option value="1400x560">Marquee (1400×560)</option>
-                <option value="1280x800">Screenshot Large (1280×800)</option>
-                <option value="640x400">Screenshot Small (640×400)</option>
-                <option value="128x128">Icon (128×128)</option>
-            </select>
-        </div>
-        
-        <button id="confirm" class="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-bold py-4 rounded-lg transition mb-4">Generate Preview</button>
-        
-        <div id="preview-container" class="hidden">
-            <label class="block text-sm font-medium mb-3">Final Preview</label>
-            <canvas id="preview" class="w-full border-4 border-blue-500 rounded-lg shadow-lg"></canvas>
-        </div>
-        
-        <button id="download" class="w-full bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white font-bold py-4 rounded-lg mt-6 hidden transition">Download PNG</button>
-    </div>
+    </header>
 
-    <!-- Main Working Stage -->
-    <div class="flex-1 relative bg-gray-100 dark:bg-gray-800 flex items-center justify-center overflow-hidden">
-        <div id="crop-container" class="relative">
-            <img id="image" src="" class="absolute block" draggable="false">
-            <div id="crop-overlay"></div>
+    <div class="flex flex-1 overflow-hidden">
+        <div id="sidebar-overlay"></div>
+        <div id="sidebar" class="w-96 bg-gray-800 border-r border-gray-700 flex flex-col overflow-y-auto md:relative md:left-0 md:w-96 md:border-r md:max-w-none">
+            <div class="p-6 space-y-8 md:p-6 md:space-y-8 p-4 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-3 text-gray-300">Upload Image</label>
+                    <div id="drop-zone" class="border-2 border-dashed border-gray-600 rounded-xl p-8 text-center cursor-pointer transition-all duration-300 hover:border-blue-500 hover:bg-blue-500/5">
+                        <input type="file" id="upload" accept="image/*" class="hidden">
+                        <svg class="mx-auto h-12 w-12 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        <p class="mt-3 text-sm text-gray-400">Click or drag & drop image</p>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="size" class="block text-sm font-medium mb-3 text-gray-300">Target Size</label>
+                    <select id="size" class="w-full p-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition">
+                        <option value="440x280">Small Promo (440×280) - Required</option>
+                        <option value="1400x560">Marquee (1400×560)</option>
+                        <option value="1280x800">Screenshot Large (1280×800)</option>
+                        <option value="640x400">Screenshot Small (640×400)</option>
+                        <option value="128x128">Icon (128×128)</option>
+                    </select>
+                </div>
+
+                <button id="confirm" class="w-full py-4 bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 group">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Generate Preview
+                </button>
+
+                <div id="preview-container" class="hidden">
+                    <label class="block text-sm font-medium mb-3 text-gray-300">Final Preview</label>
+                    <canvas id="preview" class="w-full border-2 border-blue-500 rounded-xl shadow-lg"></canvas>
+                </div>
+
+                <button id="download" class="w-full py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 group hidden">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    Download PNG
+                </button>
+            </div>
         </div>
-        <p id="placeholder" class="text-center text-gray-500 dark:text-gray-400 text-lg absolute pointer-events-none">Upload an image to start cropping<br><span class="text-sm">Blue frame = exact crop area • Scroll to zoom • Drag to move</span></p>
-        <div id="zoom-info" class="hidden">Zoom: <span id="zoom-percent">100</span>%</div>
+
+        <div class="flex-1 relative bg-gray-900 flex items-center justify-center overflow-hidden p-4 md:p-0">
+            <div id="crop-container" class="relative" style="max-width: 100%; max-height: calc(100vh - 200px);">
+                <img id="image" src="" class="absolute block" draggable="false">
+                <div id="crop-overlay"></div>
+            </div>
+            <p id="placeholder" class="text-center text-gray-500 text-lg absolute pointer-events-none px-4">
+                Upload an image to start cropping<br>
+                <span class="text-sm">Blue frame = exact crop area • Scroll to zoom • Drag to move</span>
+            </p>
+            <div id="zoom-info" class="hidden">
+                <button id="zoom-out">−</button>
+                <span>Zoom: <span id="zoom-percent">100</span>%</span>
+                <button id="zoom-in">+</button>
+            </div>
+        </div>
+            <p id="placeholder" class="text-center text-gray-500 text-lg absolute pointer-events-none">
+                Upload an image to start cropping<br>
+                <span class="text-sm">Blue frame = exact crop area • Scroll to zoom • Drag to move</span>
+            </p>
+            <div id="zoom-info" class="hidden">
+                <button id="zoom-out">−</button>
+                <span>Zoom: <span id="zoom-percent">100</span>%</span>
+                <button id="zoom-in">+</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -120,6 +253,11 @@
         const placeholder = document.getElementById('placeholder');
         const zoomInfo = document.getElementById('zoom-info');
         const zoomPercent = document.getElementById('zoom-percent');
+        const zoomInBtn = document.getElementById('zoom-in');
+        const zoomOutBtn = document.getElementById('zoom-out');
+        const menuToggle = document.getElementById('menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
 
         let isDragging = false;
         let startX, startY;
@@ -128,7 +266,6 @@
         let targetW = 440;
         let targetH = 280;
 
-        // Drag & Drop File Handling
         ['dragenter', 'dragover'].forEach(e => {
             dropZone.addEventListener(e, ev => {
                 ev.preventDefault();
@@ -172,7 +309,19 @@
             container.style.width = `${targetW}px`;
             container.style.height = `${targetH}px`;
 
-            // Initial scale to cover the crop area (fill the frame, preserve aspect, overflow if needed)
+            const viewportW = window.innerWidth - 32;
+            const viewportH = window.innerHeight - 200;
+            const scaleFit = Math.min(
+                Math.min(viewportW / targetW, 1),
+                Math.min(viewportH / targetH, 1)
+            );
+
+            if (scaleFit < 1) {
+                container.style.transform = `scale(${scaleFit})`;
+            } else {
+                container.style.transform = 'none';
+            }
+
             const scaleX = targetW / img.naturalWidth;
             const scaleY = targetH / img.naturalHeight;
             scale = Math.max(scaleX, scaleY);
@@ -182,7 +331,6 @@
             img.style.width = `${displayW}px`;
             img.style.height = `${displayH}px`;
 
-            // Center the image
             imgLeft = (targetW - displayW) / 2;
             imgTop = (targetH - displayH) / 2;
             updateImagePosition();
@@ -204,89 +352,16 @@
             zoomPercent.textContent = Math.round(scale * 100);
         }
 
-        sizeSelect.addEventListener('change', () => {
-            if (img.src) initializeCrop();
-        });
-
-        // Dragging Logic
-        function startDrag(clientX, clientY) {
-            isDragging = true;
-            startX = clientX - imgLeft;
-            startY = clientY - imgTop;
-            img.classList.add('dragging');
-        }
-
-        function drag(clientX, clientY) {
-            if (!isDragging) return;
-            imgLeft = clientX - startX;
-            imgTop = clientY - startY;
-            updateImagePosition();
-        }
-
-        function endDrag() {
-            isDragging = false;
-            img.classList.remove('dragging');
-        }
-
-        // Attach mousedown to container so we can drag even if clicking empty space (when image is zoomed out)
-        container.addEventListener('mousedown', e => startDrag(e.clientX, e.clientY));
-        
-        // Also keep image listener for specific cases where bubbling might behave differently, 
-        // though container listener covers it. This ensures robustness.
-        img.addEventListener('mousedown', e => {
-            e.stopPropagation(); // Prevent triggering container logic twice if needed, though logic is idempotent
-            startDrag(e.clientX, e.clientY);
-        });
-
-        document.addEventListener('mousemove', e => drag(e.clientX, e.clientY));
-        document.addEventListener('mouseup', endDrag);
-
-        // Touch support
-        img.addEventListener('touchstart', e => {
-            const t = e.touches[0];
-            startDrag(t.clientX, t.clientY);
-            e.preventDefault();
-        }, { passive: false });
-        
-        container.addEventListener('touchstart', e => {
-            // Only handle touch on container if it's not on the image (handled by image listener)
-            if (e.target !== img) {
-                const t = e.touches[0];
-                startDrag(t.clientX, t.clientY);
-                e.preventDefault();
-            }
-        }, { passive: false });
-
-        document.addEventListener('touchmove', e => {
-            if (e.touches.length === 1) {
-                const t = e.touches[0];
-                drag(t.clientX, t.clientY);
-                e.preventDefault();
-            }
-        }, { passive: false });
-        
-        document.addEventListener('touchend', endDrag);
-
-        // Zoom with mouse wheel — zoom toward cursor
-        // Added passive: false to ensure preventDefault works
-        container.addEventListener('wheel', e => {
+        function zoomBy(delta) {
             if (!img.src) return;
-            e.preventDefault();
-
-            const zoomIn = e.deltaY < 0;
-            const factor = zoomIn ? 1.01 : 0.99;
             const oldScale = scale;
-            scale *= factor;
+            scale += delta;
             scale = Math.max(0.05, Math.min(scale, 50));
 
             if (Math.abs(scale - oldScale) > 0.001) {
                 const rect = container.getBoundingClientRect();
-                let mouseX = e.clientX - rect.left;
-                let mouseY = e.clientY - rect.top;
-
-                // FIX: Removed the clamping (Math.min/max) that caused the "moving left" bug.
-                // The mouse coordinates can be outside the container bounds if the image is zoomed in.
-                // The math below handles negative or large values correctly.
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
 
                 const displayW = img.naturalWidth * scale;
                 const displayH = img.naturalHeight * scale;
@@ -294,13 +369,43 @@
                 img.style.height = `${displayH}px`;
 
                 const ratio = scale / oldScale;
-                imgLeft = mouseX - (mouseX - imgLeft) * ratio;
-                imgTop = mouseY - (mouseY - imgTop) * ratio;
+                imgLeft = centerX - (centerX - imgLeft) * ratio;
+                imgTop = centerY - (centerY - imgTop) * ratio;
 
                 updateImagePosition();
                 updateZoomDisplay();
             }
-        }, { passive: false });
+        }
+
+        zoomInBtn.addEventListener('click', () => zoomBy(0.01));
+        zoomOutBtn.addEventListener('click', () => zoomBy(-0.01));
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('show');
+        });
+
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('show');
+        });
+
+        window.addEventListener('resize', () => {
+            if (img.src) {
+                const viewportW = window.innerWidth - 32;
+                const viewportH = window.innerHeight - 200;
+                const scaleFit = Math.min(
+                    Math.min(viewportW / targetW, 1),
+                    Math.min(viewportH / targetH, 1)
+                );
+
+                if (scaleFit < 1) {
+                    container.style.transform = `scale(${scaleFit})`;
+                } else {
+                    container.style.transform = 'none';
+                }
+            }
+        });
 
         confirmBtn.addEventListener('click', () => {
             previewCanvas.width = targetW;
