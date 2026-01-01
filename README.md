@@ -59,12 +59,6 @@ Since these tools are client-side only, you don't need a complex backend to run 
 
 4.  Open your browser to `http://localhost:8000` (or the port provided by your server).
 
-## 🚧 Roadmap
-
-- [ ] Add JSON formatter/validator.
-- [ ] Add CSS unit converter.
-- [ ] Add a color palette generator.
-
 ## 🤝 Contributing
 
 Contributions are welcome! If you have a tool idea or a bug fix, feel free to open an issue or submit a pull request.
