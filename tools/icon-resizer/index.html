@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Icon Resizer - DevTools Hub</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="../../assets/icons/icon.png">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+  <style>
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1f2937;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #4b5563;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #6b7280;
+    }
+    .checkerboard {
+      background-image: linear-gradient(45deg, #374151 25%, transparent 25%),
+                        linear-gradient(-45deg, #374151 25%, transparent 25%),
+                        linear-gradient(45deg, transparent 75%, #374151 75%),
+                        linear-gradient(-45deg, transparent 75%, #374151 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    }
+  </style>
+</head>
+<body class="bg-gray-900 text-gray-100 min-h-screen font-sans selection:bg-purple-500 selection:text-white">
+
+  <header class="border-b border-gray-800 bg-gray-900/80 backdrop-blur-md sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+      <a href="../.." class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors group">
+        <svg class="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        <span class="text-sm font-medium">Back to Tools</span>
+      </a>
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg shadow-lg flex items-center justify-center">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+          </svg>
+        </div>
+        <h1 class="text-xl font-bold tracking-tight">Icon Resizer</h1>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-6 py-12">
+    <div class="mb-10 text-center md:text-left">
+      <h2 class="text-3xl font-bold mb-2">Resize Icons to Standard Sizes</h2>
+      <p class="text-gray-400">Upload a high-resolution square image (512×512 or larger recommended) and generate multiple icon sizes.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div class="bg-gray-800 border border-gray-700 rounded-xl p-8">
+        <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-3">
+          <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          Upload Image
+        </h3>
+        <div id="drop-zone" class="relative border-2 border-dashed border-gray-600 rounded-xl min-h-80 flex items-center justify-center transition-all duration-300 hover:border-purple-500 hover:bg-purple-500/5">
+          <input type="file" id="upload" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+          <div id="drop-text" class="text-center pointer-events-none">
+            <svg class="mx-auto h-16 w-16 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5.001 5.001 0 0112 2a5 5 0 014.9 4.09A4 4 0 0122 10a4 4 0 01-5.12 3.91A5 5 0 0112 22a5 5 0 01-4.9-4.09A4 4 0 017 16zM15 13l-3-3m0 0l-3 3m3-3v12"></path>
+            </svg>
+            <p class="mt-4 text-lg font-medium text-gray-400">Drag & drop your image here</p>
+            <p class="mt-2 text-gray-500 text-sm">or click to select a file</p>
+          </div>
+          <img id="preview" class="absolute inset-4 object-contain rounded-lg shadow-lg checkerboard hidden" alt="Image preview">
+        </div>
+      </div>
+
+      <div class="bg-gray-800 border border-gray-700 rounded-xl p-8">
+        <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-3">
+          <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
+          </svg>
+          Select Icon Sizes
+        </h3>
+        <div class="grid grid-cols-2 gap-4">
+          <label class="flex items-center cursor-pointer p-3 rounded-lg bg-gray-700/50 hover:bg-gray-700 transition-colors border border-gray-600 hover:border-purple-500">
+            <input type="checkbox" value="16" class="mr-3 w-5 h-5 text-purple-600 rounded focus:ring-purple-500">
+            <span class="font-medium">16×16</span>
+          </label>
+          <label class="flex items-center cursor-pointer p-3 rounded-lg bg-gray-700/50 hover:bg-gray-700 transition-colors border border-gray-600 hover:border-purple-500">
+            <input type="checkbox" value="32" class="mr-3 w-5 h-5 text-purple-600 rounded focus:ring-purple-500">
+            <span class="font-medium">32×32</span>
+          </label>
+          <label class="flex items-center cursor-pointer p-3 rounded-lg bg-gray-700/50 hover:bg-gray-700 transition-colors border border-gray-600 hover:border-purple-500">
+            <input type="checkbox" value="48" class="mr-3 w-5 h-5 text-purple-600 rounded focus:ring-purple-500">
+            <span class="font-medium">48×48</span>
+          </label>
+          <label class="flex items-center cursor-pointer p-3 rounded-lg bg-gray-700/50 hover:bg-gray-700 transition-colors border border-gray-600 hover:border-purple-500">
+            <input type="checkbox" value="128" class="mr-3 w-5 h-5 text-purple-600 rounded focus:ring-purple-500">
+            <span class="font-medium">128×128</span>
+          </label>
+          <label class="flex items-center cursor-pointer p-3 rounded-lg bg-gray-700/50 hover:bg-gray-700 transition-colors border border-gray-600 hover:border-purple-500">
+            <input type="checkbox" value="144" class="mr-3 w-5 h-5 text-purple-600 rounded focus:ring-purple-500">
+            <span class="font-medium">144×144</span>
+          </label>
+          <label class="flex items-center cursor-pointer p-3 rounded-lg bg-gray-700/50 hover:bg-gray-700 transition-colors border border-gray-600 hover:border-purple-500">
+            <input type="checkbox" value="180" class="mr-3 w-5 h-5 text-purple-600 rounded focus:ring-purple-500">
+            <span class="font-medium">180×180</span>
+          </label>
+          <label class="flex items-center cursor-pointer p-3 rounded-lg bg-gray-700/50 hover:bg-gray-700 transition-colors border border-gray-600 hover:border-purple-500">
+            <input type="checkbox" value="192" class="mr-3 w-5 h-5 text-purple-600 rounded focus:ring-purple-500">
+            <span class="font-medium">192×192</span>
+          </label>
+          <label class="flex items-center cursor-pointer p-3 rounded-lg bg-gray-700/50 hover:bg-gray-700 transition-colors border border-gray-600 hover:border-purple-500">
+            <input type="checkbox" value="512" class="mr-3 w-5 h-5 text-purple-600 rounded focus:ring-purple-500">
+            <span class="font-medium">512×512</span>
+          </label>
+        </div>
+
+        <button id="generate" class="mt-8 w-full py-4 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 group">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+          Generate Icons
+        </button>
+      </div>
+    </div>
+
+    <div id="results" class="mt-12 hidden">
+      <div class="bg-gray-800 border border-gray-700 rounded-xl p-8">
+        <h3 class="text-2xl font-bold text-white mb-8 flex items-center gap-3">
+          <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Generated Icons
+        </h3>
+        <div id="icons-list" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6"></div>
+        <div class="text-center mt-10">
+          <button id="download-all" class="px-10 py-4 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 mx-auto group">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            </svg>
+            Download All as ZIP
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="border-t border-gray-800 mt-20">
+    <div class="max-w-6xl mx-auto px-6 py-8 text-center text-gray-500 text-sm">
+      <p>&copy; 2025 DevTools Hub. Open source under MIT License.</p>
+    </div>
+  </footer>
+
+  <script>
+    const upload = document.getElementById('upload');
+    const preview = document.getElementById('preview');
+    const dropZone = document.getElementById('drop-zone');
+    const dropText = document.getElementById('drop-text');
+    const generate = document.getElementById('generate');
+    const results = document.getElementById('results');
+    const iconsList = document.getElementById('icons-list');
+    const downloadAll = document.getElementById('download-all');
+
+    let uploadedImage = null;
+    let baseName = 'icon';
+    let generatedBlobs = [];
+    let currentUrl = null;
+
+    function handleFile(file) {
+      if (!file || !file.type.startsWith('image/')) {
+        alert('Please select or drop a valid image file.');
+        return;
+      }
+
+      baseName = file.name.replace(/\.[^/.]+$/, '');
+
+      const url = URL.createObjectURL(file);
+      if (currentUrl) URL.revokeObjectURL(currentUrl);
+      currentUrl = url;
+
+      preview.src = url;
+      preview.classList.remove('hidden');
+      dropText.classList.add('hidden');
+
+      uploadedImage = new Image();
+      uploadedImage.src = url;
+
+      results.classList.add('hidden');
+      iconsList.innerHTML = '';
+      generatedBlobs = [];
+    }
+
+    upload.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) handleFile(file);
+    });
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('border-purple-500', 'bg-purple-500/10');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('border-purple-500', 'bg-purple-500/10');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('border-purple-500', 'bg-purple-500/10');
+      const file = e.dataTransfer.files[0];
+      handleFile(file);
+    });
+
+    generate.addEventListener('click', () => {
+      if (!uploadedImage) {
+        alert('Please upload an image first.');
+        return;
+      }
+      if (!uploadedImage.complete) {
+        alert('Image is still loading. Please wait a moment.');
+        return;
+      }
+
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+      if (checkboxes.length === 0) {
+        alert('Please select at least one size.');
+        return;
+      }
+
+      const selectedSizes = Array.from(checkboxes).map(cb => parseInt(cb.value));
+
+      iconsList.innerHTML = '';
+      generatedBlobs = [];
+      results.classList.add('hidden');
+
+      selectedSizes.forEach(size => {
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+
+        const crop = Math.min(uploadedImage.naturalWidth, uploadedImage.naturalHeight);
+        const sx = (uploadedImage.naturalWidth - crop) / 2;
+        const sy = (uploadedImage.naturalHeight - crop) / 2;
+
+        ctx.drawImage(uploadedImage, sx, sy, crop, crop, 0, 0, size, size);
+
+        canvas.toBlob(blob => {
+          const objUrl = URL.createObjectURL(blob);
+
+          const card = document.createElement('div');
+          card.className = 'bg-gray-700/50 rounded-xl p-4 text-center hover:bg-gray-700 transition-colors border border-gray-600 hover:border-purple-500';
+
+          const img = document.createElement('img');
+          img.src = objUrl;
+          img.className = 'w-24 h-24 mx-auto rounded-lg shadow checkerboard object-cover';
+
+          const label = document.createElement('p');
+          label.textContent = `${size}×${size}`;
+          label.className = 'mt-3 font-bold text-white';
+
+          const link = document.createElement('a');
+          link.href = objUrl;
+          link.download = `${baseName}-${size}x${size}.png`;
+          link.textContent = 'Download';
+          link.className = 'mt-3 block w-full px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg text-sm font-semibold transition-colors';
+
+          card.appendChild(img);
+          card.appendChild(label);
+          card.appendChild(link);
+          iconsList.appendChild(card);
+
+          generatedBlobs.push({ name: link.download, blob });
+
+          if (generatedBlobs.length === selectedSizes.length) {
+            results.classList.remove('hidden');
+          }
+        }, 'image/png');
+      });
+    });
+
+    downloadAll.addEventListener('click', () => {
+      if (generatedBlobs.length === 0) return;
+
+      const zip = new JSZip();
+      generatedBlobs.forEach(item => zip.file(item.name, item.blob));
+
+      zip.generateAsync({ type: 'blob' }).then(content => {
+        saveAs(content, `${baseName}-icons.zip`);
+      });
+    });
+  </script>
+</body>
+</html>
