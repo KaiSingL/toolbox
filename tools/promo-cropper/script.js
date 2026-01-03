@@ -81,6 +81,7 @@ function initializeCrop() {
     overlay.style.height = `${targetH}px`;
     container.style.width = `${targetW}px`;
     container.style.height = `${targetH}px`;
+    overlay.classList.remove('hidden');
 
     const viewportW = window.innerWidth - 32;
     const viewportH = window.innerHeight - 200;

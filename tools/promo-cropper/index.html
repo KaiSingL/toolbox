@@ -85,11 +85,10 @@
         <div class="flex-1 relative bg-gray-900 flex items-center justify-center overflow-hidden p-4 md:p-0">
             <div id="crop-container" class="relative" style="max-width: 100%; max-height: calc(100vh - 200px);">
                 <img id="image" src="" class="absolute block" draggable="false">
-                <div id="crop-overlay"></div>
+                <div id="crop-overlay" class="hidden"></div>
             </div>
-            <p id="placeholder" class="text-center text-gray-500 text-lg absolute pointer-events-none px-4">
-                Upload an image to start cropping<br>
-                <span class="text-sm">Blue frame = exact crop area • Scroll to zoom • Drag to move</span>
+            <p id="placeholder" class="text-center text-gray-400 text-2xl absolute pointer-events-none px-4 font-semibold">
+                Upload an image to start cropping
             </p>
             <div id="zoom-info" class="hidden">
                 <button id="zoom-out">−</button>
