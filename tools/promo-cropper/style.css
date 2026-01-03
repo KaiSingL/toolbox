@@ -1,0 +1,151 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1f2937;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #4b5563;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6b7280;
+}
+
+#crop-overlay {
+    border: 4px solid rgba(59, 130, 246, 0.9);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
+    pointer-events: none;
+    position: absolute;
+    box-sizing: border-box;
+    z-index: 10;
+}
+
+#image {
+    touch-action: none;
+    user-select: none;
+    cursor: grab;
+    image-rendering: -webkit-optimize-contrast;
+    max-width: none;
+    max-height: none;
+    min-width: 0;
+    min-height: 0;
+}
+
+#image.dragging {
+    cursor: grabbing;
+}
+
+#drop-zone.drag-over {
+    border-color: #3b82f6;
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+#zoom-info {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(17, 24, 39, 0.9);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    pointer-events: auto;
+    z-index: 20;
+    border: 1px solid #374151;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#zoom-info button {
+    background: #374151;
+    border: none;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+#zoom-info button:hover {
+    background: #4b5563;
+}
+
+@media (max-width: 768px) {
+    #sidebar {
+        position: fixed;
+        left: -100%;
+        top: 73px;
+        width: 100%;
+        max-width: 320px;
+        height: calc(100% - 73px);
+        z-index: 40;
+        transition: left 0.3s ease;
+    }
+
+    #sidebar.open {
+        left: 0;
+    }
+
+    #sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 30;
+    }
+
+    #sidebar-overlay.show {
+        display: block;
+    }
+
+    .back-text {
+        display: none;
+    }
+
+    .title-text {
+        font-size: 16px;
+    }
+
+    #zoom-info {
+        bottom: 80px;
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+
+    #zoom-info button {
+        width: 24px;
+        height: 24px;
+        font-size: 14px;
+    }
+
+    .p-6 {
+        padding: 16px;
+    }
+
+    .space-y-8 > * + * {
+        margin-top: 16px;
+    }
+
+    .text-lg {
+        font-size: 16px;
+    }
+}
