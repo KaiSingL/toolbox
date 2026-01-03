@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WiFi QR Code Generator - DevTools Hub</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="../../assets/icons/icon.png">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="header">
+    <div>
+      <a href="../.." class="back-link">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        <span>Back to Tools</span>
+      </a>
+      <div class="header-title">
+        <div class="icon-box">
+          <svg class="text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
+          </svg>
+        </div>
+        <h1>WiFi QR Code Generator</h1>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="card-container">
+      <p class="description">
+        Enter WiFi details to generate a scannable QR code. Uses WPA2 encryption by default. For open networks, leave the password blank.
+      </p>
+
+      <label class="form-label" for="ssid">SSID:</label>
+      <input
+        type="text"
+        id="ssid"
+        class="form-input"
+        placeholder="e.g., MyHomeWiFi"
+        required
+      />
+
+      <label class="form-label" for="pwd">Password:</label>
+      <input
+        type="password"
+        id="pwd"
+        class="form-input"
+        placeholder="Enter password (optional)"
+      />
+
+      <button id="generate-btn" class="btn-primary">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
+        </svg>
+        Generate QR Code
+      </button>
+
+      <div id="error" class="error-message hidden"></div>
+      <div id="qrcode" class="qr-container hidden"></div>
+      <button id="download-btn" class="btn-download hidden">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+        </svg>
+        Download PNG
+      </button>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
