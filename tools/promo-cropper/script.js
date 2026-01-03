@@ -1,4 +1,5 @@
-const dropZone = document.getElementById('drop-zone');
+const dropZone = document.getElementById('drag-overlay');
+const uploadBtn = document.getElementById('upload-btn');
 const uploadInput = document.getElementById('upload');
 const img = document.getElementById('image');
 const container = document.getElementById('crop-container');
@@ -23,29 +24,43 @@ let imgLeft = 0, imgTop = 0;
 let scale = 1;
 let targetW = 440;
 let targetH = 280;
+let dragCounter = 0;
 
-['dragenter', 'dragover'].forEach(e => {
-    dropZone.addEventListener(e, ev => {
-        ev.preventDefault();
-        ev.stopPropagation();
-        dropZone.classList.add('drag-over');
-    });
+document.addEventListener('dragenter', (e) => {
+    e.preventDefault();
+    if (e.dataTransfer.types.includes('Files')) {
+        dragCounter++;
+        dropZone.classList.remove('hidden');
+        setTimeout(() => dropZone.classList.add('show'), 0);
+    }
 });
 
-['dragleave', 'drop'].forEach(e => {
-    dropZone.addEventListener(e, ev => {
-        ev.preventDefault();
-        ev.stopPropagation();
-        dropZone.classList.remove('drag-over');
-    });
+document.addEventListener('dragleave', (e) => {
+    e.preventDefault();
+    dragCounter--;
+    if (dragCounter === 0) {
+        dropZone.classList.remove('show');
+        setTimeout(() => dropZone.classList.add('hidden'), 300);
+    }
 });
 
-dropZone.addEventListener('drop', e => {
+document.addEventListener('dragover', (e) => {
+    e.preventDefault();
+});
+
+document.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dragCounter = 0;
+    dropZone.classList.remove('show');
+    setTimeout(() => dropZone.classList.add('hidden'), 300);
+
     const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) loadImage(file);
+    if (file && file.type.startsWith('image/')) {
+        loadImage(file);
+    }
 });
 
-dropZone.addEventListener('click', () => uploadInput.click());
+uploadBtn.addEventListener('click', () => uploadInput.click());
 uploadInput.addEventListener('change', e => {
     if (e.target.files[0]) loadImage(e.target.files[0]);
 });

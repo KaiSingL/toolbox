@@ -51,6 +51,35 @@ html, body {
     background-color: rgba(59, 130, 246, 0.1);
 }
 
+#drag-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 24, 39, 0.95);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+#drag-overlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#drag-overlay .overlay-content {
+    text-align: center;
+    color: white;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
 #zoom-info {
     position: absolute;
     bottom: 20px;
