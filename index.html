@@ -5,142 +5,160 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web Tools Hub</title>
     <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon.png">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Custom scrollbar for Webkit */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1f2937; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #4b5563; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #6b7280; 
-        }
-    </style>
+    <link rel="stylesheet" href="assets/css/brutalist.css">
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen font-sans selection:bg-blue-500 selection:text-white">
-
-    <!-- Header -->
-    <header class="border-b border-gray-800 bg-gray-900/80 backdrop-blur-md sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg shadow-lg flex items-center justify-center">
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+<body>
+    <header class="header">
+        <div class="header-inner">
+            <a href="#" class="logo glitch">
+                <div class="logo-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                     </svg>
                 </div>
-                <h1 class="text-xl font-bold tracking-tight">Web Tools Hub</h1>
-            </div>
-            <a href="https://github.com/KaiSingL/tool-box" target="_blank" class="text-gray-400 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium">
-                <span>View on GitHub</span>
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                Web Tools Hub
+            </a>
+            <a href="https://github.com/KaiSingL/tool-box" target="_blank" class="github-link">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                <span>GitHub</span>
             </a>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="max-w-6xl mx-auto px-6 py-12">
-        <div class="mb-10 text-center md:text-left">
-            <h2 class="text-3xl font-bold mb-2">Available Tools</h2>
-            <p class="text-gray-400">A collection of simple, open-source browser utilities.</p>
+    <div class="marquee-container">
+        <div class="marquee-content">
+            <span class="marquee-item">/// PROMO CROPPER /// ICON RESIZER /// WIFI QR CODE /// SVG COLLECTION /// PROMO CROPPER /// ICON RESIZER /// WIFI QR CODE /// SVG COLLECTION ///</span>
         </div>
+    </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            
-            <!-- Tool Card 1: Promo Cropper -->
-            <a href="./tools/promo-cropper/index.html" class="group relative bg-gray-800 border border-gray-700 rounded-xl p-6 hover:border-blue-500 hover:shadow-2xl hover:shadow-blue-500/10 transition-all duration-300 flex flex-col h-full">
-                <div class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-500/20 transition-colors">
-                    <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">Chrome Promo Cropper</h3>
-                <p class="text-gray-400 text-sm leading-relaxed mb-6 flex-grow">
-                    Quickly crop and resize images for the Chrome Web Store. Supports Small Promo, Marquee, Screenshots, and Icons.
-                </p>
-                <div class="flex items-center text-blue-400 text-sm font-semibold group-hover:translate-x-1 transition-transform">
-                    Launch Tool
-                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                </div>
-            </a>
-
-            <!-- Tool Card 2: Icon Resizer -->
-            <a href="./tools/icon-resizer/index.html" class="group relative bg-gray-800 border border-gray-700 rounded-xl p-6 hover:border-purple-500 hover:shadow-2xl hover:shadow-purple-500/10 transition-all duration-300 flex flex-col h-full">
-                <div class="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-500/20 transition-colors">
-                    <svg class="w-6 h-6 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-purple-400 transition-colors">Icon Resizer</h3>
-                <p class="text-gray-400 text-sm leading-relaxed mb-6 flex-grow">
-                    Resize icons to multiple standard sizes at once. Perfect for web and mobile development.
-                </p>
-                <div class="flex items-center text-purple-400 text-sm font-semibold group-hover:translate-x-1 transition-transform">
-                    Launch Tool
-                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                </div>
-            </a>
-
-            <!-- Tool Card 3: WiFi QR Code Generator -->
-            <a href="./tools/wifi-qr-code-gen/index.html" class="group relative bg-gray-800 border border-gray-700 rounded-xl p-6 hover:border-indigo-500 hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-300 flex flex-col h-full">
-                <div class="w-12 h-12 bg-indigo-500/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-indigo-500/20 transition-colors">
-                    <svg class="w-6 h-6 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-indigo-400 transition-colors">WiFi QR Code Generator</h3>
-                <p class="text-gray-400 text-sm leading-relaxed mb-6 flex-grow">
-                    Generate scannable QR codes for WiFi networks. Supports WPA2 security and open networks.
-                </p>
-                <div class="flex items-center text-indigo-400 text-sm font-semibold group-hover:translate-x-1 transition-transform">
-                    Launch Tool
-                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                </div>
-            </a>
-
-            <!-- Tool Card 4: SVG Icon Collection -->
-            <a href="./tools/svg-collection/index.html" class="group relative bg-gray-800 border border-gray-700 rounded-xl p-6 hover:border-green-500 hover:shadow-2xl hover:shadow-green-500/10 transition-all duration-300 flex flex-col h-full">
-                <div class="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-500/20 transition-colors">
-                    <svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                </div>
-                <h3 class="text-xl font-bold text-white mb-2 group-hover:text-green-400 transition-colors">SVG Icon Collection</h3>
-                <p class="text-gray-400 text-sm leading-relaxed mb-6 flex-grow">
-                    Browse and copy ready-to-use SVG icons. Includes UI icons, symbols, and decorative elements.
-                </p>
-                <div class="flex items-center text-green-400 text-sm font-semibold group-hover:translate-x-1 transition-transform">
-                    Launch Tool
-                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                </div>
-            </a>
-
-            <!-- Placeholder Card for Future Tool -->
-            <!-- Copy this block to add more tools -->
-            <div class="bg-gray-800/50 border border-dashed border-gray-700 rounded-xl p-6 flex flex-col items-center justify-center text-center opacity-50 hover:opacity-100 transition-opacity">
-                <div class="w-12 h-12 bg-gray-700/50 rounded-full flex items-center justify-center mb-4">
-                    <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                </div>
-                <h3 class="text-lg font-bold text-gray-400">More Coming Soon</h3>
+    <main class="main">
+        <div class="container" style="padding-top: 48px; padding-bottom: 48px;">
+            <div style="margin-bottom: 48px;">
+                <h1 class="section-title" style="font-size: 48px; margin-bottom: 12px;">Available Tools</h1>
+                <p class="section-subtitle">A collection of open-source browser utilities.</p>
             </div>
 
+            <div class="grid-brutal" style="grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));">
+                <a href="./tools/promo-cropper/index.html" class="tool-card">
+                    <div class="tool-card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </div>
+                    <h3 class="tool-card-title">Chrome Promo Cropper</h3>
+                    <p class="tool-card-desc">Quickly crop and resize images for the Chrome Web Store. Supports Small Promo, Marquee, Screenshots, and Icons.</p>
+                    <div class="tool-card-arrow">
+                        Launch Tool
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </a>
+
+                <a href="./tools/icon-resizer/index.html" class="tool-card">
+                    <div class="tool-card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="14" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                        </svg>
+                    </div>
+                    <h3 class="tool-card-title">Icon Resizer</h3>
+                    <p class="tool-card-desc">Resize icons to multiple standard sizes at once. Perfect for web and mobile development.</p>
+                    <div class="tool-card-arrow">
+                        Launch Tool
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </a>
+
+                <a href="./tools/wifi-qr-code-gen/index.html" class="tool-card">
+                    <div class="tool-card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="7" height="7"></rect>
+                            <rect x="14" y="3" width="7" height="7"></rect>
+                            <rect x="3" y="14" width="7" height="7"></rect>
+                            <path d="M14 14m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                            <path d="M17 17m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0"></path>
+                            <path d="M21 21l-6 0"></path>
+                        </svg>
+                    </div>
+                    <h3 class="tool-card-title">WiFi QR Code Generator</h3>
+                    <p class="tool-card-desc">Generate scannable QR codes for WiFi networks. Supports WPA2 security and open networks.</p>
+                    <div class="tool-card-arrow">
+                        Launch Tool
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </a>
+
+                <a href="./tools/svg-collection/index.html" class="tool-card">
+                    <div class="tool-card-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                    </div>
+                    <h3 class="tool-card-title">SVG Icon Collection</h3>
+                    <p class="tool-card-desc">Browse and copy ready-to-use SVG icons. Includes UI icons, symbols, and decorative elements.</p>
+                    <div class="tool-card-arrow">
+                        Launch Tool
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </div>
+                </a>
+
+                <div class="placeholder-card">
+                    <div class="placeholder-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </div>
+                    <h3 class="placeholder-title">More Coming Soon</h3>
+                </div>
+            </div>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="border-t border-gray-800 mt-auto">
-        <div class="max-w-6xl mx-auto px-6 py-8 text-center text-gray-500 text-sm">
-            <p>&copy; 2025 Web Tools Hub. Open source under GNU Affero General Public License v3.0.</p>
-        </div>
+    <footer class="footer">
+        <p class="footer-text">&copy; 2025 Web Tools Hub. Open source under GNU Affero General Public License v3.0.</p>
     </footer>
 
+    <style>
+        .tool-card {
+            animation: slideUp 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .tool-card:nth-child(1) { animation-delay: 0ms; }
+        .tool-card:nth-child(2) { animation-delay: 50ms; }
+        .tool-card:nth-child(3) { animation-delay: 100ms; }
+        .tool-card:nth-child(4) { animation-delay: 150ms; }
+        .placeholder-card { animation-delay: 200ms; }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </body>
 </html>
