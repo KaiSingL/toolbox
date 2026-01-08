@@ -1,6 +1,8 @@
 // Theme management
 function initTheme() {
   const themeToggle = document.getElementById('theme-toggle');
+  if (!themeToggle) return;
+
   const htmlElement = document.documentElement;
 
   // Check for saved theme preference or default to system preference

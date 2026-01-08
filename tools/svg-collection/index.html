@@ -6,92 +6,7 @@
     <title>SVG Icon Collection - Web Tools Hub</title>
     <link rel="icon" type="image/png" sizes="32x32" href="../../assets/icons/icon.png">
     <link rel="stylesheet" href="../../assets/css/brutalist.css">
-    <style>
-        .icon-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 16px;
-        }
-
-        .icon-card {
-            position: relative;
-            background: var(--bg-surface);
-            border: var(--border-thin);
-            border-radius: 2px;
-            padding: 24px 16px 16px;
-            text-align: center;
-            transition: all var(--transition-medium);
-        }
-
-        .icon-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-4px);
-        }
-
-        .icon-card:hover .copy-btn {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .copy-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--accent);
-            color: var(--bg-primary);
-            border: none;
-            border-radius: 2px;
-            cursor: pointer;
-            opacity: 0;
-            transform: translateY(-8px);
-            transition: all var(--transition-fast);
-        }
-
-        .copy-btn:hover {
-            background: var(--accent-hover);
-        }
-
-        .copy-btn svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .icon-display {
-            width: 48px;
-            height: 48px;
-            margin: 0 auto 12px;
-        }
-
-        .card-title {
-            font-family: var(--font-mono);
-            font-size: 13px;
-            color: var(--text-muted);
-            margin: 0;
-        }
-
-        .tool-content {
-            padding: 48px 24px;
-        }
-
-        .tool-description {
-            font-family: var(--font-mono);
-            font-size: 15px;
-            color: var(--text-muted);
-            margin-bottom: 32px;
-            max-width: 600px;
-        }
-
-        @media (max-width: 480px) {
-            .icon-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header class="header">
@@ -120,235 +35,265 @@
             <p class="tool-description">Click the copy button on any icon to copy its full SVG code to your clipboard.</p>
 
             <div class="icon-grid">
-                <div class="icon-card">
-                    <button id="copy-delete-cookie" class="copy-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                    </button>
-                    <svg id="svg-delete-cookie" class="icon-display" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/>
-                        <path d="M8.5 8.5v.01"/>
-                        <path d="M16 15.5v.01"/>
-                        <path d="M12 12v.01"/>
-                        <path d="M11 17v.01"/>
-                        <path d="M7 14v.01"/>
-                        <path d="M17 2L23 8" stroke="#ef4444"/>
-                        <path d="M17 8L23 2" stroke="#ef4444"/>
+            <!-- Delete Cookie Icon -->
+            <div class="icon-card">
+                <button id="copy-delete-cookie" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
                     </svg>
-                    <p class="card-title">Delete Cookie</p>
-                </div>
-
-                <div class="icon-card">
-                    <button id="copy-close" class="copy-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                    </button>
-                    <svg id="svg-close" class="icon-display" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M18 6L6 18M6 6l12 12"/>
-                    </svg>
-                    <p class="card-title">Close</p>
-                </div>
-
-                <div class="icon-card">
-                    <button id="copy-folder" class="copy-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                    </button>
-                    <svg id="svg-folder" class="icon-display" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V6h5.17l2 2H20v10z"/>
-                    </svg>
-                    <p class="card-title">Folder</p>
-                </div>
-
-                <div class="icon-card">
-                    <button id="copy-file" class="copy-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                    </button>
-                    <svg id="svg-file" class="icon-display" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                    </svg>
-                    <p class="card-title">File</p>
-                </div>
-
-                <div class="icon-card">
-                    <button id="copy-chevron" class="copy-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                    </button>
-                    <svg id="svg-chevron" class="icon-display" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 5l7 7-7 7"/>
-                    </svg>
-                    <p class="card-title">Chevron Right</p>
-                </div>
-
-                <div class="icon-card">
-                    <button id="copy-trash" class="copy-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                    </button>
-                    <svg id="svg-trash" class="icon-display" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                    </svg>
-                    <p class="card-title">Trash</p>
-                </div>
-
-                <div class="icon-card">
-                    <button id="copy-plus" class="copy-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                    </button>
-                    <svg id="svg-plus" class="icon-display" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 4v16m8-8H4"/>
-                    </svg>
-                    <p class="card-title">Plus</p>
-                </div>
-
-                <div class="icon-card">
-                    <button id="copy-edit" class="copy-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                    </button>
-                    <svg id="svg-edit" class="icon-display" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                    </svg>
-                    <p class="card-title">Edit</p>
-                </div>
-
-                <div class="icon-card">
-                    <button id="copy-chevron-left" class="copy-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                    </button>
-                    <svg id="svg-chevron-left" class="icon-display" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M15 19l-7-7 7-7"/>
-                    </svg>
-                    <p class="card-title">Chevron Left</p>
-                </div>
-
-                <div class="icon-card">
-                    <button id="copy-save" class="copy-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                    </button>
-                    <svg id="svg-save" class="icon-display" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                        <polyline points="17 21 17 13 7 13 7 21"/>
-                        <polyline points="7 3 7 8 15 8"/>
-                    </svg>
-                    <p class="card-title">Save</p>
-                </div>
-
-                <div class="icon-card">
-                    <button id="copy-check" class="copy-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                    </button>
-                    <svg id="svg-check" class="icon-display" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M20 6L9 17l-5-5"/>
-                    </svg>
-                    <p class="card-title">Check</p>
-                </div>
-
-                <div class="icon-card">
-                    <button id="copy-circle-check" class="copy-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                    </button>
-                    <svg id="svg-circle-check" class="icon-display" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="m9 12 2 2 4-4"/>
-                    </svg>
-                    <p class="card-title">Circle Check</p>
-                </div>
-
-                <div class="icon-card">
-                    <button id="copy-log" class="copy-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                    </button>
-                    <svg id="svg-log" class="icon-display" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                        <line x1="16" y1="13" x2="8" y2="13"/>
-                        <line x1="16" y1="17" x2="8" y2="17"/>
-                    </svg>
-                    <p class="card-title">Log</p>
-                </div>
-
-                <div class="icon-card">
-                    <button id="copy-refresh" class="copy-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                    </button>
-                    <svg id="svg-refresh" class="icon-display" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                        <path d="M3 3v5h5"/>
-                        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
-                        <path d="M16 16h5v5"/>
-                    </svg>
-                    <p class="card-title">Refresh</p>
-                </div>
-
-                <div class="icon-card">
-                    <button id="copy-calendar" class="copy-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                    </button>
-                    <svg id="svg-calendar" class="icon-display" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                        <line x1="16" y1="2" x2="16" y2="6"/>
-                        <line x1="8" y1="2" x2="8" y2="6"/>
-                        <line x1="3" y1="10" x2="21" y2="10"/>
-                    </svg>
-                    <p class="card-title">Calendar</p>
-                </div>
-
-                <div class="icon-card">
-                    <button id="copy-time" class="copy-btn">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
-                        </svg>
-                    </button>
-                    <svg id="svg-time" class="icon-display" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M12 6v6l4 2"/>
-                    </svg>
-                    <p class="card-title">Time</p>
-                </div>
+                </button>
+                <svg id="svg-delete-cookie" class="icon-display icon-color" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/>
+                    <circle cx="8.5" cy="8.5" r="1"/>
+                    <circle cx="16" cy="15.5" r="1"/>
+                    <circle cx="12" cy="12" r="1"/>
+                    <circle cx="11" cy="17" r="1"/>
+                    <circle cx="7" cy="14" r="1"/>
+                    <path d="M17 2 L23 8" stroke="#ef4444"/>
+                    <path d="M17 8 L23 2" stroke="#ef4444"/>
+                </svg>
+                <p class="card-title">Delete Cookie</p>
             </div>
+
+            <!-- Close Icon -->
+            <div class="icon-card">
+                <button id="copy-close" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-close" class="icon-display icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                <p class="card-title">Close</p>
+            </div>
+
+            <!-- Folder Icon -->
+            <div class="icon-card">
+                <button id="copy-folder" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-folder" class="icon-display accent-color" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V6h5.17l2 2H20v10z"></path>
+                </svg>
+                <p class="card-title">Folder</p>
+            </div>
+
+            <!-- File Icon -->
+            <div class="icon-card">
+                <button id="copy-file" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-file" class="icon-display icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <p class="card-title">File</p>
+            </div>
+
+            <!-- Chevron Right -->
+            <div class="icon-card">
+                <button id="copy-chevron" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-chevron" class="icon-display icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+                <p class="card-title">Chevron Right</p>
+            </div>
+
+            <!-- Trash Icon -->
+            <div class="icon-card">
+                <button id="copy-trash" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-trash" class="icon-display color-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                </svg>
+                <p class="card-title">Trash</p>
+            </div>
+
+            <!-- Plus Icon -->
+            <div class="icon-card">
+                <button id="copy-plus" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-plus" class="icon-display accent-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                <p class="card-title">Plus</p>
+            </div>
+
+            <!-- Edit Icon -->
+            <div class="icon-card">
+                <button id="copy-edit" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-edit" class="icon-display icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                <p class="card-title">Edit</p>
+            </div>
+
+            <!-- Chevron Left -->
+            <div class="icon-card">
+                <button id="copy-chevron-left" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-chevron-left" class="icon-display icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+                <p class="card-title">Chevron Left</p>
+            </div>
+
+            <!-- Save Icon -->
+            <div class="icon-card">
+                <button id="copy-save" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-save" class="icon-display" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                    <polyline points="17 21 17 13 7 13 7 21"/>
+                    <polyline points="7 3 7 8 15 8"/>
+                </svg>
+                <p class="card-title">Save</p>
+            </div>
+
+            <!-- Check Icon -->
+            <div class="icon-card">
+                <button id="copy-check" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-check" class="icon-display color-green" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 6 9 17l-5-5"></path>
+                </svg>
+                <p class="card-title">Check</p>
+            </div>
+
+            <!-- Circle Check Icon -->
+            <div class="icon-card">
+                <button id="copy-circle-check" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-circle-check" class="icon-display color-green" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></circle><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 12 2 2 4-4"></path>
+                </svg>
+                <p class="card-title">Circle Check</p>
+            </div>
+
+            <!-- Log Icon -->
+            <div class="icon-card">
+                <button id="copy-log" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-log" class="icon-display icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12h-5"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 8h-5"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 17V5a2 2 0 0 0-2-2H4"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"></path>
+                </svg>
+                <p class="card-title">Log</p>
+            </div>
+
+            <!-- Refresh Icon -->
+            <div class="icon-card">
+                <button id="copy-refresh" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-refresh" class="icon-display" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                    <path d="M3 3v5h5"/>
+                    <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+                    <path d="M16 16h5v5"/>
+                </svg>
+                <p class="card-title">Refresh</p>
+            </div>
+
+            <!-- Calendar Icon -->
+            <div class="icon-card">
+                <button id="copy-calendar" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-calendar" class="icon-display icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 2v4"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></rect><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14h.01"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14h.01"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 14h.01"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 18h.01"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 18h.01"></path>
+                </svg>
+                <p class="card-title">Calendar</p>
+            </div>
+
+            <!-- Adjust Width Icon -->
+            <div class="icon-card">
+                <button id="copy-adjust-width" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-adjust-width" class="icon-display icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12h6"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12H2"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2v2"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v2"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v2"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 20v2"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 15 3-3-3-3"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m5 9-3 3 3 3"></path>
+                </svg>
+                <p class="card-title">Adjust Width</p>
+            </div>
+
+            <!-- Time Icon -->
+            <div class="icon-card">
+                <button id="copy-time" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-time" class="icon-display icon-color" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2"></path><circle cx="12" cy="12" r="10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></circle>
+                </svg>
+                <p class="card-title">Time</p>
+            </div>
+
+            <!-- X (Twitter) Icon -->
+            <div class="icon-card">
+                <button id="copy-x" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-x" class="icon-display icon-color" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2.74 2.84l7.8165 10.4693L2.6995 21.8143h1.782l6.885-7.452L16.9352 21.8143h6.0345L14.6875 10.7578l7.3305-7.9178h-1.782l-6.3585 6.8647-5.1232-6.8647H2.74zm2.6123 1.3163h2.7742l12.231 16.362h-2.7742L5.3522 4.1563z"></path>
+                </svg>
+                <p class="card-title">X</p>
+            </div>
+
+            <!-- GitHub Icon -->
+            <div class="icon-card">
+                <button id="copy-github" class="copy-btn">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </button>
+                <svg id="svg-github" class="icon-display icon-color" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12.1404 1.5C6.2565 1.5 1.5 6.2916 1.5 12.2195c0 4.7385 3.0477 8.7495 7.2756 10.1691.5286.1067.7222-.2307.7222-.5144 0-.2485-.0174-1.1003-.0174-1.9879-2.9599.639-3.5763-1.2778-3.5763-1.2778-.4757-1.2423-1.1805-1.5616-1.1805-1.5616-.9688-.6567.0706-.6567.0706-.6567 1.0746.071 1.6385 1.1003 1.6385 1.1003.9511 1.6326 2.4838 1.1713 3.1004.8873.088-.6922.37-1.1713.6695-1.4375-2.3607-.2485-4.8445-1.1713-4.8445-5.2888 0-1.1713.4225-2.1296 1.092-2.875-.1056-.2662-.4757-1.3667.1059-2.8397 0 0 .8984-.284 2.9242 1.1003a10.2301 10.2301 90 012.6602-.355c.8984 0 1.8143.1244 2.66.355 2.026-1.3843 2.9244-1.1003 2.9244-1.1003.5815 1.473.2113 2.5735.1056 2.8397.6872.7453 1.0923 1.7036 1.0923 2.875 0 4.1175-2.4838 5.0225-4.8622 5.2888.3877.3372.7222.976.7222 1.9876 0 1.4375-.0174 2.5912-.0174 2.946 0 .284.1938.6214.7222.5149 4.2279-1.4201 7.2756-5.4308 7.2756-10.1693C22.7806 6.2916 18.0066 1.5 12.1404 1.5z"></path>
+                </svg>
+                <p class="card-title">GitHub</p>
+            </div>
+        </div>
         </div>
     </main>
 
