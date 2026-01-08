@@ -23,10 +23,12 @@ function generateQR() {
   console.log("QR Data:", wifiData);
 
   const qrDiv = document.getElementById("qrcode");
+  if (!qrDiv) return;
   qrDiv.innerHTML = "";
   qrDiv.classList.remove("show");
 
-  document.getElementById("download-btn").classList.add("hidden");
+  const downloadBtn = document.getElementById("download-btn");
+  if (downloadBtn) downloadBtn.classList.add("hidden");
 
   if (typeof QRCode === "undefined") {
     showError("Library not loaded—check connection and refresh.");
@@ -45,7 +47,8 @@ function generateQR() {
     console.log("QR generated!");
     qrDiv.classList.remove("hidden");
     setTimeout(() => qrDiv.classList.add("show"), 0);
-    document.getElementById("download-btn").classList.remove("hidden");
+    const downloadBtn = document.getElementById("download-btn");
+    if (downloadBtn) downloadBtn.classList.remove("hidden");
   } catch (err) {
     showError("Error: " + err.message);
     console.error(err);
@@ -54,6 +57,7 @@ function generateQR() {
 
 function downloadQR() {
   const qrDiv = document.getElementById("qrcode");
+  if (!qrDiv) return;
   const canvas = qrDiv.querySelector("canvas");
   const img = qrDiv.querySelector("img");
 
@@ -79,7 +83,7 @@ function downloadQR() {
 window.onload = function () {
   const generateBtn = document.getElementById("generate-btn");
   const downloadBtn = document.getElementById("download-btn");
-  generateBtn.addEventListener("click", generateQR);
-  downloadBtn.addEventListener("click", downloadQR);
+  if (generateBtn) generateBtn.addEventListener("click", generateQR);
+  if (downloadBtn) downloadBtn.addEventListener("click", downloadQR);
   console.log("Ready. Library loaded:", typeof QRCode !== "undefined");
 };
