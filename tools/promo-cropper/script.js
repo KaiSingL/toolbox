@@ -14,6 +14,7 @@ const zoomInfo = document.getElementById('zoom-info');
 const zoomPercent = document.getElementById('zoom-percent');
 const zoomInBtn = document.getElementById('zoom-in');
 const zoomOutBtn = document.getElementById('zoom-out');
+const centerOverlayBtn = document.getElementById('center-overlay');
 const menuToggle = document.getElementById('menu-toggle');
 const sidebar = document.getElementById('sidebar');
 const sidebarOverlay = document.getElementById('sidebar-overlay');
@@ -138,6 +139,18 @@ function zoomBy(delta) {
 
 zoomInBtn.addEventListener('click', () => zoomBy(0.01));
 zoomOutBtn.addEventListener('click', () => zoomBy(-0.01));
+centerOverlayBtn.addEventListener('click', centerOverlay);
+
+function centerOverlay() {
+    if (!img.src) return;
+    
+    const displayW = img.naturalWidth * scale;
+    const displayH = img.naturalHeight * scale;
+    
+    overlayLeft = (displayW - targetW) / 2;
+    overlayTop = (displayH - targetH) / 2;
+    updateOverlayPosition();
+}
 
 container.addEventListener('wheel', (e) => {
     if (!img.src) return;
