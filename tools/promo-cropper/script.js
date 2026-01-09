@@ -3,6 +3,7 @@ const uploadBtn = document.getElementById('upload-btn');
 const uploadInput = document.getElementById('upload');
 const img = document.getElementById('image');
 const container = document.getElementById('crop-container');
+const canvas = document.querySelector('.tool-canvas');
 const overlay = document.getElementById('crop-overlay');
 const sizeSelect = document.getElementById('size');
 const previewCanvas = document.getElementById('preview');
@@ -22,6 +23,7 @@ const sidebarOverlay = document.getElementById('sidebar-overlay');
 let isDragging = false;
 let startX, startY;
 let overlayLeft = 0, overlayTop = 0;
+let imgLeft = 0, imgTop = 0;
 let scale = 1;
 let targetW = 440;
 let targetH = 280;
@@ -91,9 +93,32 @@ function initializeCrop() {
     img.style.width = `${displayW}px`;
     img.style.height = `${displayH}px`;
 
-    overlayLeft = (displayW - targetW) / 2;
-    overlayTop = (displayH - targetH) / 2;
+    // Center image in crop-container using container dimensions
+    imgLeft = (container.offsetWidth - displayW) / 2;
+    imgTop = (container.offsetHeight - displayH) / 2;
+    updateImagePosition();
+
+    // Position overlay relative to tool-canvas (add container's position offset)
+    const containerRect = container.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+    const containerOffsetLeft = containerRect.left - canvasRect.left;
+    const containerOffsetTop = containerRect.top - canvasRect.top;
+
+    overlayLeft = containerOffsetLeft + imgLeft + (displayW - targetW) / 2;
+    overlayTop = containerOffsetTop + imgTop + (displayH - targetH) / 2;
     updateOverlayPosition();
+
+    // Delay positioning to ensure layout is calculated
+    requestAnimationFrame(() => {
+        const containerRect = container.getBoundingClientRect();
+        const canvasRect = canvas.getBoundingClientRect();
+        const containerOffsetLeft = containerRect.left - canvasRect.left;
+        const containerOffsetTop = containerRect.top - canvasRect.top;
+
+        overlayLeft = containerOffsetLeft + imgLeft + (displayW - targetW) / 2;
+        overlayTop = containerOffsetTop + imgTop + (displayH - targetH) / 2;
+        updateOverlayPosition();
+    });
 
     updateZoomDisplay();
 
@@ -101,6 +126,11 @@ function initializeCrop() {
     zoomInfo.classList.remove('hidden');
     previewContainer.classList.add('hidden');
     downloadBtn.classList.add('hidden');
+}
+
+function updateImagePosition() {
+    img.style.left = `${imgLeft}px`;
+    img.style.top = `${imgTop}px`;
 }
 
 function updateOverlayPosition() {
@@ -115,55 +145,93 @@ function updateZoomDisplay() {
 function zoomBy(delta) {
     if (!img.src) return;
     const oldScale = scale;
+
     scale += delta;
     scale = Math.max(0.05, Math.min(scale, 50));
 
     if (Math.abs(scale - oldScale) > 0.001) {
-        const rect = container.getBoundingClientRect();
-        const centerX = rect.width / 2;
-        const centerY = rect.height / 2;
-
         const displayW = img.naturalWidth * scale;
         const displayH = img.naturalHeight * scale;
         img.style.width = `${displayW}px`;
         img.style.height = `${displayH}px`;
 
-        const ratio = scale / oldScale;
-        overlayLeft = centerX - (centerX - overlayLeft) * ratio;
-        overlayTop = centerY - (centerY - overlayTop) * ratio;
+        // Center image in crop-container as it grows/shrinks
+        imgLeft = (container.offsetWidth - displayW) / 2;
+        imgTop = (container.offsetHeight - displayH) / 2;
+        updateImagePosition();
 
+        // Update overlay position relative to the new image center
+        const containerRect = container.getBoundingClientRect();
+        const canvasRect = canvas.getBoundingClientRect();
+        const containerOffsetLeft = containerRect.left - canvasRect.left;
+        const containerOffsetTop = containerRect.top - canvasRect.top;
+
+        overlayLeft = containerOffsetLeft + imgLeft + (displayW - targetW) / 2;
+        overlayTop = containerOffsetTop + imgTop + (displayH - targetH) / 2;
         updateOverlayPosition();
+
         updateZoomDisplay();
     }
+}
+
+let zoomInterval = null;
+
+function startContinuousZoom(delta) {
+    if (zoomInterval) clearInterval(zoomInterval);
+    zoomBy(delta); // Initial zoom
+    zoomInterval = setInterval(() => zoomBy(delta), 50); // Continuous zoom every 50ms
+}
+
+function stopContinuousZoom() {
+    if (zoomInterval) {
+        clearInterval(zoomInterval);
+        zoomInterval = null;
+    }
+}
+
+function centerOverlay() {
+    if (!img.src) return;
+
+    const displayW = img.naturalWidth * scale;
+    const displayH = img.naturalHeight * scale;
+
+    const containerRect = container.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+    const containerOffsetLeft = containerRect.left - canvasRect.left;
+    const containerOffsetTop = containerRect.top - canvasRect.top;
+
+    overlayLeft = containerOffsetLeft + imgLeft + (displayW - targetW) / 2;
+    overlayTop = containerOffsetTop + imgTop + (displayH - targetH) / 2;
+    updateOverlayPosition();
 }
 
 zoomInBtn.addEventListener('click', () => zoomBy(0.01));
 zoomOutBtn.addEventListener('click', () => zoomBy(-0.01));
 centerOverlayBtn.addEventListener('click', centerOverlay);
 
-function centerOverlay() {
-    if (!img.src) return;
-    
-    const displayW = img.naturalWidth * scale;
-    const displayH = img.naturalHeight * scale;
-    
-    overlayLeft = (displayW - targetW) / 2;
-    overlayTop = (displayH - targetH) / 2;
-    updateOverlayPosition();
-}
-
-container.addEventListener('wheel', (e) => {
-    if (!img.src) return;
+zoomInBtn.addEventListener('mousedown', () => startContinuousZoom(0.01));
+zoomInBtn.addEventListener('mouseup', stopContinuousZoom);
+zoomInBtn.addEventListener('mouseleave', stopContinuousZoom);
+zoomInBtn.addEventListener('touchstart', (e) => {
     e.preventDefault();
-    const delta = e.deltaY > 0 ? -0.01 : 0.01;
-    zoomBy(delta);
-});
+    startContinuousZoom(0.01);
+}, { passive: false });
+zoomInBtn.addEventListener('touchend', stopContinuousZoom);
+
+zoomOutBtn.addEventListener('mousedown', () => startContinuousZoom(-0.01));
+zoomOutBtn.addEventListener('mouseup', stopContinuousZoom);
+zoomOutBtn.addEventListener('mouseleave', stopContinuousZoom);
+zoomOutBtn.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    startContinuousZoom(-0.01);
+}, { passive: false });
+zoomOutBtn.addEventListener('touchend', stopContinuousZoom);
 
 sizeSelect.addEventListener('change', handleSizeChange);
 
 function handleSizeChange() {
     if (!img.src) return;
-    
+
     [targetW, targetH] = sizeSelect.value.split('x').map(Number);
 
     overlay.style.width = `${targetW}px`;
@@ -172,8 +240,13 @@ function handleSizeChange() {
     const displayW = img.naturalWidth * scale;
     const displayH = img.naturalHeight * scale;
 
-    overlayLeft = (displayW - targetW) / 2;
-    overlayTop = (displayH - targetH) / 2;
+    const containerRect = container.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+    const containerOffsetLeft = containerRect.left - canvasRect.left;
+    const containerOffsetTop = containerRect.top - canvasRect.top;
+
+    overlayLeft = containerOffsetLeft + imgLeft + (displayW - targetW) / 2;
+    overlayTop = containerOffsetTop + imgTop + (displayH - targetH) / 2;
     updateOverlayPosition();
 }
 
@@ -239,8 +312,13 @@ confirmBtn.addEventListener('click', () => {
     const ctx = previewCanvas.getContext('2d');
     ctx.clearRect(0, 0, targetW, targetH);
 
-    const sourceX = overlayLeft / scale;
-    const sourceY = overlayTop / scale;
+    const containerRect = container.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+    const containerOffsetLeft = containerRect.left - canvasRect.left;
+    const containerOffsetTop = containerRect.top - canvasRect.top;
+
+    const sourceX = (overlayLeft - containerOffsetLeft - imgLeft) / scale;
+    const sourceY = (overlayTop - containerOffsetTop - imgTop) / scale;
     const sourceW = targetW / scale;
     const sourceH = targetH / scale;
 

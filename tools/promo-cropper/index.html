@@ -6,116 +6,7 @@
     <title>Chrome Promo Cropper - Web Tools Hub</title>
     <link rel="icon" type="image/png" sizes="32x32" href="../../assets/icons/icon.png">
     <link rel="stylesheet" href="../../assets/css/brutalist.css">
-    <style>
-        #crop-overlay {
-            border: 2px solid var(--accent);
-            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.6);
-            pointer-events: auto;
-            position: absolute;
-            box-sizing: border-box;
-            z-index: 10;
-            cursor: grab;
-            touch-action: none;
-        }
-
-        #image {
-            touch-action: none;
-            user-select: none;
-            cursor: default;
-            image-rendering: -webkit-optimize-contrast;
-            max-width: none;
-            max-height: none;
-            min-width: 0;
-            min-height: 0;
-        }
-
-        #drag-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(5, 5, 5, 0.95);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        #drag-overlay.show {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        #drag-overlay .overlay-content {
-            text-align: center;
-            color: white;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .upload-hint {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .preview-container {
-            padding-top: 24px;
-            border-top: var(--border-thin);
-        }
-
-        #preview {
-            width: 100%;
-            border: 2px solid var(--accent);
-            border-radius: 2px;
-        }
-
-        .zoom-controls {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg-primary);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 2px;
-            font-size: 14px;
-            pointer-events: auto;
-            z-index: 20;
-            border: 1px solid var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .zoom-btn {
-            background: var(--bg-surface);
-            border: 1px solid var(--accent);
-            color: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 2px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-
-        .zoom-btn:hover {
-            background: var(--accent);
-            color: var(--bg-primary);
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="tool-page">
@@ -191,10 +82,10 @@
             </aside>
 
               <main class="tool-canvas">
-                  <div id="crop-container" class="tool-canvas-inner" style="max-width: 100%; max-height: calc(100vh - 200px);">
-                     <img id="image" src="" draggable="false">
-                     <div id="crop-overlay"></div>
-                 </div>
+                  <div id="crop-container" class="tool-canvas-inner" style="max-width: 100%; max-height: calc(100vh - 200px); position: relative;">
+                      <img id="image" src="" draggable="false">
+                  </div>
+                  <div id="crop-overlay"></div>
                 <p id="placeholder" class="tool-placeholder">
                     <span class="tool-placeholder-icon">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -236,10 +127,6 @@
 
     <script src="script.js"></script>
     <script>
-        const menuToggle = document.getElementById('menu-toggle');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarOverlay = document.getElementById('sidebar-overlay');
-
         menuToggle.addEventListener('click', () => {
             sidebar.classList.toggle('open');
             sidebarOverlay.classList.toggle('show');
