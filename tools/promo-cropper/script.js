@@ -20,7 +20,7 @@ const sidebarOverlay = document.getElementById('sidebar-overlay');
 
 let isDragging = false;
 let startX, startY;
-let imgLeft = 0, imgTop = 0;
+let overlayLeft = 0, overlayTop = 0;
 let scale = 1;
 let targetW = 440;
 let targetH = 280;
@@ -79,22 +79,7 @@ function initializeCrop() {
 
     overlay.style.width = `${targetW}px`;
     overlay.style.height = `${targetH}px`;
-    container.style.width = `${targetW}px`;
-    container.style.height = `${targetH}px`;
     overlay.classList.remove('hidden');
-
-    const viewportW = window.innerWidth - 32;
-    const viewportH = window.innerHeight - 200;
-    const scaleFit = Math.min(
-        Math.min(viewportW / targetW, 1),
-        Math.min(viewportH / targetH, 1)
-    );
-
-    if (scaleFit < 1) {
-        container.style.transform = `scale(${scaleFit})`;
-    } else {
-        container.style.transform = 'none';
-    }
 
     const scaleX = targetW / img.naturalWidth;
     const scaleY = targetH / img.naturalHeight;
@@ -105,9 +90,9 @@ function initializeCrop() {
     img.style.width = `${displayW}px`;
     img.style.height = `${displayH}px`;
 
-    imgLeft = (targetW - displayW) / 2;
-    imgTop = (targetH - displayH) / 2;
-    updateImagePosition();
+    overlayLeft = (displayW - targetW) / 2;
+    overlayTop = (displayH - targetH) / 2;
+    updateOverlayPosition();
 
     updateZoomDisplay();
 
@@ -117,9 +102,9 @@ function initializeCrop() {
     downloadBtn.classList.add('hidden');
 }
 
-function updateImagePosition() {
-    img.style.left = `${imgLeft}px`;
-    img.style.top = `${imgTop}px`;
+function updateOverlayPosition() {
+    overlay.style.left = `${overlayLeft}px`;
+    overlay.style.top = `${overlayTop}px`;
 }
 
 function updateZoomDisplay() {
@@ -143,16 +128,83 @@ function zoomBy(delta) {
         img.style.height = `${displayH}px`;
 
         const ratio = scale / oldScale;
-        imgLeft = centerX - (centerX - imgLeft) * ratio;
-        imgTop = centerY - (centerY - imgTop) * ratio;
+        overlayLeft = centerX - (centerX - overlayLeft) * ratio;
+        overlayTop = centerY - (centerY - overlayTop) * ratio;
 
-        updateImagePosition();
+        updateOverlayPosition();
         updateZoomDisplay();
     }
 }
 
 zoomInBtn.addEventListener('click', () => zoomBy(0.01));
 zoomOutBtn.addEventListener('click', () => zoomBy(-0.01));
+
+container.addEventListener('wheel', (e) => {
+    if (!img.src) return;
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.01 : 0.01;
+    zoomBy(delta);
+});
+
+sizeSelect.addEventListener('change', handleSizeChange);
+
+function handleSizeChange() {
+    if (!img.src) return;
+    
+    [targetW, targetH] = sizeSelect.value.split('x').map(Number);
+
+    overlay.style.width = `${targetW}px`;
+    overlay.style.height = `${targetH}px`;
+
+    const displayW = img.naturalWidth * scale;
+    const displayH = img.naturalHeight * scale;
+
+    overlayLeft = (displayW - targetW) / 2;
+    overlayTop = (displayH - targetH) / 2;
+    updateOverlayPosition();
+}
+
+overlay.addEventListener('mousedown', (e) => {
+    if (!img.src) return;
+    isDragging = true;
+    startX = e.clientX - overlayLeft;
+    startY = e.clientY - overlayTop;
+    overlay.style.cursor = 'grabbing';
+});
+
+overlay.addEventListener('touchstart', (e) => {
+    if (!img.src) return;
+    isDragging = true;
+    const touch = e.touches[0];
+    startX = touch.clientX - overlayLeft;
+    startY = touch.clientY - overlayTop;
+}, { passive: false });
+
+document.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    overlayLeft = e.clientX - startX;
+    overlayTop = e.clientY - startY;
+    updateOverlayPosition();
+});
+
+document.addEventListener('touchmove', (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    overlayLeft = touch.clientX - startX;
+    overlayTop = touch.clientY - startY;
+    updateOverlayPosition();
+}, { passive: false });
+
+document.addEventListener('mouseup', () => {
+    isDragging = false;
+    overlay.style.cursor = 'grab';
+});
+
+document.addEventListener('touchend', () => {
+    isDragging = false;
+    overlay.style.cursor = 'grab';
+});
 
 menuToggle.addEventListener('click', () => {
     sidebar.classList.toggle('open');
@@ -165,20 +217,6 @@ sidebarOverlay.addEventListener('click', () => {
 });
 
 window.addEventListener('resize', () => {
-    if (img.src) {
-        const viewportW = window.innerWidth - 32;
-        const viewportH = window.innerHeight - 200;
-        const scaleFit = Math.min(
-            Math.min(viewportW / targetW, 1),
-            Math.min(viewportH / targetH, 1)
-        );
-
-        if (scaleFit < 1) {
-            container.style.transform = `scale(${scaleFit})`;
-        } else {
-            container.style.transform = 'none';
-        }
-    }
 });
 
 confirmBtn.addEventListener('click', () => {
@@ -188,8 +226,8 @@ confirmBtn.addEventListener('click', () => {
     const ctx = previewCanvas.getContext('2d');
     ctx.clearRect(0, 0, targetW, targetH);
 
-    const sourceX = -imgLeft / scale;
-    const sourceY = -imgTop / scale;
+    const sourceX = overlayLeft / scale;
+    const sourceY = overlayTop / scale;
     const sourceW = targetW / scale;
     const sourceH = targetH / scale;
 
