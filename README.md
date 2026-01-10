@@ -1,6 +1,6 @@
-# 🧰 Tool Box
+# 🧰 Web Tools Hub
 
-A collection of lightweight, open-source web tools designed to simplify everyday development and design tasks. All tools run entirely in the browser—no server required and no data leaves your device.
+A collection of lightweight, open-source browser utilities. All tools run entirely in your browser—no server required and no data leaves your device.
 
 ## 🚀 Live Demo
 
@@ -8,28 +8,55 @@ Check out the live site here: **[https://kaisingl.github.io/tool-box/](https://k
 
 ## 🛠️ Available Tools
 
-### Chrome Extension Promo Cropper
-A dedicated image cropper for Chrome Web Store assets. It simplifies the process of preparing images by handling the math for you.
+### Chrome Promo Cropper
+Quickly crop and resize images for the Chrome Web Store. Supports Small Promo, Marquee, Screenshots, and Icons.
 - **Features:**
-  - Zoom-to-cursor functionality for precise cropping.
-  - Locked aspect ratio during zoom.
+  - Zoom-to-cursor functionality for precise cropping
+  - Locked aspect ratio during zoom
   - Pre-set dimensions for all Chrome Web Store requirements:
     - Small Promo (440×280)
     - Marquee (1400×560)
     - Screenshot Large (1280×800)
     - Screenshot Small (640×400)
     - Icon (128×128)
-  - Direct PNG download.
-- **Tech:** HTML5 Canvas, Vanilla JS, Tailwind CSS.
+  - Direct PNG download
+- **Tech:** HTML5 Canvas, Vanilla JavaScript
+
+### Icon Resizer
+Resize icons to multiple standard sizes at once. Perfect for web and mobile development.
+- **Features:**
+  - Bulk resize to multiple dimensions
+  - Common icon presets (16×16, 32×32, 64×64, 128×128, 256×256, 512×512)
+  - Download as ZIP file
+  - Drag & drop support
+- **Tech:** HTML5 Canvas, Vanilla JavaScript, JSZip, FileSaver.js
+
+### WiFi QR Code Generator
+Generate scannable QR codes for WiFi networks. Supports WPA2 security and open networks.
+- **Features:**
+  - Enter network SSID and password
+  - Choose security type (WPA2, WEP, or open)
+  - Download QR code as PNG
+  - Works on all devices with QR scanner
+- **Tech:** QRCode.js, Vanilla JavaScript
+
+### SVG Icon Collection
+Browse and copy ready-to-use SVG icons. Includes UI icons, symbols, and decorative elements.
+- **Features:**
+  - Curated collection of SVG icons
+  - One-click copy to clipboard
+  - Clean, minimal icon designs
+  - Perfect for web projects
+- **Tech:** Vanilla JavaScript
 
 ## 🛠️ Tech Stack
 
 This project is built with simplicity and performance in mind:
 
-- **HTML5 & CSS3**: Semantic markup and modern styling.
-- **Vanilla JavaScript**: No frameworks, just fast, native DOM manipulation.
-- **Tailwind CSS**: Used via CDN for rapid, responsive UI development.
-- **GitHub Pages**: For static hosting and CI/CD.
+- **HTML5 & CSS3**: Semantic markup and modern styling
+- **Vanilla JavaScript**: No frameworks, just fast, native DOM manipulation
+- **Neo-Brutalist CSS**: Custom design system for a bold, distinctive aesthetic
+- **GitHub Pages**: For static hosting and CI/CD
 
 ## 📦 Installation & Usage
 
