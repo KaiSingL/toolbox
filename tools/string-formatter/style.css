@@ -1,0 +1,125 @@
+.tool-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 48px 24px;
+}
+
+.tool-hero {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.tool-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-row {
+    display: flex;
+    gap: 16px;
+}
+
+.form-row.checkboxes {
+    flex-direction: column;
+    gap: 12px;
+}
+
+.checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.checkbox-group input[type="checkbox"] {
+    display: none;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.checkbox-label svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: var(--text-primary);
+    transition: fill 0.2s ease;
+}
+
+input:checked + .checkbox-label svg {
+    fill: var(--accent);
+}
+
+.form-row.buttons {
+    justify-content: center;
+    gap: 16px;
+}
+
+.w-full {
+    width: 100%;
+}
+
+.output-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.output-brutal {
+    background: var(--bg-primary);
+    border: var(--border-thin);
+    border-radius: 2px;
+    padding: 16px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--text-primary);
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-x: auto;
+    min-height: 100px;
+}
+
+.error-message {
+    color: #ff6b6b;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    margin: 8px 0;
+    padding: 8px;
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid #ff6b6b;
+    border-radius: 2px;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .tool-container {
+        padding: 24px 16px;
+    }
+
+    .form-row {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .form-row.buttons {
+        flex-direction: column;
+    }
+
+    .output-brutal {
+        font-size: 12px;
+        padding: 12px;
+    }
+}
