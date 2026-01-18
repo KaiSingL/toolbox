@@ -87,24 +87,27 @@ Older tools may use Tailwind CSS. Do not use Tailwind for new features - use bru
 ### State Management
 - **Image state:** Track with `Image()` objects, check `.complete` before operations
 - **Video state:** Use video events (`loadedmetadata`, `timeupdate`) for scrubber sync
+- **Blob state:** Store `Blob` objects for downloads, create object URLs as needed
 - **URL cleanup:** Always revoke object URLs: `if (currentUrl) URL.revokeObjectURL(currentUrl)`
 - **File naming:** Extract base name: `file.name.replace(/\.[^/.]+$/, '')`
 - **Blob storage:** Store in arrays for bulk operations (`generatedBlobs.push({ name, blob })`)
 
 ### External Dependencies
-- JSZip: `https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js`
-- FileSaver.js: `https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js`
+- JSZip: `https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js` (for ZIP downloads)
+- FileSaver.js: `https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js` (optional, use native download when possible)
 - QRCode.js: `https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js`
 - Check existing tools before adding new dependencies
+- Prefer native browser APIs over libraries when available
 - Load scripts from CDN for reliability
 
 ### Error Handling
-- Use `alert()` for user-facing errors
+- Use error overlay for user-facing errors instead of `alert()`
 - Validate inputs before processing (file type, selected sizes, image loaded)
-- Provide clear, actionable error messages
+- Provide clear, actionable error messages in overlay below header
 - Handle edge cases: no file selected, wrong file type, still loading
-- Use try/catch for async operations like clipboard access
-- Graceful degradation for unsupported features
+- Use try/catch for async operations like clipboard access and downloads
+- Graceful degradation: disable features for unsupported browsers
+- Auto-dismiss error overlays after 5 seconds
 
 ### Code Formatting
 - 4-space indentation
@@ -122,11 +125,26 @@ Older tools may use Tailwind CSS. Do not use Tailwind for new features - use bru
 - Revoke object URLs after use
 - Avoid eval() or dangerous APIs
 
+### Video Handling Patterns
+- **Loading:** Create object URL from file, set to video.src, call video.load()
+- **Metadata:** Listen to `loadedmetadata` for duration and setup scrubber max
+- **Scrubber sync:** Bidirectional: slider changes video.currentTime, video timeupdates update slider
+- **Frame capture:** Draw video to canvas using `ctx.drawImage(video, 0, 0)` at current time
+- **Cleanup:** Revoke object URLs on new uploads to prevent memory leaks
+
+### Download Patterns
+- **Native download:** Use `URL.createObjectURL(blob)` + temporary `<a>` with `download` attribute
+- **Browser support:** Check `'download' in document.createElement('a')`
+- **Fallback:** Disable button with explanatory text for unsupported browsers
+- **Error handling:** Show overlay for blocked downloads or failures
+- **Memory:** Always revoke object URLs after download attempt
+
 ### Event Handling Patterns
 - **Drag & Drop:** Use page-wide `dragenter`/`dragleave`/`drop` with counter for overlays
 - **Prevent default:** Always call `e.preventDefault()` on drag events
 - **File detection:** Check `e.dataTransfer.types.includes('Files')` before showing overlay
 - **Counter pattern:** Use `dragCounter` to prevent flicker over child elements
+- **Upload state:** Add `has-video` class to hide upload label after successful load
 
 ### Mobile Patterns
 - **Sidebar:** Fixed left (desktop) / slide-out from left (mobile)
