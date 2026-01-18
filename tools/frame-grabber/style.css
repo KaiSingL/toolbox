@@ -121,6 +121,32 @@
       }
     }
 
+    .error-overlay {
+      position: fixed;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-surface);
+      border: var(--border-thin);
+      border-radius: 2px;
+      padding: 8px 16px;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 14px;
+      z-index: 1000;
+      box-shadow: var(--shadow-offset) var(--shadow-offset) 0 var(--border-color);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .error-overlay:not(.hidden) {
+      opacity: 1;
+    }
+
+    .error-overlay.hidden {
+      opacity: 0;
+    }
+
     @media (max-width: 480px) {
       .card-brutal {
         padding: 16px !important;

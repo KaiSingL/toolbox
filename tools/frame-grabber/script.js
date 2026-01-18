@@ -8,11 +8,22 @@ const currentTime = document.getElementById('current-time');
 const captureBtn = document.getElementById('capture');
 const results = document.getElementById('results');
 const canvas = document.getElementById('canvas');
+const previewImg = document.getElementById('previewImg');
 const downloadBtn = document.getElementById('download');
 const ctx = canvas.getContext('2d');
 
 let videoUrl = null;
+let currentBlob = null;
+let currentBlobUrl = null;
 let dragCounter = 0;
+
+// Check browser download support
+const supportsDownload = 'download' in document.createElement('a');
+
+if (!supportsDownload) {
+  downloadBtn.disabled = true;
+  downloadBtn.innerHTML = 'Download not supported by the browser';
+}
 
 document.addEventListener('dragenter', (e) => {
     e.preventDefault();
@@ -51,7 +62,7 @@ document.addEventListener('drop', (e) => {
     if (file && file.type.startsWith('video/')) {
         loadVideo(file);
     } else {
-        alert('Please drop a valid video file.');
+        showError('Please drop a valid video file.');
     }
 });
 
@@ -67,12 +78,16 @@ function loadVideo(file) {
     if (videoUrl) {
         URL.revokeObjectURL(videoUrl);
     }
+    if (currentBlobUrl) {
+        URL.revokeObjectURL(currentBlobUrl);
+    }
     videoUrl = URL.createObjectURL(file);
     video.src = videoUrl;
     video.load();
     results.classList.add('hidden');
     dropZone.classList.remove('has-video');
     video.classList.remove('show');
+    currentBlob = null;
 }
 
 video.addEventListener('loadedmetadata', () => {
@@ -103,20 +118,61 @@ stepForward.addEventListener('click', () => {
 
 captureBtn.addEventListener('click', () => {
     if (video.readyState < 2) {
-        alert('Video is not ready. Please wait for it to load.');
+        showError('Video is not ready. Please wait for it to load.');
         return;
     }
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     ctx.drawImage(video, 0, 0);
+    canvas.toBlob(blob => {
+        if (currentBlobUrl) {
+            URL.revokeObjectURL(currentBlobUrl);
+        }
+        currentBlobUrl = URL.createObjectURL(blob);
+        previewImg.src = currentBlobUrl;
+        currentBlob = blob;
+    });
     results.classList.remove('hidden');
 });
 
 downloadBtn.addEventListener('click', () => {
-    canvas.toBlob(blob => {
-        saveAs(blob, 'frame-' + Date.now() + '.png');
-    });
+    if (!supportsDownload) return;
+    
+    if (!currentBlob) {
+        showError('No frame captured to download');
+        return;
+    }
+    
+    try {
+        const url = URL.createObjectURL(currentBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'frame-' + Date.now() + '.png';
+        link.style.display = 'none';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        URL.revokeObjectURL(url);
+        hideError();
+    } catch (error) {
+        console.error('Download failed:', error);
+        showError();
+    }
 });
 
 // Hide video controls initially
 video.controls = false;
+
+// Error overlay functions
+function showError(message = 'Download blocked by browser settings') {
+  const overlay = document.getElementById('error-overlay');
+  overlay.querySelector('span').textContent = message;
+  overlay.classList.remove('hidden');
+  setTimeout(() => overlay.classList.add('hidden'), 5000);
+}
+
+function hideError() {
+  document.getElementById('error-overlay').classList.add('hidden');
+}
