@@ -49,6 +49,25 @@ Browse and copy ready-to-use SVG icons. Includes UI icons, symbols, and decorati
   - Perfect for web projects
 - **Tech:** Vanilla JavaScript
 
+### String Formatter
+Format word lists with quotes, delimiters, and line breaks.
+- **Features:**
+  - Add quotes and delimiters to lists
+  - Control words per line
+  - Include/exclude trailing delimiters
+  - Ignore blank lines option
+  - Copy formatted output to clipboard
+- **Tech:** Vanilla JavaScript
+
+### Frame Grabber
+Extract frames from videos as PNG images. Upload a video and grab any frame instantly.
+- **Features:**
+  - Custom timeline scrubber with 0.1s step controls
+  - Frame capture at exact playback position
+  - Download captured frame as PNG
+  - Drag & drop video support
+- **Tech:** HTML5 Video, Canvas, Vanilla JavaScript, FileSaver.js
+
 ## 🛠️ Tech Stack
 
 This project is built with simplicity and performance in mind:
