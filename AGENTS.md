@@ -1,13 +1,19 @@
 # Web Tools Hub - Agent Guidelines
 
-## Build/Run Commands
+## Build/Run/Test Commands
 
-This project uses static HTML/CSS/JavaScript with no build process or testing framework.
+This project uses static HTML/CSS/JavaScript with no build process, linting tools, or automated testing framework. All tools run directly in the browser with no compilation step.
 
-- **Run locally:** `python3 -m http.server` or `npx http-server`
+- **Run locally:** `python3 -m http.server` (serves on http://localhost:8000) or `npx http-server`
 - **Deploy to GitHub Pages:** Push to `main` branch and enable GitHub Pages in repository settings
 - **No build commands required** - tools run directly in browser
 - **No test commands** - no automated testing framework configured
+- **Manual testing:** Open tool in browser after running local server. Test functionality, responsive design, and edge cases manually.
+- **Running a single test:** Since no automated tests exist, "test" a single tool by navigating to `http://localhost:8000/tools/tool-name/` and verifying expected behavior.
+
+## Cursor Rules & Copilot Instructions
+
+No Cursor rules (.cursor/rules or .cursorrules) or Copilot rules (.github/copilot-instructions.md) are configured for this repository. Follow the guidelines below for consistent code generation.
 
 ## Design System
 
@@ -25,28 +31,50 @@ Older tools may use Tailwind CSS. Do not use Tailwind for new features - use bru
 
 ## Code Style Guidelines
 
+### General Principles
+- **Readability First:** Code should be self-documenting with clear variable names and structure
+- **Consistency:** Follow existing patterns in the codebase
+- **Performance:** Optimize for browser execution, minimize DOM manipulations
+- **Security:** Never store or transmit user data; all processing client-side
+- **Accessibility:** Ensure keyboard navigation and screen reader compatibility
+
+### JavaScript Conventions
+- **Variables:** Use `const` for immutable, `let` for mutable. Avoid `var`
+- **Naming:** camelCase for variables/functions (`dropZone`, `handleFile`, `uploadedImage`)
+  - Prefix state variables: `currentUrl`, `generatedBlobs`, `uploadedImage`
+  - Prefix event handlers: `handleFile`, `onDragOver`
+  - Use descriptive names: `fileInput` not `input`, `previewCanvas` not `canvas`
+- **Element IDs:** kebab-case (`drop-zone`, `upload-btn`, `preview`)
+- **Constants:** UPPER_SNAKE_CASE for magic numbers (`MAX_FILE_SIZE = 10 * 1024 * 1024`)
+- **Functions:** Keep small (<20 lines), descriptive names, single responsibility
+- **Arrow Functions:** Use for callbacks and anonymous functions
+- **Template Literals:** Prefer over string concatenation
+- **DOM Selection:** Use `document.getElementById()` for single elements, `document.querySelector()` sparingly
+- **Event Handling:** Use `.addEventListener()` with arrow functions, avoid inline handlers
+- **Async/Await:** Use for promises, avoid `.then()` chains
+- **Error Handling:** Use try/catch for async operations, validate inputs early
+- **Comments:** Section comments (`// Event Listeners`), avoid obvious comments
+- **Imports:** No ES6 modules; all scripts loaded via `<script>` tags
+- **Types:** Dynamic typing; no TypeScript; document complex objects in comments
+
+### HTML Structure
+- Use semantic HTML5 elements (header, main, footer, section, article)
+- Include proper meta tags (charset, viewport, og: tags for social sharing)
+- Link favicon relative to root: `<link rel="icon" type="image/png" sizes="32x32" href="../../assets/icons/icon.png">`
+- Load brutalist.css: `<link rel="stylesheet" href="../../assets/css/brutalist.css">`
+- Keep scripts at end of body tag for performance
+- Use data attributes for JS hooks: `<div data-component="drop-zone">`
+- Alt text for images, labels for form inputs
+
 ### CSS/Brutalist System
 - Use `assets/css/brutalist.css` for all styling - no inline Tailwind classes
 - Reference CSS variables: `var(--accent)`, `var(--bg-primary)`, `var(--font-mono)`
 - Utility classes: `.btn-primary`, `.btn-secondary`, `.input-brutal`, `.card-brutal`
 - Add custom styles in `<style>` tags per-file for tool-specific styles
 - Responsive breakpoints: 768px (mobile), 1024px (tablet)
-
-### HTML Structure
-- Use semantic HTML5 elements (header, main, footer, section, article)
-- Include proper meta tags (charset, viewport)
-- Link favicon relative to root: `<link rel="icon" type="image/png" sizes="32x32" href="../../assets/icons/icon.png">`
-- Load brutalist.css: `<link rel="stylesheet" href="../../assets/css/brutalist.css">`
-- Keep scripts at end of body tag
-
-### JavaScript Conventions
-- **Variables:** Use `const` for immutable, `let` for mutable. Avoid `var`
-- **Naming:** camelCase for variables/functions (`dropZone`, `handleFile`, `uploadedImage`)
-- **Element IDs:** kebab-case (`drop-zone`, `upload-btn`, `preview`)
-- **State variables:** Use descriptive names with `current`/`generated` prefixes (`currentUrl`, `generatedBlobs`)
-- **DOM Selection:** Use `document.getElementById()` for elements with IDs
-- **Event Handling:** Use `.addEventListener()` with arrow functions
-- **Functions:** Keep small and focused, descriptive names
+- Use CSS Grid/Flexbox for layouts, avoid floats
+- BEM-like naming: `.drop-zone__text`, `.btn--primary`
+- Avoid !important; use specificity wisely
 
 ### File Organization
 - Each tool in: `tools/tool-name/index.html` (with optional script.js/style.css)
@@ -54,9 +82,11 @@ Older tools may use Tailwind CSS. Do not use Tailwind for new features - use bru
 - Shared styles: `assets/css/brutalist.css`
 - Assets: `assets/icons/icon.png` (favicon for all tools)
 - Copy existing tool structure when adding new tools
+- Keep tool-specific styles in `<style>` tags within index.html or separate style.css
 
 ### State Management
 - **Image state:** Track with `Image()` objects, check `.complete` before operations
+- **Video state:** Use video events (`loadedmetadata`, `timeupdate`) for scrubber sync
 - **URL cleanup:** Always revoke object URLs: `if (currentUrl) URL.revokeObjectURL(currentUrl)`
 - **File naming:** Extract base name: `file.name.replace(/\.[^/.]+$/, '')`
 - **Blob storage:** Store in arrays for bulk operations (`generatedBlobs.push({ name, blob })`)
@@ -66,18 +96,31 @@ Older tools may use Tailwind CSS. Do not use Tailwind for new features - use bru
 - FileSaver.js: `https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js`
 - QRCode.js: `https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js`
 - Check existing tools before adding new dependencies
+- Load scripts from CDN for reliability
 
 ### Error Handling
 - Use `alert()` for user-facing errors
 - Validate inputs before processing (file type, selected sizes, image loaded)
 - Provide clear, actionable error messages
 - Handle edge cases: no file selected, wrong file type, still loading
+- Use try/catch for async operations like clipboard access
+- Graceful degradation for unsupported features
 
 ### Code Formatting
 - 4-space indentation
 - No trailing whitespace
 - Clear section comments when helpful (`// Header`, `// State Management`, `// Event Listeners`)
 - Keep HTML readable with proper line breaks and indentation
+- Consistent quote style: double quotes for HTML attributes, single for JS strings
+- Line length: aim for <100 characters, break long lines appropriately
+
+### Security Best Practices
+- Never store or log user data
+- All processing client-side only
+- No server communication
+- Validate file types and sizes
+- Revoke object URLs after use
+- Avoid eval() or dangerous APIs
 
 ### Event Handling Patterns
 - **Drag & Drop:** Use page-wide `dragenter`/`dragleave`/`drop` with counter for overlays
@@ -111,3 +154,22 @@ Older tools may use Tailwind CSS. Do not use Tailwind for new features - use bru
 - Cleanup on re-upload: clear `innerHTML = ''`, `generatedBlobs = []`
 - Always revoke object URLs before creating new ones
 - Check `img.complete` before operations, wait for `onload` if needed
+- Minimize DOM queries; cache element references
+- Use requestAnimationFrame for animations
+
+### Code Review Guidelines
+- Ensure all user inputs are validated
+- Check for proper error handling and user feedback
+- Verify accessibility: keyboard navigation, screen reader support
+- Confirm responsive design works on mobile
+- Test edge cases: empty inputs, invalid files, network failures
+- Follow security practices: no data storage/transmission
+- Maintain consistent code style and naming conventions
+
+### AI Assistant Guidelines
+- When adding new tools, follow the established patterns exactly
+- Use existing CSS classes and variables from brutalist.css
+- Test manually in browser before considering complete
+- Provide clear commit messages following repo style
+- If unsure about implementation, reference existing tools
+- Prioritize user experience and accessibility
