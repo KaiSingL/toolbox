@@ -1,4 +1,4 @@
-@import url('https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=jetbrains-mono@400,500&display=swap');
+
 
 :root {
   --bg-primary: #050505;
@@ -37,6 +37,24 @@ body {
   line-height: 1.6;
   font-size: 16px;
   overflow-x: hidden;
+}
+
+/* Skip link for accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--accent);
+  color: var(--bg-primary);
+  padding: 8px;
+  text-decoration: none;
+  border-radius: 2px;
+  z-index: 1000;
+  font-weight: 500;
+}
+
+.skip-link:focus {
+  top: 6px;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -1049,6 +1067,18 @@ img {
 
 .w-full {
   width: 100%;
+}
+
+/* Accessibility: Respect users' motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 .font-bold {
