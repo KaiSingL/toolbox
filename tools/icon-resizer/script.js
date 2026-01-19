@@ -11,6 +11,62 @@
     let baseName = 'icon';
     let generatedBlobs = [];
     let currentUrl = null;
+    let customSizes = [];
+
+    function saveCustomSizes() {
+      try {
+        localStorage.setItem('icon-resizer-custom-sizes', JSON.stringify(customSizes));
+      } catch (e) {
+        console.warn('Could not save custom sizes to localStorage:', e);
+      }
+    }
+
+    function loadCustomSizes() {
+      try {
+        const saved = localStorage.getItem('icon-resizer-custom-sizes');
+        if (saved) {
+          customSizes = JSON.parse(saved);
+          renderCustomSizes();
+        }
+      } catch (e) {
+        console.warn('Could not load custom sizes from localStorage:', e);
+      }
+    }
+
+    function renderCustomSizes() {
+      const customSizesList = document.getElementById('custom-sizes-list');
+      customSizesList.innerHTML = '';
+
+      customSizes.forEach((size, index) => {
+        const label = document.createElement('label');
+        label.className = 'size-checkbox custom-size-checkbox';
+        label.dataset.size = size;
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = size;
+        checkbox.checked = false; // Custom sizes start unselected
+
+        const sizeText = document.createElement('span');
+        sizeText.textContent = `${size}×${size}`;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'custom-size-remove';
+        removeBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+        removeBtn.onclick = (e) => {
+          e.stopPropagation();
+          customSizes.splice(index, 1);
+          saveCustomSizes();
+          renderCustomSizes();
+        };
+
+        label.appendChild(checkbox);
+        label.appendChild(sizeText);
+        label.appendChild(removeBtn);
+
+        customSizesList.appendChild(label);
+      });
+    }
 
     function handleFile(file) {
       if (!file || !file.type.startsWith('image/')) {
@@ -60,6 +116,38 @@
       handleFile(file);
     });
 
+    // Custom size functionality
+    const customSizeInput = document.getElementById('custom-size-input');
+    const addCustomSizeBtn = document.getElementById('add-custom-size');
+
+    addCustomSizeBtn.addEventListener('click', () => {
+      const size = parseInt(customSizeInput.value.trim());
+      if (!size || size < 1 || size > 4096) {
+        alert('Please enter a valid size between 1 and 4096 pixels.');
+        return;
+      }
+
+      if (customSizes.includes(size)) {
+        alert('This size is already added.');
+        return;
+      }
+
+      customSizes.push(size);
+      customSizes.sort((a, b) => a - b); // Sort numerically
+      saveCustomSizes();
+      renderCustomSizes();
+      customSizeInput.value = ''; // Clear input
+    });
+
+    customSizeInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        addCustomSizeBtn.click();
+      }
+    });
+
+    // Load custom sizes on page load
+    loadCustomSizes();
+
     generate.addEventListener('click', () => {
       if (!uploadedImage) {
         alert('Please upload an image first.');
@@ -71,6 +159,7 @@
       }
 
       const checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+
       if (checkboxes.length === 0) {
         alert('Please select at least one size.');
         return;
@@ -119,7 +208,8 @@
           img.className = 'checkerboard';
 
           const label = document.createElement('p');
-          label.textContent = `${size}×${size}`;
+          const isCustomSize = customSizes.includes(size);
+          label.textContent = isCustomSize ? `Custom: ${size}×${size}` : `${size}×${size}`;
 
           const link = document.createElement('a');
           link.href = objUrl;
