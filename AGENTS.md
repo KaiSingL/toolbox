@@ -7,9 +7,10 @@ This project uses static HTML/CSS/JavaScript with no build process, linting tool
 - **Run locally:** `python3 -m http.server` (serves on http://localhost:8000) or `npx http-server`
 - **Deploy to GitHub Pages:** Push to `main` branch and enable GitHub Pages in repository settings
 - **No build commands required** - tools run directly in browser
-- **No test commands** - no automated testing framework configured
+- **Performance testing:** `npx lighthouse http://localhost:8000/index.html --output=json --output-path=lighthouse-result.json --quiet`
+- **Performance targets:** Aim for 90+ Lighthouse Performance score, <2.5s LCP, <300KB bundle size
 - **Manual testing:** Open tool in browser after running local server. Test functionality, responsive design, and edge cases manually.
-- **Running a single test:** Since no automated tests exist, "test" a single tool by navigating to `http://localhost:8000/tools/tool-name/` and verifying expected behavior.
+- **Running a single test:** Navigate to `http://localhost:8000/tools/tool-name/` and verify expected behavior.
 
 ## Cursor Rules & Copilot Instructions
 
@@ -18,7 +19,7 @@ No Cursor rules (.cursor/rules or .cursorrules) or Copilot rules (.github/copilo
 ## Design System
 
 ### Neo-Brutalist Style (Current)
-This project uses a neo-brutalist design system defined in `assets/css/brutalist.css`:
+This project uses a neo-brutalist design system defined in `assets/css/brutalist.min.css`:
 - **Background:** #050505 (near-black)
 - **Surface:** #111111
 - **Accent:** #cac8f4 (lavender)
@@ -67,7 +68,7 @@ Older tools may use Tailwind CSS. Do not use Tailwind for new features - use bru
 - Alt text for images, labels for form inputs
 
 ### CSS/Brutalist System
-- Use `assets/css/brutalist.css` for all styling - no inline Tailwind classes
+- Use `assets/css/brutalist.min.css` for all styling (minified version) - no inline Tailwind classes
 - Reference CSS variables: `var(--accent)`, `var(--bg-primary)`, `var(--font-mono)`
 - Utility classes: `.btn-primary`, `.btn-secondary`, `.input-brutal`, `.card-brutal`
 - Add custom styles in `<style>` tags per-file for tool-specific styles
@@ -75,6 +76,12 @@ Older tools may use Tailwind CSS. Do not use Tailwind for new features - use bru
 - Use CSS Grid/Flexbox for layouts, avoid floats
 - BEM-like naming: `.drop-zone__text`, `.btn--primary`
 - Avoid !important; use specificity wisely
+
+### Font Loading (Optimized)
+- Fonts are inlined in `<head>` to eliminate render-blocking requests
+- Clash Display (400,500,600,700 weights) and JetBrains Mono available via inline CSS
+- font-display: swap enabled for performance
+- Do not add external FontShare CSS links
 
 ### File Organization
 - Each tool in: `tools/tool-name/index.html` (with optional script.js/style.css)
@@ -183,6 +190,14 @@ Older tools may use Tailwind CSS. Do not use Tailwind for new features - use bru
 - Test edge cases: empty inputs, invalid files, network failures
 - Follow security practices: no data storage/transmission
 - Maintain consistent code style and naming conventions
+
+### Performance Optimization Guidelines
+- **CSS:** Always use minified `brutalist.min.css` and inline critical styles
+- **Fonts:** Inline font CSS to eliminate blocking requests (target <2.5s LCP)
+- **Images:** Optimize icon sizes, use appropriate formats
+- **JavaScript:** Keep scripts lightweight, use defer when possible
+- **Bundle Size:** Monitor total transfer size, target <300KB
+- **Testing:** Run Lighthouse regularly, maintain 90+ Performance score
 
 ### AI Assistant Guidelines
 - When adding new tools, follow the established patterns exactly
