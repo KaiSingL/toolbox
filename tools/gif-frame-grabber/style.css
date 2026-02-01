@@ -106,6 +106,7 @@
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .progress-bar {
@@ -190,6 +191,24 @@
   display: block;
 }
 
+.bottom-download-section {
+  padding: 24px;
+  margin-top: 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.bottom-download-section .selection-count {
+  margin-bottom: 8px;
+}
+
+.bottom-download-section .btn-primary {
+  min-width: 200px;
+}
+
 .error-overlay {
   position: fixed;
   top: 60px;
@@ -225,6 +244,10 @@
   .frames-controls .btn-primary {
     width: 100%;
   }
+
+  .bottom-download-section .btn-primary {
+    width: 100%;
+  }
 }
 
 @media (max-width: 480px) {
@@ -253,5 +276,9 @@
 
   .drop-zone {
     min-height: 180px;
+  }
+
+  .bottom-download-section {
+    padding: 16px !important;
   }
 }

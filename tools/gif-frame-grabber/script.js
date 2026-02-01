@@ -10,6 +10,8 @@
   const deselectAllBtn = document.getElementById('deselect-all');
   const selectionCount = document.getElementById('selection-count');
   const downloadBtn = document.getElementById('download-btn');
+  const bottomDownloadSection = document.getElementById('bottom-download-section');
+  const bottomSelectionCount = document.getElementById('bottom-selection-count');
   const errorOverlay = document.getElementById('error-overlay');
   const errorMessage = document.getElementById('error-message');
 
@@ -25,6 +27,13 @@
   function updateSelectionCount() {
     const selected = frames.filter(f => f.selected).length;
     selectionCount.textContent = selected + ' / ' + frames.length + ' selected';
+    bottomSelectionCount.textContent = selected + ' / ' + frames.length + ' selected';
+
+    if (selected >= 1) {
+      bottomDownloadSection.classList.remove('hidden');
+    } else {
+      bottomDownloadSection.classList.add('hidden');
+    }
   }
 
   function renderFrameCard(frame, index) {
@@ -114,7 +123,7 @@
 
         frames.push({
           dataUrl: dataUrl,
-          selected: true
+          selected: false
         });
       }
 
@@ -218,4 +227,5 @@
   selectAllBtn.addEventListener('click', selectAll);
   deselectAllBtn.addEventListener('click', deselectAll);
   downloadBtn.addEventListener('click', download);
+  document.getElementById('bottom-download-btn').addEventListener('click', download);
 })();
