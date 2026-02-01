@@ -61,55 +61,57 @@
     <span id="error-message"></span>
   </div>
 
-  <main id="main" class="main" style="padding: 48px 24px;">
+  <main id="main" class="main gif-main">
     <div class="container">
-      <div style="margin-bottom: 48px;">
+      <div class="gif-header">
         <h1 class="section-title">GIF Frame Grabber</h1>
         <p class="section-subtitle">Extract frames from animated GIFs as PNG images. Upload a GIF, select frames, and download individually or as ZIP.</p>
       </div>
 
-      <div class="card-brutal" style="padding: 24px; margin-bottom: 24px;">
-        <div class="section-title" style="font-size: 18px; margin-bottom: 24px; display: flex; align-items: center; gap: 12px;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
-            <path d="M7 2v20"/>
-            <path d="M17 2v20"/>
-            <path d="M2 12h20"/>
-            <path d="M2 7h5"/>
-            <path d="M2 17h5"/>
-            <path d="M17 17h5"/>
-            <path d="M17 7h5"/>
-          </svg>
-          Upload GIF
-        </div>
-        <div id="drop-zone" class="drop-zone">
-          <input type="file" id="upload" accept="image/gif">
-          <div id="drop-text" class="drop-zone-text">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17 8 12 3 7 8"/>
-              <line x1="12" y1="3" x2="12" y2="15"/>
-            </svg>
-            <p>Drag & drop your GIF here</p>
-            <span>or click to select a file</span>
+<div class="grid-brutal gif-grid">
+          <div class="card-brutal gif-card">
+            <div class="section-title gif-section-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+                <path d="M7 2v20"/>
+                <path d="M17 2v20"/>
+                <path d="M2 12h20"/>
+                <path d="M2 7h5"/>
+                <path d="M2 17h5"/>
+                <path d="M17 17h5"/>
+                <path d="M17 7h5"/>
+              </svg>
+              Upload GIF
+            </div>
+            <div id="drop-zone" class="drop-zone">
+              <input type="file" id="upload" accept="image/gif">
+              <div id="drop-text" class="drop-zone-text">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <p>Drag & drop your GIF here</p>
+                <span>or click to select a file</span>
+              </div>
+            </div>
+          </div>
+
+          <div id="progress-section" class="card-brutal hidden gif-progress-section">
+            <div class="section-title gif-progress-title">
+              Extracting Frames
+            </div>
+            <div class="progress-bar">
+              <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <p id="progress-text" class="progress-text">Processing...</p>
           </div>
         </div>
-      </div>
 
-      <div id="progress-section" class="card-brutal hidden" style="padding: 24px; margin-bottom: 24px;">
-        <div class="section-title" style="font-size: 18px; margin-bottom: 16px;">
-          Extracting Frames
-        </div>
-        <div class="progress-bar">
-          <div id="progress-fill" class="progress-fill"></div>
-        </div>
-        <p id="progress-text" class="progress-text">Processing...</p>
-      </div>
-
-      <div id="frames-section" class="hidden">
-        <div class="card-brutal" style="padding: 24px; margin-bottom: 24px;">
-          <div class="frames-controls" style="display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;">
-            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <div id="frames-section" class="hidden">
+        <div class="card-brutal gif-frames-card">
+          <div class="frames-controls gif-frames-controls">
+            <div class="gif-controls-group">
               <button id="select-all" class="btn-secondary">Select All</button>
               <button id="deselect-all" class="btn-secondary">Deselect All</button>
               <span id="selection-count" class="selection-count">0 / 0 selected</span>
