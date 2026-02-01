@@ -185,16 +185,8 @@
 
 .frame-image {
   width: 100%;
-  aspect-ratio: 16 / 10;
-  object-fit: contain;
-  background:
-    linear-gradient(45deg, #1a1a1a 25%, transparent 25%),
-    linear-gradient(-45deg, #1a1a1a 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #1a1a1a 75%),
-    linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
-  background-size: 16px 16px;
-  background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
-  background-color: #0d0d0d;
+  height: 100%;
+  object-fit: cover;
   display: block;
 }
 
