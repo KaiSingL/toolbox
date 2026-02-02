@@ -1,0 +1,10 @@
+<svg id="svg-delete-cookie" class="icon-display icon-color" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"></path>
+    <circle cx="8.5" cy="8.5" r="1"></circle>
+    <circle cx="16" cy="15.5" r="1"></circle>
+    <circle cx="12" cy="12" r="1"></circle>
+    <circle cx="11" cy="17" r="1"></circle>
+    <circle cx="7" cy="14" r="1"></circle>
+    <path d="M17 2 L23 8" stroke="#ef4444"></path>
+    <path d="M17 8 L23 2" stroke="#ef4444"></path>
+</svg>
