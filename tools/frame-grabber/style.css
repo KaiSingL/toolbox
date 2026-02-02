@@ -8,15 +8,16 @@
     }
 
     .drop-zone {
+      width: 100%;
       border: 2px dashed var(--border-color);
       border-radius: 2px;
-      min-height: 280px;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       transition: all var(--transition-medium);
       position: relative;
+      padding: 16px;
     }
 
     .drop-zone:hover {
@@ -68,13 +69,9 @@
     }
 
     .drop-zone-preview {
-      position: absolute;
-      inset: 16px;
       display: none;
-      max-width: calc(100% - 32px);
-      max-height: calc(100% - 32px);
-      object-fit: contain;
-      margin: auto;
+      width: 100%;
+      height: auto;
     }
 
     .drop-zone-preview.show {
@@ -110,14 +107,8 @@
     }
 
     @media (max-width: 768px) {
-      .drop-zone {
-        min-height: 200px;
-      }
-
       .drop-zone-preview {
-        inset: 8px;
-        max-width: calc(100% - 16px);
-        max-height: calc(100% - 16px);
+        max-width: 100%;
       }
     }
 
