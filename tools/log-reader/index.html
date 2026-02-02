@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Reader - Web Tools Hub</title>
+    <meta name="description" content="Read and search large log files with pagination. Handles files up to 10GB entirely in your browser.">
+    
+    <meta property="og:title" content="Log Reader - Web Tools Hub">
+    <meta property="og:description" content="Read and search large log files with pagination. Handles files up to 10GB entirely in your browser.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://kaisingl.github.io/tool-box/tools/log-reader/">
+    <meta property="og:image" content="https://kaisingl.github.io/tool-box/assets/icons/icon-512x512.png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta property="og:image:alt" content="Web Tools Hub Icon">
+    <meta property="og:site_name" content="Web Tools Hub">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Log Reader - Web Tools Hub">
+    <meta name="twitter:description" content="Read and search large log files with pagination. Handles files up to 10GB entirely in your browser.">
+    <meta name="twitter:image" content="https://kaisingl.github.io/tool-box/assets/icons/icon-512x512.png">
+    
+    <link rel="image_src" href="https://kaisingl.github.io/tool-box/assets/icons/icon-512x512.png">
+    
+    <link rel="icon" type="image/png" sizes="60x60" href="../../assets/icons/icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../../assets/icons/icon-180x180.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="../../assets/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="../../assets/icons/icon-512x512.png">
+    <link rel="icon" href="../../assets/icons/icon-180x180.png" sizes="any">
+
+    <link rel="preconnect" href="https://cdn.fontshare.com">
+    <style>@font-face{font-family:'Clash Display';src:url('//cdn.fontshare.com/wf/VFMK2COV3DN37JR7JQ4CAOJPZ7KWKNY7/ODD5YJNDLHZZB2MIT3DPVH4EIHAMZ34D/BSY64LPTT3OPLVKAZKL3AHKRWZ3D74AC.woff2') format('woff2'),url('//cdn.fontshare.com/wf/VFMK2COV3DN37JR7JQ4CAOJPZ7KWKNY7/ODD5YJNDLHZZB2MIT3DPVH4EIHAMZ34D/BSY64LPTT3OPLVKAZKL3AHKRWZ3D74AC.woff') format('woff'),url('//cdn.fontshare.com/wf/VFMK2COV3DN37JR7JQ4CAOJPZ7KWKNY7/ODD5YJNDLHZZB2MIT3DPVH4EIHAMZ34D/BSY64LPTT3OPLVKAZKL3AHKRWZ3D74AC.ttf') format('truetype');font-weight:400;font-display:swap;font-style:normal}@font-face{font-family:'Clash Display';src:url('//cdn.fontshare.com/wf/2GQIT54GKQY3JRFTSHS4ARTRNRQISSAA/3CIP5EBHRRHE5FVQU3VFROPUERNDSTDF/JTSL5QESUXATU47LCPUNHZQBDDIWDOSW.woff2') format('woff2'),url('//cdn.fontshare.com/wf/2GQIT54GKQY3JRFTSHS4ARTRNRQISSAA/3CIP5EBHRRHE5FVQU3VFROPUERNDSTDF/JTSL5QESUXATU47LCPUNHZQBDDIWDOSW.woff') format('woff'),url('//cdn.fontshare.com/wf/2GQIT54GKQY3JRFTSHS4ARTRNRQISSAA/3CIP5EBHRRHE5FVQU3VFROPUERNDSTDF/JTSL5QESUXATU47LCPUNHZQBDDIWDOSW.ttf') format('truetype');font-weight:500;font-display:swap;font-style:normal}@font-face{font-family:'Clash Display';src:url('//cdn.fontshare.com/wf/FPDAZ2S6SW4QMSRIIKNNGTPM6VIXYMKO/5HNPQ453FRLIQWV2FNOBUU3FKTDZQVSG/Z3MGHFHX6DCTLQ55LJYRJ5MDCZPMFZU6.woff2') format('woff2'),url('//cdn.fontshare.com/wf/FPDAZ2S6SW4QMSRIIKNNGTPM6VIXYMKO/5HNPQ453FRLIQWV2FNOBUU3FKTDZQVSG/Z3MGHFHX6DCTLQ55LJYRJ5MDCZPMFZU6.woff') format('woff'),url('//cdn.fontshare.com/wf/FPDAZ2S6SW4QMSRIIKNNGTPM6VIXYMKO/5HNPQ453FRLIQWV2FNOBUU3FKTDZQVSG/Z3MGHFHX6DCTLQ55LJYRJ5MDCZPMFZU6.ttf') format('truetype');font-weight:600;font-display:swap;font-style:normal}@font-face{font-family:'Clash Display';src:url('//cdn.fontshare.com/wf/BFBSY7LX5W2U2EROCLVVTQP4VS7S4PC3/IIUX4FGTMD2LK2VWD3RVTAS4SSMUN7B5/53RZKGODFYDW3QHTIL7IPOWTBCSUEZK7.woff2') format('woff2'),url('//cdn.fontshare.com/wf/BFBSY7LX5W2U2EROCLVVTQP4VS7S4PC3/IIUX4FGTMD2LK2VWD3RVTAS4SSMUN7B5/53RZKGODFYDW3QHTIL7IPOWTBCSUEZK7.woff') format('woff'),url('//cdn.fontshare.com/wf/BFBSY7LX5W2U2EROCLVVTQP4VS7S4PC3/IIUX4FGTMD2LK2VWD3RVTAS4SSMUN7B5/53RZKGODFYDW3QHTIL7IPOWTBCSUEZK7.ttf') format('truetype');font-weight:700;font-display:swap;font-style:normal}@font-face{font-family:'JetBrains Mono';src:url('//cdn.fontshare.com/wf/KWBLPYGH2LVWQPKKVJJGX7BWHWYYVXUV/BPVLPGVGIXQ3SNZVZNFGPL75Y2BJG7B4/HFQYFSQOJMJFKWHHFQMGXB3CJAKKMX7S.woff2') format('woff2'),url('//cdn.fontshare.com/wf/KWBLPYGH2LVWQPKKVJJGX7BWHWYYVXUV/BPVLPGVGIXQ3SNZVZNFGPL75Y2BJG7B4/HFQYFSQOJMJFKWHHFQMGXB3CJAKKMX7S.woff') format('woff'),url('//cdn.fontshare.com/wf/KWBLPYGH2LVWQPKKVJJGX7BWHWYYVXUV/BPVLPGVGIXQ3SNZVZNFGPL75Y2BJG7B4/HFQYFSQOJMJFKWHHFQMGXB3CJAKKMX7S.ttf') format('truetype');font-weight:400;font-display:swap;font-style:normal}@font-face{font-family:'JetBrains Mono';src:url('//cdn.fontshare.com/wf/LXDTWPMVXEAN3RX2WPHWXQXBKVNTQJIK/CE3PLTYBZF6FZB2B4KOFLOJRXBVFUV4A/2JEWRVCWYQZWJTJJBP4JEFR7YP6VFQQ7.woff2') format('woff2'),url('//cdn.fontshare.com/wf/LXDTWPMVXEAN3RX2WPHWXQXBKVNTQJIK/CE3PLTYBZF6FZB2B4KOFLOJRXBVFUV4A/2JEWRVCWYQZWJTJJBP4JEFR7YP6VFQQ7.woff') format('woff'),url('//cdn.fontshare.com/wf/LXDTWPMVXEAN3RX2WPHWXQXBKVNTQJIK/CE3PLTYBZF6FZB2B4KOFLOJRXBVFUV4A/2JEWRVCWYQZWJTJJBP4JEFR7YP6VFQQ7.ttf') format('truetype');font-weight:500;font-display:swap;font-style:normal}</style>
+
+    <link rel="stylesheet" href="../../assets/css/brutalist.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <a href="#main" class="skip-link">Skip to main content</a>
+    <header class="header">
+        <div class="header-inner">
+            <a href="../../index.html" class="logo">
+                <div class="logo-icon">
+                    <img src="../../assets/icons/icon-60x60.png" alt="Web Tools Hub Logo">
+                </div>
+                Web Tools Hub
+            </a>
+            <a href="https://github.com/KaiSingL/tool-box" target="_blank" class="github-link">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                <span>GitHub</span>
+            </a>
+        </div>
+    </header>
+
+    <main id="main" class="main">
+        <div class="container log-reader-layout">
+            <div>
+                <h1 class="section-title">Log Reader</h1>
+                <p class="section-subtitle">Read and search large log files with pagination. Handles files up to 10GB entirely in your browser.</p>
+            </div>
+
+            <!-- Upload Section -->
+            <div id="upload-section" class="card-brutal upload-section">
+                <div class="upload-title section-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10 9 9 9 8 9"/>
+                    </svg>
+                    Upload Log File
+                </div>
+                <div id="drop-zone" class="drop-zone">
+                    <input type="file" id="upload" accept=".log,.txt,.out,.err">
+                    <div id="drop-text" class="drop-zone-text">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="17 8 12 3 7 8"/>
+                            <line x1="12" y1="3" x2="12" y2="15"/>
+                        </svg>
+                        <p>Drag & drop your log file here</p>
+                        <span>or click to select a file</span>
+                        <small>Supports .log, .txt, .out, .err files</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Viewer Section -->
+            <div id="viewer-section" class="viewer-section hidden">
+                <!-- File Stats -->
+                <div class="card-brutal file-stats-bar">
+                    <div class="file-stats-bar-content">
+                        <div class="file-stats">
+                            <span class="file-stat">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                    <polyline points="14 2 14 8 20 8"/>
+                                </svg>
+                                <span id="file-name" class="file-stat-value">-</span>
+                            </span>
+                            <span class="file-stat">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+                                    <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+                                </svg>
+                                <span id="file-size">-</span>
+                            </span>
+                            <span class="file-stat">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="8" y1="6" x2="21" y2="6"/>
+                                    <line x1="8" y1="12" x2="21" y2="12"/>
+                                    <line x1="8" y1="18" x2="21" y2="18"/>
+                                    <line x1="3" y1="6" x2="3.01" y2="6"/>
+                                    <line x1="3" y1="12" x2="3.01" y2="12"/>
+                                    <line x1="3" y1="18" x2="3.01" y2="18"/>
+                                </svg>
+                                <span id="total-lines">-</span>
+                            </span>
+                        </div>
+                        <div class="settings-group">
+                            <label for="lines-per-page" class="settings-label">Lines per page:</label>
+                            <select id="lines-per-page" class="input-brutal lines-per-page-select">
+                                <option value="100">100</option>
+                                <option value="500">500</option>
+                                <option value="1000" selected>1000</option>
+                                <option value="5000">5000</option>
+                                <option value="10000">10000</option>
+                            </select>
+                            <button id="download-page" class="btn-secondary download-btn">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                    <polyline points="7 10 12 15 17 10"/>
+                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                </svg>
+                                Download Page
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search -->
+                <div class="card-brutal search-section">
+                    <div class="search-container">
+                        <input type="text" id="search-input" class="input-brutal search-input" placeholder="Search in file...">
+                        <button id="search-btn" class="btn-primary search-btn">
+                            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                            </svg>
+                            Search
+                        </button>
+                        <button id="clear-search" class="btn-secondary clear-btn hidden">
+                            <svg class="clear-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="18" y1="6" x2="6" y2="18"/>
+                                <line x1="6" y1="6" x2="18" y2="18"/>
+                            </svg>
+                            Clear
+                        </button>
+                    </div>
+                    <div id="search-progress" class="progress-bar hidden">
+                        <div id="search-progress-fill" class="progress-fill"></div>
+                    </div>
+                    <div id="search-info" class="search-results-info"></div>
+                    
+                    <!-- Search Navigation -->
+                    <div id="search-nav" class="search-nav hidden">
+                        <div class="search-nav-content">
+                            <span id="match-counter" class="match-counter">Match 0 of 0</span>
+                            <div class="search-nav-buttons">
+                                <button id="btn-prev-match" class="btn-secondary search-nav-btn">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="15 18 9 12 15 6"/>
+                                    </svg>
+                                    Previous
+                                </button>
+                                <button id="btn-next-match" class="btn-secondary search-nav-btn">
+                                    Next
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="9 18 15 12 9 6"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Results Panel -->
+                <div id="search-results-panel" class="card-brutal search-results-panel hidden">
+                    <div class="search-results-header" id="search-results-toggle">
+                        <div class="search-results-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="8" y1="6" x2="21" y2="6"/>
+                                <line x1="8" y1="12" x2="21" y2="12"/>
+                                <line x1="8" y1="18" x2="21" y2="18"/>
+                                <line x1="3" y1="6" x2="3.01" y2="6"/>
+                                <line x1="3" y1="12" x2="3.01" y2="12"/>
+                                <line x1="3" y1="18" x2="3.01" y2="18"/>
+                            </svg>
+                            <span id="search-results-title-text">Search Results</span>
+                        </div>
+                        <svg id="search-results-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="6 9 12 15 18 9"/>
+                        </svg>
+                    </div>
+                    <div id="search-results-list" class="search-results-list hidden">
+                        <div id="search-results-items" class="search-results-items"></div>
+                        <button id="btn-load-more" class="btn-secondary btn-load-more hidden">Load more results</button>
+                    </div>
+                </div>
+
+                <!-- Log Display -->
+                <div class="card-brutal log-card">
+                    <div id="log-container" class="log-container">
+                        <div id="loading-overlay" class="loading-overlay hidden">
+                            <div class="loading-content">
+                                <div class="loading-title section-title">Loading...</div>
+                                <div id="loading-text" class="loading-text"></div>
+                            </div>
+                        </div>
+                        <div id="log-content" class="log-content"></div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="card-brutal pagination-card">
+                    <div class="pagination-controls">
+                        <button id="btn-first" class="btn-secondary pagination-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="11 17 6 12 11 7"/>
+                                <polyline points="18 17 13 12 18 7"/>
+                            </svg>
+                            First
+                        </button>
+                        <button id="btn-prev" class="btn-secondary pagination-btn">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6"/>
+                            </svg>
+                            Previous
+                        </button>
+                        <div class="page-input-group">
+                            <span>Page</span>
+                            <input type="number" id="page-input" class="input-brutal page-input" value="1" min="1">
+                            <span id="page-total" class="page-total">of 1</span>
+                        </div>
+                        <button id="btn-next" class="btn-secondary pagination-btn">
+                            Next
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </button>
+                        <button id="btn-last" class="btn-secondary pagination-btn">
+                            Last
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="13 17 18 12 13 7"/>
+                                <polyline points="6 17 11 12 6 7"/>
+                            </svg>
+                        </button>
+                        <span id="page-info" class="page-info"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p class="footer-text">&copy; 2025 Web Tools Hub. Open source under GNU Affero General Public License v3.0.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
