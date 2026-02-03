@@ -16,7 +16,7 @@ const error = document.getElementById('error');
 const originalCopyBtnHTML = copyBtn.innerHTML;
 
 // Formatting function
-function formatWordList(text, quoteChar = '"', delimiter = ', ', wordsPerLine = Infinity, includeTrailingDelimiter = false, ignoreBlankLines = true) {
+function formatWordList(text, quoteChar = '', delimiter = ', ', wordsPerLine = Infinity, includeTrailingDelimiter = false, ignoreBlankLines = true) {
     let lines = text.split(/\r?\n/);
 
     if (ignoreBlankLines) {
@@ -51,8 +51,8 @@ formatBtn.addEventListener('click', () => {
     }
     hideError();
 
-    const quoteChar = quoteCharInput.value || '"';
-    const delimiter = delimiterInput.value || ', ';
+    const quoteChar = quoteCharInput.value || '';
+    const delimiter = delimiterInput.value || ' ';
     const wordsPerLine = wordsPerLineInput.value ? parseInt(wordsPerLineInput.value) : Infinity;
     const includeTrailing = includeTrailingCheckbox.checked;
     const ignoreBlank = ignoreBlankCheckbox.checked;
