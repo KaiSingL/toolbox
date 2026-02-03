@@ -1,0 +1,174 @@
+/* ============================================
+   Prism.js One Dark Theme
+   Based on VS Code One Dark Pro
+   ============================================ */
+
+/* Log container background matching One Dark */
+.log-content {
+    background: #282c34;
+    border-radius: 2px;
+}
+
+/* Base code block styling */
+code[class*="language-"],
+pre[class*="language-"] {
+    color: #abb2bf;
+    text-shadow: none;
+    font-family: 'JetBrains Mono', 'Fira Code', Consolas, Monaco, monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    direction: ltr;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    tab-size: 4;
+    hyphens: none;
+}
+
+/* Log file specific tokens mapped to One Dark colors */
+.token.info {
+    color: #98c379;
+}
+
+.token.warn,
+.token.warning {
+    color: #e5c07b;
+    font-weight: 500;
+}
+
+.token.error {
+    color: #e06c75;
+    font-weight: 600;
+}
+
+.token.debug {
+    color: #56b6c2;
+}
+
+.token.trace {
+    color: #5c6370;
+}
+
+.token.date {
+    color: #5c6370;
+}
+
+.token.string {
+    color: #98c379;
+}
+
+.token.constant {
+    color: #d19a66;
+}
+
+.token.url {
+    color: #61afef;
+    text-decoration: underline;
+}
+
+.token.exception {
+    color: #c678dd;
+}
+
+.token.property {
+    color: #e06c75;
+}
+
+.token.keyword {
+    color: #c678dd;
+}
+
+.token.number {
+    color: #d19a66;
+}
+
+.token.boolean {
+    color: #56b6c2;
+}
+
+.token.null {
+    color: #56b6c2;
+}
+
+/* Line-level highlighting for log levels */
+.log-line.level-error {
+    background: rgba(224, 108, 117, 0.08);
+}
+
+.log-line.level-error:hover {
+    background: rgba(224, 108, 117, 0.15);
+}
+
+.log-line.level-warning {
+    background: rgba(229, 192, 123, 0.08);
+}
+
+.log-line.level-warning:hover {
+    background: rgba(229, 192, 123, 0.15);
+}
+
+.log-line.level-info {
+    background: rgba(152, 195, 121, 0.05);
+}
+
+.log-line.level-info:hover {
+    background: rgba(152, 195, 121, 0.1);
+}
+
+.log-line.level-debug {
+    background: rgba(86, 182, 194, 0.05);
+}
+
+.log-line.level-debug:hover {
+    background: rgba(86, 182, 194, 0.1);
+}
+
+/* Comment styling */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: #5c6370;
+}
+
+/* Punctuation */
+.token.punctuation {
+    color: #abb2bf;
+}
+
+/* Operator */
+.token.operator {
+    color: #56b6c2;
+}
+
+/* Tag and attribute names (for XML/HTML logs) */
+.token.tag {
+    color: #e06c75;
+}
+
+.token.attr-name {
+    color: #d19a66;
+}
+
+.token.attr-value {
+    color: #98c379;
+}
+
+/* Generic token fallbacks */
+.token.namespace {
+    opacity: .7;
+}
+
+.token.important,
+.token.bold {
+    font-weight: bold;
+}
+
+.token.italic {
+    font-style: italic;
+}
+
+.token.entity {
+    cursor: help;
+}

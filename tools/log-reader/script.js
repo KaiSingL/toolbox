@@ -17,6 +17,12 @@ let isSearching = false;
 let searchAbortController = null;
 let fileReadAbortController = null;
 const MAX_RESULTS_DISPLAY = 50; // Limit results shown for performance
+let syntaxHighlightingEnabled = true; // One Dark syntax highlighting (default: on)
+
+// Prism.js Web Worker for non-blocking highlighting
+let prismWorker = null;
+let workerJobId = 0;
+const pendingJobs = new Map();
 
 // DOM Elements
 const uploadSection = document.getElementById('upload-section');
@@ -69,6 +75,9 @@ clearSearchBtn.addEventListener('click', clearSearch);
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') startSearch();
 });
+
+// Syntax highlighting toggle
+document.getElementById('highlight-toggle').addEventListener('click', toggleSyntaxHighlighting);
 
 // Search navigation
 btnPrevMatch.addEventListener('click', () => navigateMatch(-1));
@@ -168,41 +177,51 @@ async function loadFile(file) {
 async function buildLineIndex(file) {
     const totalSize = file.size;
     let position = 0;
-    let buffer = '';
-    
+    let remainder = '';
+
     while (position < totalSize) {
         if (fileReadAbortController.signal.aborted) {
             throw new Error('AbortError');
         }
-        
+
         const chunkSize = Math.min(CHUNK_SIZE, totalSize - position);
         const chunk = file.slice(position, position + chunkSize);
         const text = await chunk.text();
-        
-        buffer += text;
-        
-        // Process lines in buffer
-        let lineStart = 0;
-        for (let i = 0; i < buffer.length; i++) {
-            if (buffer[i] === '\n') {
-                lineIndex.push(position - buffer.length + lineStart);
+
+        const fullText = remainder + text;
+        remainder = '';
+
+        let i = 0;
+        while (i < fullText.length) {
+            let char = fullText[i];
+
+            if (char === '\n') {
+                lineIndex.push(position + i + 1);
                 totalLines++;
-                lineStart = i + 1;
+                i++;
+            } else if (char === '\r') {
+                if (i + 1 < fullText.length && fullText[i + 1] === '\n') {
+                    lineIndex.push(position + i + 2);
+                    i += 2;
+                } else {
+                    lineIndex.push(position + i + 1);
+                    totalLines++;
+                    i++;
+                }
+            } else {
+                i++;
             }
         }
-        
-        // Keep remainder for next chunk
-        buffer = buffer.slice(lineStart);
+
+        remainder = fullText.slice(i);
         position += chunkSize;
-        
-        // Update loading text
+
         const progress = Math.round((position / totalSize) * 100);
         loadingText.textContent = `Building index... ${progress}% (${formatNumber(totalLines)} lines found)`;
     }
-    
-    // Handle last line if no trailing newline
-    if (buffer.length > 0) {
-        lineIndex.push(position - buffer.length);
+
+    if (remainder.length > 0) {
+        lineIndex.push(position - remainder.length);
         totalLines++;
     }
 }
@@ -214,6 +233,7 @@ async function loadPage(pageNum) {
     currentPage = pageNum;
     pageInput.value = pageNum;
     
+    document.getElementById('log-container').classList.remove('expanded');
     showLoading(`Loading page ${pageNum}...`);
     
     try {
@@ -221,94 +241,290 @@ async function loadPage(pageNum) {
         const endLine = Math.min(startLine + linesPerPage, totalLines);
         
         const lines = await readLines(startLine, endLine);
-        renderLines(lines, startLine + 1);
+        await renderLines(lines, startLine + 1);
         updatePageInfo(startLine + 1, endLine);
     } finally {
         hideLoading();
     }
 }
 
-// Read specific lines from file
+// Read specific lines from file (batched for performance)
 async function readLines(startLine, endLine) {
+    if (startLine >= endLine) return [];
+
+    const startPos = lineIndex[startLine];
+    const endPos = lineIndex[endLine] || currentFile.size;
+
+    const slice = currentFile.slice(startPos, endPos);
+    const text = await slice.text();
+
     const lines = [];
-    
-    for (let i = startLine; i < endLine; i++) {
-        const line = await readLine(i);
-        lines.push(line);
+    let currentLine = '';
+
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+
+        if (char === '\n') {
+            lines.push(currentLine);
+            currentLine = '';
+        } else if (char === '\r') {
+            if (i + 1 < text.length && text[i + 1] === '\n') {
+                lines.push(currentLine);
+                currentLine = '';
+                i++;
+            } else {
+                lines.push(currentLine);
+                currentLine = '';
+            }
+        } else {
+            currentLine += char;
+        }
     }
-    
+
+    if (currentLine || lines.length === 0) {
+        lines.push(currentLine);
+    }
+
     return lines;
 }
 
-// Read a single line from file
-async function readLine(lineNum) {
-    if (lineNum >= totalLines) return '';
-    
-    const startPos = lineIndex[lineNum];
-    let endPos;
-    
-    if (lineNum + 1 < totalLines) {
-        endPos = lineIndex[lineNum + 1];
-    } else {
-        endPos = currentFile.size;
+// Render lines to DOM with Prism.js highlighting
+async function renderLines(lines, startLineNum) {
+    // Show loading state for highlighting
+    if (syntaxHighlightingEnabled) {
+        loadingText.textContent = `Highlighting ${lines.length} lines...`;
+        loadingOverlay.classList.remove('hidden');
     }
     
-    const slice = currentFile.slice(startPos, endPos);
-    let text = await slice.text();
-    
-    // Remove trailing newline
-    if (text.endsWith('\n')) {
-        text = text.slice(0, -1);
+    try {
+        let highlightedLines;
+        
+        if (syntaxHighlightingEnabled) {
+            // Use Prism.js via Web Worker for non-blocking highlighting
+            highlightedLines = await highlightLinesAsync(lines, startLineNum);
+        } else {
+            // Plain text - no highlighting
+            highlightedLines = lines.map((line, index) => ({
+                lineNum: startLineNum + index,
+                content: escapeHtml(line),
+                logLevel: detectLogLevelFromLine(line)
+            }));
+        }
+        
+        // Build DOM
+        const fragment = document.createDocumentFragment();
+        
+        highlightedLines.forEach(({ lineNum, content, logLevel }) => {
+            const lineEl = document.createElement('div');
+            lineEl.className = 'log-line';
+            lineEl.dataset.line = lineNum;
+            
+            // Add log level class for background tinting
+            if (logLevel) {
+                lineEl.classList.add(`level-${logLevel}`);
+            }
+            
+            // Check if this is the current match
+            const absoluteLineIndex = lineNum - 1;
+            if (searchResults.length > 0 && currentMatchIndex >= 0) {
+                const currentMatchLine = searchResults[currentMatchIndex];
+                if (absoluteLineIndex === currentMatchLine) {
+                    lineEl.classList.add('current-match');
+                }
+            }
+            
+            const lineNumberEl = document.createElement('span');
+            lineNumberEl.className = 'line-number';
+            lineNumberEl.textContent = lineNum;
+            
+            const contentEl = document.createElement('span');
+            contentEl.className = 'line-content';
+            contentEl.innerHTML = content;
+            
+            // Apply search highlighting on top if needed
+            if (searchTerm && !syntaxHighlightingEnabled) {
+                const regex = new RegExp(escapeRegExp(searchTerm), 'gi');
+                contentEl.innerHTML = content.replace(regex, match => 
+                    `<span class="search-highlight">${match}</span>`
+                );
+            }
+            
+            lineEl.appendChild(lineNumberEl);
+            lineEl.appendChild(contentEl);
+            fragment.appendChild(lineEl);
+        });
+        
+        logContent.innerHTML = '';
+        logContent.appendChild(fragment);
+        
+        // Update container class based on highlighting state
+        document.getElementById('log-container').classList.add('expanded');
+        if (!syntaxHighlightingEnabled) {
+            logContent.classList.add('syntax-highlighting-disabled');
+        } else {
+            logContent.classList.remove('syntax-highlighting-disabled');
+        }
+    } catch (error) {
+        console.error('Error rendering lines:', error);
+        // Fallback to plain text
+        const fragment = document.createDocumentFragment();
+        lines.forEach((line, index) => {
+            const lineNum = startLineNum + index;
+            const lineEl = document.createElement('div');
+            lineEl.className = 'log-line';
+            lineEl.dataset.line = lineNum;
+            
+            const lineNumberEl = document.createElement('span');
+            lineNumberEl.className = 'line-number';
+            lineNumberEl.textContent = lineNum;
+            
+            const contentEl = document.createElement('span');
+            contentEl.className = 'line-content';
+            contentEl.textContent = line;
+            
+            lineEl.appendChild(lineNumberEl);
+            lineEl.appendChild(contentEl);
+            fragment.appendChild(lineEl);
+        });
+        
+        logContent.innerHTML = '';
+        logContent.appendChild(fragment);
+    } finally {
+        if (syntaxHighlightingEnabled) {
+            loadingOverlay.classList.add('hidden');
+            document.getElementById('log-container').classList.add('expanded');
+        }
     }
-    if (text.endsWith('\r')) {
-        text = text.slice(0, -1);
-    }
-    
-    return text;
 }
 
-// Render lines to DOM
-function renderLines(lines, startLineNum) {
-    const fragment = document.createDocumentFragment();
+/**
+ * Detect log level from a line (simple version)
+ * @param {string} line - The log line to analyze
+ * @returns {string|null} - The detected log level or null
+ */
+function detectLogLevelFromLine(line) {
+    const upperLine = line.toUpperCase();
+    if (/\b(ERROR|FAIL|FAILURE|FATAL|CRITICAL|ALERT|EMERGENCY|EE)\b/.test(upperLine) ||
+        /\[\s*(ERROR|EROR|ERR|FATAL|FATL|FTL|E|F)\s*\]/.test(upperLine)) {
+        return 'error';
+    }
+    if (/\b(WARNING|WARN|WW)\b/.test(upperLine) ||
+        /\[\s*(WARNING|WARN|WRN|W)\s*\]/.test(upperLine)) {
+        return 'warning';
+    }
+    if (/\b(INFO|INFORMATION|NOTICE|II)\b/.test(upperLine) ||
+        /\[\s*(INFO|INF|I)\s*\]/.test(upperLine)) {
+        return 'info';
+    }
+    if (/\b(DEBUG)\b/.test(upperLine) ||
+        /\[\s*(DEBUG|DBG|D)\s*\]/.test(upperLine)) {
+        return 'debug';
+    }
+    if (/\b(TRACE|VERBOSE)\b/.test(upperLine) ||
+        /\[\s*(TRACE|VERBOSE|V)\s*\]/.test(upperLine)) {
+        return 'trace';
+    }
+    return null;
+}
+
+/**
+ * Initialize Prism Web Worker
+ */
+function initPrismWorker() {
+    if (!prismWorker && window.Worker) {
+        try {
+            prismWorker = new Worker('prism-worker.js');
+            
+            prismWorker.onmessage = function(event) {
+                const { id, success, highlightedLines, error } = event.data;
+                const job = pendingJobs.get(id);
+                
+                if (job) {
+                    pendingJobs.delete(id);
+                    
+                    if (success) {
+                        job.resolve(highlightedLines);
+                    } else {
+                        job.reject(new Error(error));
+                    }
+                }
+            };
+            
+            prismWorker.onerror = function(error) {
+                console.error('Prism Worker error:', error);
+                // Reject all pending jobs
+                pendingJobs.forEach((job) => {
+                    job.reject(error);
+                });
+                pendingJobs.clear();
+            };
+        } catch (e) {
+            console.warn('Failed to initialize Prism Worker:', e);
+            prismWorker = null;
+        }
+    }
+}
+
+/**
+ * Terminate Prism Web Worker
+ */
+function terminatePrismWorker() {
+    if (prismWorker) {
+        prismWorker.terminate();
+        prismWorker = null;
+        pendingJobs.clear();
+    }
+}
+
+/**
+ * Highlight lines using Prism.js via Web Worker
+ * @param {string[]} lines - Array of lines to highlight
+ * @param {number} startLineNum - Starting line number
+ * @returns {Promise<Array>} - Promise resolving to highlighted lines
+ */
+async function highlightLinesAsync(lines, startLineNum) {
+    // If Worker not available, fallback to synchronous Prism highlighting
+    if (!prismWorker) {
+        return lines.map((line, index) => ({
+            lineNum: startLineNum + index,
+            content: highlightWithPrism(line),
+            logLevel: detectLogLevelFromLine(line)
+        }));
+    }
     
-    lines.forEach((line, index) => {
-        const lineNum = startLineNum + index;
-        const lineEl = document.createElement('div');
-        lineEl.className = 'log-line';
-        lineEl.dataset.line = lineNum;
-        
-        // Check if this is the current match
-        const absoluteLineIndex = lineNum - 1;
-        if (searchResults.length > 0 && currentMatchIndex >= 0) {
-            const currentMatchLine = searchResults[currentMatchIndex];
-            if (absoluteLineIndex === currentMatchLine) {
-                lineEl.classList.add('current-match');
-            }
-        }
-        
-        const lineNumberEl = document.createElement('span');
-        lineNumberEl.className = 'line-number';
-        lineNumberEl.textContent = lineNum;
-        
-        const contentEl = document.createElement('span');
-        contentEl.className = 'line-content';
-        
-        // Apply search highlighting
-        if (searchTerm) {
-            const regex = new RegExp(escapeRegExp(searchTerm), 'gi');
-            const highlighted = line.replace(regex, match => `<span class="search-highlight">${match}</span>`);
-            contentEl.innerHTML = highlighted;
-        } else {
-            contentEl.textContent = line;
-        }
-        
-        lineEl.appendChild(lineNumberEl);
-        lineEl.appendChild(contentEl);
-        fragment.appendChild(lineEl);
+    // Create job
+    const id = ++workerJobId;
+    const jobPromise = new Promise((resolve, reject) => {
+        pendingJobs.set(id, { resolve, reject });
     });
     
-    logContent.innerHTML = '';
-    logContent.appendChild(fragment);
+    // Post to worker
+    prismWorker.postMessage({
+        id: id,
+        lines: lines,
+        startLineNum: startLineNum
+    });
+    
+    return jobPromise;
+}
+
+/**
+ * Highlight a single line with Prism.js (synchronous fallback)
+ * @param {string} line - Line to highlight
+ * @returns {string} - Highlighted HTML
+ */
+function highlightWithPrism(line) {
+    if (!line) return '';
+    
+    try {
+        if (Prism.languages.log) {
+            return Prism.highlight(line, Prism.languages.log, 'log');
+        }
+    } catch (e) {
+        console.warn('Prism highlighting failed:', e);
+    }
+    
+    return escapeHtml(line);
 }
 
 // Pagination Controls
@@ -505,7 +721,7 @@ async function navigateMatch(direction) {
         const startLine = (currentPage - 1) * linesPerPage;
         const endLine = Math.min(startLine + linesPerPage, totalLines);
         const lines = await readLines(startLine, endLine);
-        renderLines(lines, startLine + 1);
+        await renderLines(lines, startLine + 1);
     }
     
     // Scroll to the match
@@ -666,3 +882,42 @@ function formatNumber(num) {
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Toggle syntax highlighting
+function toggleSyntaxHighlighting() {
+    syntaxHighlightingEnabled = !syntaxHighlightingEnabled;
+    
+    // Update toggle button state
+    const toggleBtn = document.getElementById('highlight-toggle');
+    const toggleSpan = toggleBtn.querySelector('span');
+    
+    if (syntaxHighlightingEnabled) {
+        toggleBtn.classList.add('active');
+        toggleSpan.textContent = 'Highlight';
+        initPrismWorker();
+    } else {
+        toggleBtn.classList.remove('active');
+        toggleSpan.textContent = 'Plain';
+    }
+    
+    // Re-render current page with new highlighting state
+    loadPage(currentPage);
+}
+
+// Initialize Prism Worker when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    if (syntaxHighlightingEnabled) {
+        initPrismWorker();
+    }
+});
+
+// Cleanup on page unload
+window.addEventListener('beforeunload', () => {
+    terminatePrismWorker();
+});

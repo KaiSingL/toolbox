@@ -91,6 +91,7 @@
     display: flex;
     flex-direction: column;
     gap: 24px;
+    padding-bottom: 80px;
 }
 
 .hidden {
@@ -347,8 +348,15 @@
     font-family: var(--font-mono);
     font-size: 13px;
     line-height: 1.5;
-    min-height: 200px;
+    min-height: 60px;
+    max-height: 60px;
     position: relative;
+    transition: max-height 0.4s ease;
+    overflow: hidden;
+}
+
+.log-container.expanded {
+    max-height: none;
 }
 
 .log-content {
@@ -422,7 +430,11 @@
 
 /* Pagination */
 .pagination-card {
-    padding: 24px;
+    padding: 16px 24px;
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    border-top: 1px solid var(--border-color);
 }
 
 .pagination-controls {
@@ -509,9 +521,9 @@
         width: 100%;
         text-align: center;
     }
-    
-    .log-container {
-        max-height: 50vh;
+
+    .log-container.expanded {
+        max-height: none;
     }
 }
 
@@ -534,4 +546,175 @@
     .drop-zone-text small {
         font-size: 12px;
     }
+}
+
+/* ============================================
+   One Dark Syntax Highlighting
+   ============================================ */
+
+/* Token Colors - One Dark Theme */
+.token-error { 
+    color: #E06C75; 
+    font-weight: 600; 
+}
+
+.token-warning { 
+    color: #E5C07B; 
+    font-weight: 500; 
+}
+
+.token-info { 
+    color: #98C379; 
+}
+
+.token-debug { 
+    color: #56B6C2; 
+}
+
+.token-trace { 
+    color: #5C6370; 
+}
+
+.token-date { 
+    color: #5C6370; 
+}
+
+.token-string { 
+    color: #98C379; 
+}
+
+.token-constant { 
+    color: #D19A66; 
+}
+
+.token-url { 
+    color: #61AFEF; 
+    text-decoration: underline;
+}
+
+.token-exception { 
+    color: #C678DD; 
+}
+
+.token-json-key { 
+    color: #E06C75; 
+}
+
+.token-json-string { 
+    color: #98C379; 
+}
+
+.token-json-number { 
+    color: #D19A66; 
+}
+
+.token-json-boolean { 
+    color: #56B6C2; 
+}
+
+/* Line-level background tints based on log level */
+.log-line.level-error { 
+    background: rgba(224, 108, 117, 0.08); 
+}
+
+.log-line.level-error:hover { 
+    background: rgba(224, 108, 117, 0.15); 
+}
+
+.log-line.level-warning { 
+    background: rgba(229, 192, 123, 0.08); 
+}
+
+.log-line.level-warning:hover { 
+    background: rgba(229, 192, 123, 0.15); 
+}
+
+.log-line.level-info { 
+    background: rgba(152, 195, 121, 0.05); 
+}
+
+.log-line.level-info:hover { 
+    background: rgba(152, 195, 121, 0.1); 
+}
+
+.log-line.level-debug { 
+    background: rgba(86, 182, 194, 0.05); 
+}
+
+.log-line.level-debug:hover { 
+    background: rgba(86, 182, 194, 0.1); 
+}
+
+/* ============================================
+   Syntax Highlighting Toggle
+   ============================================ */
+
+.highlight-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+
+.highlight-toggle:hover {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+}
+
+.highlight-toggle.active {
+    background: rgba(202, 200, 244, 0.2);
+    border-color: var(--accent);
+    color: var(--text-primary);
+}
+
+.highlight-toggle.active svg {
+    color: var(--accent);
+}
+
+.highlight-toggle svg {
+    width: 14px;
+    height: 14px;
+    transition: color 0.2s ease;
+}
+
+/* Smooth transitions for highlighting toggle */
+.log-line, 
+.line-content {
+    transition: background 0.2s ease, color 0.15s ease;
+}
+
+/* When highlighting is disabled */
+.syntax-highlighting-disabled .log-line {
+    background: none !important;
+}
+
+.syntax-highlighting-disabled .log-line:hover {
+    background: rgba(202, 200, 244, 0.08) !important;
+}
+
+.syntax-highlighting-disabled .token-error,
+.syntax-highlighting-disabled .token-warning,
+.syntax-highlighting-disabled .token-info,
+.syntax-highlighting-disabled .token-debug,
+.syntax-highlighting-disabled .token-trace,
+.syntax-highlighting-disabled .token-date,
+.syntax-highlighting-disabled .token-string,
+.syntax-highlighting-disabled .token-constant,
+.syntax-highlighting-disabled .token-url,
+.syntax-highlighting-disabled .token-exception,
+.syntax-highlighting-disabled .token-json-key,
+.syntax-highlighting-disabled .token-json-string,
+.syntax-highlighting-disabled .token-json-number,
+.syntax-highlighting-disabled .token-json-boolean {
+    color: inherit;
+    font-weight: inherit;
+    text-decoration: inherit;
 }
