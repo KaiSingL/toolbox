@@ -491,6 +491,11 @@
     white-space: nowrap;
 }
 
+.pagination-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
 /* Empty State */
 .empty-state {
     text-align: center;

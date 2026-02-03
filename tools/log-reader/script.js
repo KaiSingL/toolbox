@@ -247,6 +247,7 @@ async function loadPage(pageNum) {
         updatePageInfo(startLine + 1, endLine);
     } finally {
         hideLoading();
+        updatePageButtons();
     }
 }
 
@@ -559,6 +560,18 @@ function updatePagination() {
     const totalPages = getTotalPages();
     pageTotal.textContent = `of ${formatNumber(totalPages)}`;
     pageInput.max = totalPages;
+    updatePageButtons();
+}
+
+function updatePageButtons() {
+    const totalPages = getTotalPages();
+    const isFirstPage = currentPage === 1;
+    const isLastPage = currentPage === totalPages;
+
+    document.getElementById('btn-first').disabled = isFirstPage;
+    document.getElementById('btn-prev').disabled = isFirstPage;
+    document.getElementById('btn-next').disabled = isLastPage;
+    document.getElementById('btn-last').disabled = isLastPage;
 }
 
 function updatePageInfo(startLine, endLine) {
