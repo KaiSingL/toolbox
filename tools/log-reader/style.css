@@ -339,7 +339,7 @@
 /* Log Container */
 .log-card {
     padding: 0;
-    overflow: hidden;
+    margin-bottom: 70px;
 }
 
 .log-container {
@@ -352,7 +352,7 @@
     max-height: 60px;
     position: relative;
     transition: max-height 0.4s ease;
-    overflow: hidden;
+    overflow: auto;
 }
 
 .log-container.expanded {
@@ -431,10 +431,13 @@
 /* Pagination */
 .pagination-card {
     padding: 16px 24px;
-    position: sticky;
+    position: fixed;
     bottom: 0;
-    z-index: 5;
+    left: 0;
+    right: 0;
+    z-index: 100;
     border-top: 1px solid var(--border-color);
+    background: var(--bg-primary);
 }
 
 .pagination-controls {

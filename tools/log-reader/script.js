@@ -68,6 +68,8 @@ document.getElementById('btn-first').addEventListener('click', () => goToPage(1)
 document.getElementById('btn-prev').addEventListener('click', () => goToPage(currentPage - 1));
 document.getElementById('btn-next').addEventListener('click', () => goToPage(currentPage + 1));
 document.getElementById('btn-last').addEventListener('click', () => goToPage(getTotalPages()));
+document.getElementById('btn-top').addEventListener('click', () => scrollToTop());
+document.getElementById('btn-bottom').addEventListener('click', () => scrollToBottom());
 pageInput.addEventListener('change', handlePageInput);
 document.getElementById('download-page').addEventListener('click', downloadCurrentPage);
 searchBtn.addEventListener('click', startSearch);
@@ -740,6 +742,16 @@ function scrollToMatch(lineNum) {
         logLines[relativeLineIndex].classList.add('current-match');
         logLines[relativeLineIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+}
+
+// Scroll to top of log content
+function scrollToTop() {
+    document.getElementById('log-top-anchor').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Scroll to bottom of log content
+function scrollToBottom() {
+    document.getElementById('log-bottom-anchor').scrollIntoView({ behavior: 'smooth', block: 'end' });
 }
 
 // Update match counter display
