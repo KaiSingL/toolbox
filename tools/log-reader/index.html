@@ -266,49 +266,53 @@
                 <!-- Pagination -->
                 <div class="card-brutal pagination-card">
                     <div class="pagination-controls">
-                        <button id="btn-first" class="btn-secondary pagination-btn">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="11 17 6 12 11 7"/>
-                                <polyline points="18 17 13 12 18 7"/>
-                            </svg>
-                            First
-                        </button>
-                        <button id="btn-prev" class="btn-secondary pagination-btn">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="15 18 9 12 15 6"/>
-                            </svg>
-                            Previous
-                        </button>
-                        <div class="page-input-group">
-                            <span>Page</span>
-                            <input type="number" id="page-input" class="input-brutal page-input" value="1" min="1">
-                            <span id="page-total" class="page-total">of 1</span>
+                        <div class="pagination-group">
+                            <button id="btn-first" class="btn-secondary pagination-btn">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="11 17 6 12 11 7"/>
+                                    <polyline points="18 17 13 12 18 7"/>
+                                </svg>
+                                First
+                            </button>
+                            <button id="btn-prev" class="btn-secondary pagination-btn">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="15 18 9 12 15 6"/>
+                                </svg>
+                                Previous
+                            </button>
+                            <div class="page-input-group">
+                                <span>Page</span>
+                                <input type="number" id="page-input" class="input-brutal page-input" value="1" min="1">
+                                <span id="page-total" class="page-total">of 1</span>
+                            </div>
+                            <button id="btn-next" class="btn-secondary pagination-btn">
+                                Next
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="9 18 15 12 9 6"/>
+                                </svg>
+                            </button>
+                            <button id="btn-last" class="btn-secondary pagination-btn">
+                                Last
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="13 17 18 12 13 7"/>
+                                    <polyline points="6 17 11 12 6 7"/>
+                                </svg>
+                            </button>
                         </div>
-                        <button id="btn-next" class="btn-secondary pagination-btn">
-                            Next
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="9 18 15 12 9 6"/>
-                            </svg>
-                        </button>
-                        <button id="btn-last" class="btn-secondary pagination-btn">
-                            Last
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="13 17 18 12 13 7"/>
-                                <polyline points="6 17 11 12 6 7"/>
-                            </svg>
-                        </button>
-                        <button id="btn-top" class="btn-secondary pagination-btn" title="Scroll to top">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="18 15 12 9 6 15"/>
-                            </svg>
-                            Top
-                        </button>
-                        <button id="btn-bottom" class="btn-secondary pagination-btn" title="Scroll to bottom">
-                            Bottom
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
-                        </button>
+                        <div class="pagination-group">
+                            <button id="btn-top" class="btn-secondary pagination-btn" title="Scroll to top">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="18 15 12 9 6 15"/>
+                                </svg>
+                                Top
+                            </button>
+                            <button id="btn-bottom" class="btn-secondary pagination-btn" title="Scroll to bottom">
+                                Bottom
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="6 9 12 15 18 9"/>
+                                </svg>
+                            </button>
+                        </div>
                         <span id="page-info" class="page-info"></span>
                     </div>
                 </div>
