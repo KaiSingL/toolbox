@@ -54,7 +54,7 @@ const clearSearchBtn = document.getElementById('clear-search');
 const searchProgress = document.getElementById('search-progress');
 const searchProgressFill = document.getElementById('search-progress-fill');
 const searchInfo = document.getElementById('search-info');
-const searchNav = document.getElementById('search-nav');
+const sidePanelNav = document.getElementById('side-panel-nav');
 const matchCounter = document.getElementById('match-counter');
 const btnPrevMatch = document.getElementById('btn-prev-match');
 const btnNextMatch = document.getElementById('btn-next-match');
@@ -66,7 +66,6 @@ const wholeWordCheckbox = document.getElementById('option-whole-word');
 const matchCaseCheckbox = document.getElementById('option-match-case');
 const searchHeader = document.getElementById('search-header');
 const sidePanel = document.getElementById('search-side-panel');
-const sidePanelToggle = document.getElementById('side-panel-toggle');
 const toggleSidePanelBtn = document.getElementById('toggle-side-panel');
 const viewerGrid = document.getElementById('viewer-grid');
 
@@ -94,14 +93,19 @@ searchInput.addEventListener('keypress', (e) => {
 document.getElementById('highlight-toggle').addEventListener('click', toggleSyntaxHighlighting);
 
 // Search navigation
-btnPrevMatch.addEventListener('click', () => navigateMatch(-1));
-btnNextMatch.addEventListener('click', () => navigateMatch(1));
+btnPrevMatch.addEventListener('click', (e) => {
+    e.stopPropagation();
+    navigateMatch(-1);
+});
+btnNextMatch.addEventListener('click', (e) => {
+    e.stopPropagation();
+    navigateMatch(1);
+});
 
 // Load more results button
 btnLoadMore.addEventListener('click', loadMoreResults);
 
-// Side panel toggle buttons
-sidePanelToggle.addEventListener('click', toggleSidePanel);
+// Side panel toggle button
 toggleSidePanelBtn.addEventListener('click', toggleSidePanel);
 
 // Search option toggles
@@ -175,7 +179,7 @@ async function loadFile(file) {
     
     // Reset search UI
     searchInput.value = '';
-    searchNav.classList.add('hidden');
+    sidePanelNav.classList.add('hidden');
     sidePanel.classList.add('hidden');
     searchResultsList.classList.add('hidden');
     searchResultsItems.innerHTML = '';
@@ -227,9 +231,11 @@ async function buildLineIndex(file) {
         const text = await chunk.text();
 
         const fullText = remainder + text;
-        remainder = '';
 
-        let i = 0;
+        // Process only the NEW text portion, not the remainder
+        let i = remainder.length;  // Skip remainder chars at start
+        let textProcessed = 0;
+
         while (i < fullText.length) {
             let char = fullText[i];
 
@@ -240,6 +246,7 @@ async function buildLineIndex(file) {
             } else if (char === '\r') {
                 if (i + 1 < fullText.length && fullText[i + 1] === '\n') {
                     lineIndex.push(position + i + 2);
+                    totalLines++;
                     i += 2;
                 } else {
                     lineIndex.push(position + i + 1);
@@ -249,20 +256,25 @@ async function buildLineIndex(file) {
             } else {
                 i++;
             }
+            textProcessed++;
         }
 
+        // Save remainder - everything after what we just processed
         remainder = fullText.slice(i);
+
         position += chunkSize;
 
         const progress = Math.round((position / totalSize) * 100);
         loadingText.textContent = `Building index... ${progress}% (${formatNumber(totalLines)} lines found)`;
     }
 
+    // Handle final remainder (last line of file, may not end with newline)
     if (remainder.length > 0) {
         lineIndex.push(position - remainder.length);
         totalLines++;
     }
-}
+
+    }
 
 // Load a specific page
 async function loadPage(pageNum) {
@@ -707,7 +719,7 @@ async function startSearch() {
         // Handle empty file or no matches
         if (totalLines === 0 || searchResults.length === 0) {
             searchInfo.textContent = totalLines === 0 ? 'File is empty' : 'No matches found';
-            searchNav.classList.add('hidden');
+            sidePanelNav.classList.add('hidden');
             if (searchResults.length === 0) {
                 sidePanel.classList.add('hidden');
                 sidePanelVisible = false;
@@ -715,7 +727,7 @@ async function startSearch() {
             }
         } else {
             searchInfo.textContent = `Found ${formatNumber(searchResults.length)} matches`;
-            searchNav.classList.remove('hidden');
+            sidePanelNav.classList.remove('hidden');
             
             // Ensure side panel is visible
             sidePanel.classList.remove('hidden');
@@ -810,6 +822,7 @@ async function searchOnMainThread(term) {
     let totalChunks = Math.ceil(currentFile.size / CHUNK_SIZE);
     let processedChunks = 0;
     let lastLineIndex = 0;
+    let hasTrailingNewline = true;
 
     for (let pos = 0; pos < currentFile.size; pos += CHUNK_SIZE) {
         if (searchAbortController.signal.aborted) {
@@ -825,6 +838,9 @@ async function searchOnMainThread(term) {
         }
         const startLine = lastLineIndex;
 
+        // Check if chunk ends with newline
+        hasTrailingNewline = chunk.length > 0 && (chunk[chunk.length - 1] === '\n' || chunk[chunk.length - 1] === '\r');
+
         // Search chunk
         let lineStart = 0;
         let currentLine = startLine;
@@ -838,7 +854,9 @@ async function searchOnMainThread(term) {
                 lineStart = i + 1;
             }
         }
-        if (lineStart < chunk.length) {
+        
+        // Only count the remaining text as a line if it doesn't end with newline
+        if (lineStart < chunk.length && !hasTrailingNewline) {
             currentLine++;
         }
 
@@ -865,7 +883,7 @@ function clearSearch() {
     searchProgress.classList.add('hidden');
     searchInfo.textContent = '';
     clearSearchBtn.classList.add('hidden');
-    searchNav.classList.add('hidden');
+    sidePanelNav.classList.add('hidden');
     sidePanel.classList.add('hidden');
     sidePanelVisible = false;
     toggleSidePanelBtn.classList.remove('active');
@@ -945,7 +963,7 @@ function updateMatchCounter() {
     if (searchResults.length === 0) {
         matchCounter.textContent = 'No matches';
     } else {
-        matchCounter.textContent = `Match ${currentMatchIndex + 1} of ${searchResults.length}`;
+        matchCounter.textContent = `${currentMatchIndex + 1} of ${searchResults.length}`;
     }
 }
 
