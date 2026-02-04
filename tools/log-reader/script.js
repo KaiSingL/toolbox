@@ -20,6 +20,7 @@ const MAX_RESULTS_DISPLAY = 50; // Limit results shown for performance
 let syntaxHighlightingEnabled = true; // One Dark syntax highlighting (default: on)
 let matchWholeWord = false; // Match whole word only
 let matchCase = false; // Match case sensitive
+let sidePanelVisible = false; // Side panel visibility state
 
 // Prism.js Web Worker for non-blocking highlighting
 let prismWorker = null;
@@ -57,15 +58,17 @@ const searchNav = document.getElementById('search-nav');
 const matchCounter = document.getElementById('match-counter');
 const btnPrevMatch = document.getElementById('btn-prev-match');
 const btnNextMatch = document.getElementById('btn-next-match');
-const searchResultsPanel = document.getElementById('search-results-panel');
-const searchResultsToggle = document.getElementById('search-results-toggle');
 const searchResultsTitleText = document.getElementById('search-results-title-text');
-const searchResultsChevron = document.getElementById('search-results-chevron');
 const searchResultsList = document.getElementById('search-results-list');
 const searchResultsItems = document.getElementById('search-results-items');
 const btnLoadMore = document.getElementById('btn-load-more');
 const wholeWordCheckbox = document.getElementById('option-whole-word');
 const matchCaseCheckbox = document.getElementById('option-match-case');
+const searchHeader = document.getElementById('search-header');
+const sidePanel = document.getElementById('search-side-panel');
+const sidePanelToggle = document.getElementById('side-panel-toggle');
+const toggleSidePanelBtn = document.getElementById('toggle-side-panel');
+const viewerGrid = document.getElementById('viewer-grid');
 
 // Event Listeners
 uploadInput.addEventListener('change', handleFileSelect);
@@ -94,8 +97,12 @@ document.getElementById('highlight-toggle').addEventListener('click', toggleSynt
 btnPrevMatch.addEventListener('click', () => navigateMatch(-1));
 btnNextMatch.addEventListener('click', () => navigateMatch(1));
 
-// Search results panel toggle
-searchResultsToggle.addEventListener('click', toggleSearchResults);
+// Load more results button
+btnLoadMore.addEventListener('click', loadMoreResults);
+
+// Side panel toggle buttons
+sidePanelToggle.addEventListener('click', toggleSidePanel);
+toggleSidePanelBtn.addEventListener('click', toggleSidePanel);
 
 // Search option toggles
 wholeWordCheckbox.addEventListener('change', () => {
@@ -109,6 +116,15 @@ matchCaseCheckbox.addEventListener('change', () => {
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && searchTerm) {
         clearSearch();
+    }
+    if (e.key === 'Escape' && sidePanelVisible && window.innerWidth <= 900) {
+        toggleSidePanel();
+    }
+    if (e.key === 'b' || e.key === 'B') {
+        if (document.activeElement === searchInput || document.activeElement.tagName !== 'INPUT') {
+            e.preventDefault();
+            toggleSidePanel();
+        }
     }
     if (e.key === 'Enter' && e.shiftKey && searchResults.length > 0) {
         e.preventDefault();
@@ -155,13 +171,16 @@ async function loadFile(file) {
     searchTerm = '';
     searchResults = [];
     currentMatchIndex = -1;
+    sidePanelVisible = false;
     
     // Reset search UI
     searchInput.value = '';
     searchNav.classList.add('hidden');
-    searchResultsPanel.classList.add('hidden');
+    sidePanel.classList.add('hidden');
     searchResultsList.classList.add('hidden');
     searchResultsItems.innerHTML = '';
+    toggleSidePanelBtn.classList.remove('active');
+    viewerGrid.classList.remove('with-panel');
     
     // Update UI
     fileNameEl.textContent = file.name;
@@ -658,6 +677,7 @@ async function startSearch() {
     isSearching = true;
     searchResults = [];
     currentMatchIndex = -1;
+    loadedResultsCount = 0;
 
     // Show progress
     searchProgress.classList.remove('hidden');
@@ -688,12 +708,20 @@ async function startSearch() {
         if (totalLines === 0 || searchResults.length === 0) {
             searchInfo.textContent = totalLines === 0 ? 'File is empty' : 'No matches found';
             searchNav.classList.add('hidden');
-            searchResultsPanel.classList.add('hidden');
-            searchResultsItems.innerHTML = '';
+            if (searchResults.length === 0) {
+                sidePanel.classList.add('hidden');
+                sidePanelVisible = false;
+                toggleSidePanelBtn.classList.remove('active');
+            }
         } else {
             searchInfo.textContent = `Found ${formatNumber(searchResults.length)} matches`;
             searchNav.classList.remove('hidden');
-            searchResultsPanel.classList.remove('hidden');
+            
+            // Ensure side panel is visible
+            sidePanel.classList.remove('hidden');
+            sidePanelVisible = true;
+            toggleSidePanelBtn.classList.add('active');
+            viewerGrid.classList.add('with-panel');
             searchResultsTitleText.textContent = `Search Results (${formatNumber(searchResults.length)} matches)`;
 
             // Auto-jump to first match
@@ -702,9 +730,6 @@ async function startSearch() {
 
             // Populate results panel
             await populateSearchResults();
-
-            // Show the results list
-            searchResultsList.classList.remove('hidden');
         }
 
     } catch (error) {
@@ -841,9 +866,10 @@ function clearSearch() {
     searchInfo.textContent = '';
     clearSearchBtn.classList.add('hidden');
     searchNav.classList.add('hidden');
-    searchResultsPanel.classList.add('hidden');
+    sidePanel.classList.add('hidden');
+    sidePanelVisible = false;
+    toggleSidePanelBtn.classList.remove('active');
     searchResultsList.classList.add('hidden');
-    searchResultsChevron.style.transform = 'rotate(0deg)';
 
     // Terminate search worker
     terminateSearchWorker();
@@ -923,21 +949,24 @@ function updateMatchCounter() {
     }
 }
 
-// Toggle search results panel
-function toggleSearchResults() {
-    const isExpanded = !searchResultsList.classList.contains('hidden');
+// Toggle side panel
+function toggleSidePanel() {
+    sidePanelVisible = !sidePanelVisible;
     
-    if (isExpanded) {
-        searchResultsList.classList.add('hidden');
-        searchResultsChevron.style.transform = 'rotate(0deg)';
+    if (sidePanelVisible) {
+        sidePanel.classList.remove('hidden');
+        toggleSidePanelBtn.classList.add('active');
+        viewerGrid.classList.add('with-panel');
     } else {
-        searchResultsList.classList.remove('hidden');
-        searchResultsChevron.style.transform = 'rotate(180deg)';
-        // Populate results if not already done
-        if (searchResultsItems.children.length === 0 && searchResults.length > 0) {
-            populateSearchResults();
-        }
+        sidePanel.classList.add('hidden');
+        toggleSidePanelBtn.classList.remove('active');
+        viewerGrid.classList.remove('with-panel');
     }
+}
+
+// Toggle search results panel (legacy function for compatibility)
+function toggleSearchResults() {
+    toggleSidePanel();
 }
 
 // Read a single line by line number
@@ -1026,42 +1055,11 @@ async function populateSearchResults() {
 
         resultItem.appendChild(contentEl);
 
-        // Click handler
+        // Click handler - navigate to line
         resultItem.addEventListener('click', () => {
-            if (resultItem.classList.contains('truncated')) {
-                // Expand/collapse
-                const lineText = resultItem.querySelector('.line-text');
-                const expandIndicator = resultItem.querySelector('.expand-indicator');
-                if (resultItem.classList.contains('expanded')) {
-                    // Collapse back
-                    const MAX_PREVIEW_LENGTH = 300;
-                    const line = searchResultsItems.querySelectorAll('.search-result-item')[i];
-                    const regex = new RegExp(escapeRegExp(searchTerm), matchCase ? '' : 'gi');
-                    const match = regex.exec(line);
-                    const matchStart = match ? match.index : 0;
-                    const matchEnd = match ? match.index + match[0].length : 0;
-                    let contextStart = Math.max(0, matchStart - 50);
-                    let contextEnd = Math.min(line.length, matchEnd + 100);
-                    let truncatedContent = line.substring(contextStart, contextEnd);
-                    if (contextStart > 0) truncatedContent = '...' + truncatedContent;
-                    if (contextEnd < line.length) truncatedContent = truncatedContent + '...';
-                    lineText.innerHTML = `<span class="line-text">${escapeHtml(truncatedContent)}</span>`;
-                    expandIndicator.textContent = 'Show more';
-                    resultItem.classList.remove('expanded');
-                } else {
-                    // Expand full line
-                    const regex = new RegExp(escapeRegExp(searchTerm), matchCase ? '' : 'gi');
-                    const highlighted = line.replace(regex, match => `<span class="search-highlight">${escapeHtml(match)}</span>`);
-                    lineText.innerHTML = `<span class="line-text">${highlighted}</span>`;
-                    expandIndicator.textContent = 'Show less';
-                    resultItem.classList.add('expanded');
-                }
-            } else {
-                // Navigate to line
-                currentMatchIndex = i;
-                navigateMatch(0);
-                updateActiveResultItem();
-            }
+            currentMatchIndex = i;
+            navigateMatch(0);
+            updateActiveResultItem();
         });
 
         searchResultsItems.appendChild(resultItem);
@@ -1075,6 +1073,82 @@ async function populateSearchResults() {
         btnLoadMore.textContent = `Load more (${searchResults.length - MAX_RESULTS_DISPLAY} remaining)`;
     } else {
         btnLoadMore.classList.add('hidden');
+    }
+}
+
+// Load more search results
+let loadedResultsCount = MAX_RESULTS_DISPLAY;
+
+async function loadMoreResults() {
+    if (searchResults.length <= loadedResultsCount) return;
+
+    const startIndex = loadedResultsCount;
+    const endIndex = Math.min(startIndex + MAX_RESULTS_DISPLAY, searchResults.length);
+
+    for (let i = startIndex; i < endIndex; i++) {
+        const lineNum = searchResults[i];
+        const line = await readLine(lineNum);
+
+        const resultItem = document.createElement('div');
+        resultItem.className = 'search-result-item';
+        resultItem.dataset.index = i;
+        resultItem.dataset.line = lineNum;
+
+        // Line number header
+        const lineHeader = document.createElement('div');
+        lineHeader.className = 'search-result-header';
+
+        const lineNumEl = document.createElement('span');
+        lineNumEl.className = 'search-result-line-num';
+        lineNumEl.textContent = `Line ${lineNum + 1}`;
+
+        lineHeader.appendChild(lineNumEl);
+        resultItem.appendChild(lineHeader);
+
+        // Line content
+        const contentEl = document.createElement('div');
+        contentEl.className = 'search-result-content';
+
+        const MAX_PREVIEW_LENGTH = 300;
+        const isLongLine = line.length > MAX_PREVIEW_LENGTH;
+
+        if (isLongLine) {
+            const truncated = line.substring(0, MAX_PREVIEW_LENGTH);
+            const regex = new RegExp(escapeRegExp(searchTerm), matchCase ? '' : 'gi');
+            const match = regex.exec(truncated);
+            const matchStart = match ? match.index : 0;
+            const matchEnd = match ? match.index + match[0].length : 0;
+            let contextStart = Math.max(0, matchStart - 50);
+            let contextEnd = Math.min(truncated.length, matchEnd + 100);
+            let truncatedContent = line.substring(contextStart, contextEnd);
+            if (contextStart > 0) truncatedContent = '...' + truncatedContent;
+            if (contextEnd < line.length) truncatedContent = truncatedContent + '...';
+            contentEl.innerHTML = `<span class="line-text">${escapeHtml(truncatedContent)}</span><span class="expand-indicator">Show more</span>`;
+            resultItem.classList.add('truncated');
+        } else {
+            const regex = new RegExp(escapeRegExp(searchTerm), matchCase ? '' : 'gi');
+            const highlighted = line.replace(regex, match => `<span class="search-highlight">${escapeHtml(match)}</span>`);
+            contentEl.innerHTML = `<span class="line-text">${highlighted}</span>`;
+        }
+
+        resultItem.appendChild(contentEl);
+
+        // Click handler
+        resultItem.addEventListener('click', () => {
+            currentMatchIndex = i;
+            navigateMatch(0);
+            updateActiveResultItem();
+        });
+
+        searchResultsItems.appendChild(resultItem);
+    }
+
+    loadedResultsCount = endIndex;
+
+    if (endIndex >= searchResults.length) {
+        btnLoadMore.classList.add('hidden');
+    } else {
+        btnLoadMore.textContent = `Load more (${searchResults.length - endIndex} remaining)`;
     }
 }
 
