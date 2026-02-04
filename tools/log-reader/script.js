@@ -26,6 +26,11 @@ let prismWorker = null;
 let workerJobId = 0;
 const pendingJobs = new Map();
 
+// Search Worker for fast chunk-based searching
+let searchWorker = null;
+let searchJobId = 0;
+const pendingSearchJobs = new Map();
+
 // DOM Elements
 const uploadSection = document.getElementById('upload-section');
 const viewerSection = document.getElementById('viewer-section');
@@ -492,6 +497,53 @@ function terminatePrismWorker() {
 }
 
 /**
+ * Initialize Search Worker for fast chunk-based searching
+ */
+function initSearchWorker() {
+    if (!searchWorker && window.Worker) {
+        try {
+            searchWorker = new Worker('search-worker.js');
+
+            searchWorker.onmessage = function(event) {
+                const { type, id, lineNum } = event.data;
+                const job = pendingSearchJobs.get(id);
+
+                if (job) {
+                    if (type === 'result') {
+                        job.results.push(lineNum);
+                    } else if (type === 'complete') {
+                        job.resolve(job.results);
+                        pendingSearchJobs.delete(id);
+                    }
+                }
+            };
+
+            searchWorker.onerror = function(error) {
+                console.error('Search Worker error:', error);
+                pendingSearchJobs.forEach((job) => {
+                    job.reject(error);
+                });
+                pendingSearchJobs.clear();
+            };
+        } catch (e) {
+            console.warn('Failed to initialize Search Worker:', e);
+            searchWorker = null;
+        }
+    }
+}
+
+/**
+ * Terminate Search Worker
+ */
+function terminateSearchWorker() {
+    if (searchWorker) {
+        searchWorker.terminate();
+        searchWorker = null;
+        pendingSearchJobs.clear();
+    }
+}
+
+/**
  * Highlight lines using Prism.js via Web Worker
  * @param {string[]} lines - Array of lines to highlight
  * @param {number} startLineNum - Starting line number
@@ -612,39 +664,22 @@ async function startSearch() {
     searchProgressFill.style.width = '0%';
     searchInfo.textContent = 'Searching...';
     clearSearchBtn.classList.remove('hidden');
-    
+
     searchAbortController = new AbortController();
-    
+
     try {
-        // Build regex pattern based on options
-        let regexFlags = matchCase ? '' : 'i';
-        let pattern = escapeRegExp(term);
-        if (matchWholeWord) {
-            pattern = `\\b${pattern}\\b`;
-        }
-        const regex = new RegExp(pattern, regexFlags);
-
-        // Search through all lines using pre-built lineIndex
-        for (let lineNum = 0; lineNum < totalLines; lineNum++) {
-            if (searchAbortController.signal.aborted) {
-                throw new Error('AbortError');
-            }
-
-            const line = await readLine(lineNum);
-            if (regex.test(line)) {
-                searchResults.push(lineNum);
-            }
-
-            // Progress update
-            if (lineNum % 1000 === 0) {
-                const progress = Math.round((lineNum / totalLines) * 100);
-                searchProgressFill.style.width = `${progress}%`;
-                searchInfo.textContent = `Searching... ${progress}% (${formatNumber(searchResults.length)} matches)`;
-            }
+        // Initialize worker
+        if (!searchWorker) {
+            initSearchWorker();
         }
 
-        // Debug logging
-        console.log('Search complete:', { term, totalLines, resultsCount: searchResults.length, results: searchResults });
+        if (!searchWorker) {
+            // Fallback to main thread search
+            await searchOnMainThread(term);
+        } else {
+            // Use worker
+            await searchWithWorker(term);
+        }
 
         // Show results
         searchProgress.classList.add('hidden');
@@ -657,12 +692,8 @@ async function startSearch() {
             searchResultsItems.innerHTML = '';
         } else {
             searchInfo.textContent = `Found ${formatNumber(searchResults.length)} matches`;
-
-            // Show navigation
             searchNav.classList.remove('hidden');
             searchResultsPanel.classList.remove('hidden');
-
-            // Update results title
             searchResultsTitleText.textContent = `Search Results (${formatNumber(searchResults.length)} matches)`;
 
             // Auto-jump to first match
@@ -675,7 +706,7 @@ async function startSearch() {
             // Show the results list
             searchResultsList.classList.remove('hidden');
         }
-        
+
     } catch (error) {
         if (error.name !== 'AbortError') {
             console.error('Search error:', error);
@@ -686,17 +717,125 @@ async function startSearch() {
     }
 }
 
+async function searchWithWorker(term) {
+    const jobId = ++searchJobId;
+    const CHUNK_SIZE = 1024 * 1024;
+    let totalChunks = Math.ceil(currentFile.size / CHUNK_SIZE);
+    let processedChunks = 0;
+    let lastLineIndex = 0;
+
+    // Create job promise
+    const jobPromise = new Promise((resolve, reject) => {
+        pendingSearchJobs.set(jobId, { resolve, reject, results: [] });
+    });
+
+    // Initialize worker with search params
+    searchWorker.postMessage({
+        type: 'init',
+        id: jobId,
+        term,
+        matchWholeWord,
+        matchCase
+    });
+
+    // Read file in chunks and send to worker
+    for (let pos = 0; pos < currentFile.size; pos += CHUNK_SIZE) {
+        if (searchAbortController.signal.aborted) {
+            throw new Error('AbortError');
+        }
+
+        const chunkEnd = Math.min(pos + CHUNK_SIZE, currentFile.size);
+        const chunk = await currentFile.slice(pos, chunkEnd).text();
+
+        // Find first line number in this chunk using lineIndex (optimized)
+        while (lastLineIndex < lineIndex.length && lineIndex[lastLineIndex] < pos) {
+            lastLineIndex++;
+        }
+        const startLine = lastLineIndex;
+
+        searchWorker.postMessage({
+            type: 'chunk',
+            id: jobId,
+            chunk,
+            startLine
+        });
+
+        // Update progress
+        processedChunks++;
+        const progress = Math.round((processedChunks / totalChunks) * 100);
+        searchProgressFill.style.width = `${progress}%`;
+        searchInfo.textContent = `Searching... ${progress}%`;
+    }
+
+    // Signal done
+    searchWorker.postMessage({ type: 'done', id: jobId });
+
+    // Wait for results
+    searchResults = await jobPromise;
+}
+
+async function searchOnMainThread(term) {
+    // Fallback: search on main thread (slower but reliable)
+    let regexFlags = matchCase ? '' : 'i';
+    let pattern = escapeRegExp(term);
+    if (matchWholeWord) pattern = `\\b${pattern}\\b`;
+    const regex = new RegExp(pattern, regexFlags);
+
+    const CHUNK_SIZE = 1024 * 1024;
+    let totalChunks = Math.ceil(currentFile.size / CHUNK_SIZE);
+    let processedChunks = 0;
+    let lastLineIndex = 0;
+
+    for (let pos = 0; pos < currentFile.size; pos += CHUNK_SIZE) {
+        if (searchAbortController.signal.aborted) {
+            throw new Error('AbortError');
+        }
+
+        const chunkEnd = Math.min(pos + CHUNK_SIZE, currentFile.size);
+        const chunk = await currentFile.slice(pos, chunkEnd).text();
+
+        // Find first line number in this chunk (optimized)
+        while (lastLineIndex < lineIndex.length && lineIndex[lastLineIndex] < pos) {
+            lastLineIndex++;
+        }
+        const startLine = lastLineIndex;
+
+        // Search chunk
+        let lineStart = 0;
+        let currentLine = startLine;
+        for (let i = 0; i < chunk.length; i++) {
+            if (chunk[i] === '\n') {
+                const line = chunk.slice(lineStart, i);
+                if (regex.test(line)) {
+                    searchResults.push(currentLine);
+                }
+                currentLine++;
+                lineStart = i + 1;
+            }
+        }
+        if (lineStart < chunk.length) {
+            currentLine++;
+        }
+
+        // Update progress
+        processedChunks++;
+        const progress = Math.round((processedChunks / totalChunks) * 100);
+        searchProgressFill.style.width = `${progress}%`;
+        searchInfo.textContent = `Searching... ${progress}%`;
+    }
+}
+
 function clearSearch() {
     // Abort ongoing search
     if (searchAbortController) {
         searchAbortController.abort();
     }
-    
+
     searchTerm = '';
     searchResults = [];
     currentMatchIndex = -1;
     isSearching = false;
-    
+
     searchInput.value = '';
     searchProgress.classList.add('hidden');
     searchInfo.textContent = '';
@@ -705,7 +844,10 @@ function clearSearch() {
     searchResultsPanel.classList.add('hidden');
     searchResultsList.classList.add('hidden');
     searchResultsChevron.style.transform = 'rotate(0deg)';
-    
+
+    // Terminate search worker
+    terminateSearchWorker();
+
     // Reload current page without highlights
     loadPage(currentPage);
 }
@@ -1024,14 +1166,16 @@ function toggleSyntaxHighlighting() {
     loadPage(currentPage);
 }
 
-// Initialize Prism Worker when DOM is ready
+// Initialize Prism Worker and Search Worker when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     if (syntaxHighlightingEnabled) {
         initPrismWorker();
     }
+    initSearchWorker();
 });
 
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {
     terminatePrismWorker();
+    terminateSearchWorker();
 });
