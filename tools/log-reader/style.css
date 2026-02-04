@@ -6,6 +6,17 @@
     gap: 24px;
 }
 
+/* Disable card-brutal hover transform effect */
+.card-brutal {
+    transition: border-color var(--transition-fast);
+}
+
+.card-brutal:hover {
+    transform: none;
+    box-shadow: none;
+    border-color: var(--accent);
+}
+
 /* Upload Section */
 .upload-section {
     padding: 24px;
