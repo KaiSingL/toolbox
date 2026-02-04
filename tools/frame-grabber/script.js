@@ -10,6 +10,7 @@ const results = document.getElementById('results');
 const canvas = document.getElementById('canvas');
 const previewImg = document.getElementById('previewImg');
 const downloadBtn = document.getElementById('download');
+const frameControls = document.getElementById('frame-controls');
 const ctx = canvas.getContext('2d');
 
 let videoUrl = null;
@@ -87,6 +88,7 @@ function loadVideo(file) {
     results.classList.add('hidden');
     dropZone.classList.remove('has-video');
     video.classList.remove('show');
+    frameControls.classList.add('hidden');
     currentBlob = null;
 }
 
@@ -97,6 +99,7 @@ video.addEventListener('loadedmetadata', () => {
     video.currentTime = 0;
     video.classList.add('show');
     dropZone.classList.add('has-video');
+    frameControls.classList.remove('hidden');
 });
 
 video.addEventListener('timeupdate', () => {
