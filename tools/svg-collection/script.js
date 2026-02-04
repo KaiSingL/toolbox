@@ -151,14 +151,39 @@ function initCopyButtons() {
 }
 
 function initLazyLoading() {
-  const placeholders = document.querySelectorAll('.icon-placeholder');
-  placeholders.forEach(placeholder => {
-    iconObserver.observe(placeholder);
-  });
+    const placeholders = document.querySelectorAll('.icon-placeholder');
+    placeholders.forEach(placeholder => {
+        iconObserver.observe(placeholder);
+    });
+}
+
+function initIconCardSelection() {
+    if (window.innerWidth > 480) return;
+
+    document.querySelectorAll('.icon-card').forEach(card => {
+        card.addEventListener('click', function(e) {
+            if (e.target.closest('.copy-btn')) return;
+
+            document.querySelectorAll('.icon-card.selected').forEach(c => {
+                if (c !== this) c.classList.remove('selected');
+            });
+
+            this.classList.toggle('selected');
+        });
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.icon-card')) {
+            document.querySelectorAll('.icon-card.selected').forEach(c => {
+                c.classList.remove('selected');
+            });
+        }
+    });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
   initTheme();
   initCopyButtons();
   initLazyLoading();
+  initIconCardSelection();
 });

@@ -1,6 +1,6 @@
 .icon-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
     gap: 16px;
 }
 
@@ -9,7 +9,7 @@
     background: var(--bg-surface);
     border: var(--border-thin);
     border-radius: 2px;
-    padding: 24px 16px 16px;
+    padding: 16px 8px 12px;
     text-align: center;
     transition: all var(--transition-medium);
 }
@@ -28,8 +28,8 @@
     position: absolute;
     top: 8px;
     right: 8px;
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -38,24 +38,31 @@
     border: none;
     border-radius: 2px;
     cursor: pointer;
-    opacity: 0;
-    transform: translateY(-8px);
+    opacity: 1;
+    transform: none;
     transition: all var(--transition-fast);
+}
+
+.copy-btn svg {
+    width: 12px;
+    height: 12px;
 }
 
 .copy-btn:hover {
     background: var(--accent-hover);
 }
 
-.copy-btn svg {
-    width: 16px;
-    height: 16px;
+@media (min-width: 481px) {
+    .copy-btn {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
 }
 
 .icon-placeholder {
-    width: 48px;
-    height: 48px;
-    margin: 0 auto 12px;
+    width: 32px;
+    height: 32px;
+    margin: 0 auto 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -64,8 +71,8 @@
 }
 
 .icon-placeholder .icon-display {
-    width: 48px;
-    height: 48px;
+    width: 32px;
+    height: 32px;
 }
 
 .icon-placeholder.loaded {
@@ -89,7 +96,7 @@
 
 .card-title {
     font-family: var(--font-mono);
-    font-size: 13px;
+    font-size: 11px;
     color: var(--text-muted);
     margin: 0;
 }
@@ -108,7 +115,18 @@
 
 @media (max-width: 480px) {
     .icon-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+
+    .copy-btn {
+        opacity: 0;
+        transform: none;
+    }
+
+    .icon-card.selected .copy-btn,
+    .icon-card:focus-within .copy-btn {
+        opacity: 1;
     }
 }
 
