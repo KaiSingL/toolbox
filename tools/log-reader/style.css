@@ -614,6 +614,13 @@
     padding: 6px 8px;
     text-align: center;
     font-size: 12px;
+    -moz-appearance: textfield;
+}
+
+.page-input::-webkit-outer-spin-button,
+.page-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 .page-total {

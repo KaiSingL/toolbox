@@ -543,11 +543,12 @@ function highlightWithPrism(line) {
 }
 
 // Pagination Controls
-function goToPage(pageNum) {
+async function goToPage(pageNum) {
     const totalPages = getTotalPages();
     if (pageNum < 1) pageNum = 1;
     if (pageNum > totalPages) pageNum = totalPages;
-    loadPage(pageNum);
+    await loadPage(pageNum);
+    scrollToTop();
 }
 
 function handlePageInput(e) {
@@ -557,11 +558,12 @@ function handlePageInput(e) {
     }
 }
 
-function handleLinesPerPageChange(e) {
+async function handleLinesPerPageChange(e) {
     linesPerPage = parseInt(e.target.value, 10);
     currentPage = 1;
     updatePagination();
-    loadPage(1);
+    await loadPage(1);
+    scrollToTop();
 }
 
 function getTotalPages() {
