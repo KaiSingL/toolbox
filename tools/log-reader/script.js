@@ -18,6 +18,8 @@ let searchAbortController = null;
 let fileReadAbortController = null;
 const MAX_RESULTS_DISPLAY = 50; // Limit results shown for performance
 let syntaxHighlightingEnabled = true; // One Dark syntax highlighting (default: on)
+let matchWholeWord = false; // Match whole word only
+let matchCase = false; // Match case sensitive
 
 // Prism.js Web Worker for non-blocking highlighting
 let prismWorker = null;
@@ -57,6 +59,8 @@ const searchResultsChevron = document.getElementById('search-results-chevron');
 const searchResultsList = document.getElementById('search-results-list');
 const searchResultsItems = document.getElementById('search-results-items');
 const btnLoadMore = document.getElementById('btn-load-more');
+const wholeWordCheckbox = document.getElementById('option-whole-word');
+const matchCaseCheckbox = document.getElementById('option-match-case');
 
 // Event Listeners
 uploadInput.addEventListener('change', handleFileSelect);
@@ -87,6 +91,14 @@ btnNextMatch.addEventListener('click', () => navigateMatch(1));
 
 // Search results panel toggle
 searchResultsToggle.addEventListener('click', toggleSearchResults);
+
+// Search option toggles
+wholeWordCheckbox.addEventListener('change', () => {
+    matchWholeWord = wholeWordCheckbox.checked;
+});
+matchCaseCheckbox.addEventListener('change', () => {
+    matchCase = matchCaseCheckbox.checked;
+});
 
 // Keyboard shortcuts
 document.addEventListener('keydown', (e) => {
@@ -582,14 +594,17 @@ function updatePageInfo(startLine, endLine) {
 async function startSearch() {
     const term = searchInput.value.trim();
     if (!term || isSearching) return;
-    
-    // Clear previous search
-    clearSearch();
-    
+
+    // Abort previous search
+    if (searchAbortController) {
+        searchAbortController.abort();
+    }
+
     searchTerm = term;
     isSearching = true;
     searchResults = [];
-    
+    currentMatchIndex = -1;
+
     // Show progress
     searchProgress.classList.remove('hidden');
     searchProgressFill.style.width = '0%';
@@ -599,76 +614,64 @@ async function startSearch() {
     searchAbortController = new AbortController();
     
     try {
-        // Search through file chunk by chunk
-        const totalSize = currentFile.size;
-        let position = 0;
-        let lineNum = 0;
-        let buffer = '';
-        
-        while (position < totalSize) {
+        // Build regex pattern based on options
+        let regexFlags = matchCase ? '' : 'i';
+        let pattern = escapeRegExp(term);
+        if (matchWholeWord) {
+            pattern = `\\b${pattern}\\b`;
+        }
+        const regex = new RegExp(pattern, regexFlags);
+
+        // Search through all lines using pre-built lineIndex
+        for (let lineNum = 0; lineNum < totalLines; lineNum++) {
             if (searchAbortController.signal.aborted) {
                 throw new Error('AbortError');
             }
-            
-            const chunkSize = Math.min(CHUNK_SIZE, totalSize - position);
-            const chunk = currentFile.slice(position, position + chunkSize);
-            const text = await chunk.text();
-            
-            buffer += text;
-            
-            // Process lines
-            let lineStart = 0;
-            for (let i = 0; i < buffer.length; i++) {
-                if (buffer[i] === '\n') {
-                    const line = buffer.slice(lineStart, i);
-                    if (line.toLowerCase().includes(term.toLowerCase())) {
-                        searchResults.push(lineNum);
-                    }
-                    lineNum++;
-                    lineStart = i + 1;
-                }
-            }
-            
-            // Keep remainder
-            buffer = buffer.slice(lineStart);
-            position += chunkSize;
-            
-            // Update progress
-            const progress = Math.round((position / totalSize) * 100);
-            searchProgressFill.style.width = `${progress}%`;
-            searchInfo.textContent = `Searching... ${progress}% (${formatNumber(searchResults.length)} matches)`;
-        }
-        
-        // Check last line
-        if (buffer.length > 0) {
-            if (buffer.toLowerCase().includes(term.toLowerCase())) {
+
+            const line = await readLine(lineNum);
+            if (regex.test(line)) {
                 searchResults.push(lineNum);
             }
+
+            // Progress update
+            if (lineNum % 1000 === 0) {
+                const progress = Math.round((lineNum / totalLines) * 100);
+                searchProgressFill.style.width = `${progress}%`;
+                searchInfo.textContent = `Searching... ${progress}% (${formatNumber(searchResults.length)} matches)`;
+            }
         }
-        
+
+        // Debug logging
+        console.log('Search complete:', { term, totalLines, resultsCount: searchResults.length, results: searchResults });
+
         // Show results
         searchProgress.classList.add('hidden');
-        
-        if (searchResults.length === 0) {
-            searchInfo.textContent = 'No matches found';
+
+        // Handle empty file or no matches
+        if (totalLines === 0 || searchResults.length === 0) {
+            searchInfo.textContent = totalLines === 0 ? 'File is empty' : 'No matches found';
             searchNav.classList.add('hidden');
             searchResultsPanel.classList.add('hidden');
+            searchResultsItems.innerHTML = '';
         } else {
             searchInfo.textContent = `Found ${formatNumber(searchResults.length)} matches`;
-            
+
             // Show navigation
             searchNav.classList.remove('hidden');
             searchResultsPanel.classList.remove('hidden');
-            
+
             // Update results title
             searchResultsTitleText.textContent = `Search Results (${formatNumber(searchResults.length)} matches)`;
-            
+
             // Auto-jump to first match
             currentMatchIndex = -1;
             await navigateMatch(1);
-            
+
             // Populate results panel
             await populateSearchResults();
+
+            // Show the results list
+            searchResultsList.classList.remove('hidden');
         }
         
     } catch (error) {
@@ -707,7 +710,7 @@ function clearSearch() {
 
 // Navigate to next/previous match
 async function navigateMatch(direction) {
-    if (searchResults.length === 0) return;
+    if (searchResults.length === 0 || totalLines === 0) return;
     
     // Update current match index
     currentMatchIndex += direction;
@@ -793,51 +796,135 @@ function toggleSearchResults() {
     }
 }
 
+// Read a single line by line number
+async function readLine(lineNum) {
+    if (lineNum < 0 || lineNum >= totalLines) return '';
+
+    const startPos = lineIndex[lineNum];
+    const endPos = lineIndex[lineNum + 1] || currentFile.size;
+
+    const slice = currentFile.slice(startPos, endPos);
+    const text = await slice.text();
+
+    return text.replace(/[\r\n]+$/, '');
+}
+
 // Populate search results panel
 async function populateSearchResults() {
+    if (totalLines === 0 || searchResults.length === 0) {
+        searchResultsItems.innerHTML = '<div class="empty-state">No matches found</div>';
+        searchResultsList.classList.remove('hidden');
+        return;
+    }
+
     searchResultsItems.innerHTML = '';
-    
+
     // Limit results for performance
     const resultsToShow = Math.min(searchResults.length, MAX_RESULTS_DISPLAY);
-    
+
     for (let i = 0; i < resultsToShow; i++) {
         const lineNum = searchResults[i];
         const line = await readLine(lineNum);
-        
+
         const resultItem = document.createElement('div');
         resultItem.className = 'search-result-item';
         resultItem.dataset.index = i;
         resultItem.dataset.line = lineNum;
-        
+
         if (i === currentMatchIndex) {
             resultItem.classList.add('active');
         }
-        
+
+        // Line number header
+        const lineHeader = document.createElement('div');
+        lineHeader.className = 'search-result-header';
+
         const lineNumEl = document.createElement('span');
         lineNumEl.className = 'search-result-line-num';
-        lineNumEl.textContent = lineNum + 1;
-        
-        const contentEl = document.createElement('span');
+        lineNumEl.textContent = `Line ${lineNum + 1}`;
+
+        lineHeader.appendChild(lineNumEl);
+        resultItem.appendChild(lineHeader);
+
+        // Line content with truncation
+        const contentEl = document.createElement('div');
         contentEl.className = 'search-result-content';
-        
-        // Highlight search term
-        const regex = new RegExp(escapeRegExp(searchTerm), 'gi');
-        const highlighted = line.replace(regex, match => `<span class="search-result-highlight">${match}</span>`);
-        contentEl.innerHTML = highlighted;
-        
-        resultItem.appendChild(lineNumEl);
+
+        const MAX_PREVIEW_LENGTH = 300;
+        const isLongLine = line.length > MAX_PREVIEW_LENGTH;
+
+        if (isLongLine) {
+            // Truncated view with expand capability
+            const truncated = line.substring(0, MAX_PREVIEW_LENGTH);
+            const regex = new RegExp(escapeRegExp(searchTerm), matchCase ? '' : 'gi');
+
+            // Find match position for context
+            const match = regex.exec(truncated);
+            const matchStart = match ? match.index : 0;
+            const matchEnd = match ? match.index + match[0].length : 0;
+
+            // Show context around match if possible
+            let contextStart = Math.max(0, matchStart - 50);
+            let contextEnd = Math.min(truncated.length, matchEnd + 100);
+            let truncatedContent = line.substring(contextStart, contextEnd);
+
+            if (contextStart > 0) truncatedContent = '...' + truncatedContent;
+            if (contextEnd < line.length) truncatedContent = truncatedContent + '...';
+
+            contentEl.innerHTML = `<span class="line-text">${escapeHtml(truncatedContent)}</span><span class="expand-indicator">Show more</span>`;
+            resultItem.classList.add('truncated');
+        } else {
+            // Full line
+            const regex = new RegExp(escapeRegExp(searchTerm), matchCase ? '' : 'gi');
+            const highlighted = line.replace(regex, match => `<span class="search-highlight">${escapeHtml(match)}</span>`);
+            contentEl.innerHTML = `<span class="line-text">${highlighted}</span>`;
+        }
+
         resultItem.appendChild(contentEl);
-        
+
         // Click handler
         resultItem.addEventListener('click', () => {
-            currentMatchIndex = i;
-            navigateMatch(0); // Navigate to this match
-            updateActiveResultItem();
+            if (resultItem.classList.contains('truncated')) {
+                // Expand/collapse
+                const lineText = resultItem.querySelector('.line-text');
+                const expandIndicator = resultItem.querySelector('.expand-indicator');
+                if (resultItem.classList.contains('expanded')) {
+                    // Collapse back
+                    const MAX_PREVIEW_LENGTH = 300;
+                    const line = searchResultsItems.querySelectorAll('.search-result-item')[i];
+                    const regex = new RegExp(escapeRegExp(searchTerm), matchCase ? '' : 'gi');
+                    const match = regex.exec(line);
+                    const matchStart = match ? match.index : 0;
+                    const matchEnd = match ? match.index + match[0].length : 0;
+                    let contextStart = Math.max(0, matchStart - 50);
+                    let contextEnd = Math.min(line.length, matchEnd + 100);
+                    let truncatedContent = line.substring(contextStart, contextEnd);
+                    if (contextStart > 0) truncatedContent = '...' + truncatedContent;
+                    if (contextEnd < line.length) truncatedContent = truncatedContent + '...';
+                    lineText.innerHTML = `<span class="line-text">${escapeHtml(truncatedContent)}</span>`;
+                    expandIndicator.textContent = 'Show more';
+                    resultItem.classList.remove('expanded');
+                } else {
+                    // Expand full line
+                    const regex = new RegExp(escapeRegExp(searchTerm), matchCase ? '' : 'gi');
+                    const highlighted = line.replace(regex, match => `<span class="search-highlight">${escapeHtml(match)}</span>`);
+                    lineText.innerHTML = `<span class="line-text">${highlighted}</span>`;
+                    expandIndicator.textContent = 'Show less';
+                    resultItem.classList.add('expanded');
+                }
+            } else {
+                // Navigate to line
+                currentMatchIndex = i;
+                navigateMatch(0);
+                updateActiveResultItem();
+            }
         });
-        
+
         searchResultsItems.appendChild(resultItem);
     }
-    
+
+    searchResultsList.classList.remove('hidden');
+
     // Show load more button if there are more results
     if (searchResults.length > MAX_RESULTS_DISPLAY) {
         btnLoadMore.classList.remove('hidden');
