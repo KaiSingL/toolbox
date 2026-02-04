@@ -20,7 +20,7 @@ No Cursor rules (.cursor/rules or .cursorrules) or Copilot rules (.github/copilo
 
 - **Commit message format:** `type(tool-name): brief description` (e.g., `fix(log-reader): use pre-built lineIndex`)
 - **Types:** feat, fix, style, refactor, docs, chore
-- **Commit frequency:** Commit when a logical unit of work is complete
+- **Commit frequency:** Commit when user says so
 - **Never force push:** Warn user if force push is requested
 - **Branch:** Work on `main` branch directly
 
