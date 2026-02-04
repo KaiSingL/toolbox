@@ -940,7 +940,7 @@ async function navigateMatch(direction) {
 // Scroll to a specific match in the log
 function scrollToMatch(lineNum) {
     const logLines = logContent.querySelectorAll('.log-line');
-    const relativeLineIndex = lineNum - ((currentPage - 1) * linesPerPage);
+    const relativeLineIndex = lineNum - 1 - ((currentPage - 1) * linesPerPage);
     
     if (logLines[relativeLineIndex]) {
         logLines[relativeLineIndex].classList.add('current-match');
