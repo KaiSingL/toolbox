@@ -14,12 +14,13 @@ self.onmessage = function(event) {
         let flags = matchCase ? '' : 'i';
         let pattern = escapeRegExp(term);
         if (matchWholeWord) pattern = `\\b${pattern}\\b`;
-        regex = new RegExp(pattern, flags);
-        currentLineNum = startLine || 0;
+regex = new RegExp(pattern, flags);
+        currentLineNum = (startLine || 0) + 1;
         return;
     }
 
     if (type === 'chunk') {
+        currentLineNum = startLine + 1;
         let lineStart = 0;
         for (let i = 0; i < chunk.length; i++) {
             if (chunk[i] === '\n') {
@@ -31,7 +32,6 @@ self.onmessage = function(event) {
                 lineStart = i + 1;
             }
         }
-        // Don't increment for partial line - let next chunk handle it
         return;
     }
 

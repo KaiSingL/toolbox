@@ -1032,7 +1032,7 @@ async function populateSearchResults() {
 
         const lineNumEl = document.createElement('span');
         lineNumEl.className = 'search-result-line-num';
-        lineNumEl.textContent = `Line ${lineNum + 1}`;
+        lineNumEl.textContent = `Line ${lineNum}`;
 
         lineHeader.appendChild(lineNumEl);
         resultItem.appendChild(lineHeader);
@@ -1118,7 +1118,7 @@ async function loadMoreResults() {
 
         const lineNumEl = document.createElement('span');
         lineNumEl.className = 'search-result-line-num';
-        lineNumEl.textContent = `Line ${lineNum + 1}`;
+        lineNumEl.textContent = `Line ${lineNum}`;
 
         lineHeader.appendChild(lineNumEl);
         resultItem.appendChild(lineHeader);
