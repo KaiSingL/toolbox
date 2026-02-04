@@ -16,6 +16,14 @@ This project uses static HTML/CSS/JavaScript with no build process, linting tool
 
 No Cursor rules (.cursor/rules or .cursorrules) or Copilot rules (.github/copilot-instructions.md) are configured for this repository. Follow the guidelines below for consistent code generation.
 
+## Git Workflow
+
+- **Commit message format:** `type(tool-name): brief description` (e.g., `fix(log-reader): use pre-built lineIndex`)
+- **Types:** feat, fix, style, refactor, docs, chore
+- **Commit frequency:** Commit when a logical unit of work is complete
+- **Never force push:** Warn user if force push is requested
+- **Branch:** Work on `main` branch directly
+
 ## Design System
 
 ### Neo-Brutalist Style (Current)
@@ -46,7 +54,34 @@ Older tools may use Tailwind CSS. Do not use Tailwind for new features - use bru
 - **DOM:** Use `document.getElementById()` for single elements
 - **Events:** Use `.addEventListener()` with arrow functions, avoid inline handlers
 - **Async:** Use async/await, avoid `.then()` chains
+- **Async Abort:** Use AbortController for cancellable async operations (see log-reader pattern)
 - **Comments:** Section comments only, avoid obvious comments
+
+### Async Patterns (Log Reader Example)
+When handling large files or long-running operations:
+```javascript
+let abortController = null;
+
+async function startOperation() {
+    if (abortController) {
+        abortController.abort();
+    }
+    abortController = new AbortController();
+    
+    try {
+        for await (const chunk of stream) {
+            if (abortController.signal.aborted) {
+                throw new Error('AbortError');
+            }
+            // process chunk
+        }
+    } catch (error) {
+        if (error.name !== 'AbortError') {
+            console.error('Operation error:', error);
+        }
+    }
+}
+```
 
 ### HTML Structure
 - Use semantic HTML5 elements (header, main, footer, section, article)
@@ -92,6 +127,8 @@ Older tools may use Tailwind CSS. Do not use Tailwind for new features - use bru
 - Use error overlays instead of `alert()`, validate all inputs
 - Never store/log user data, all processing client-side
 - Revoke object URLs after use, avoid dangerous APIs
+- Use `error.name === 'AbortError'` to distinguish aborted operations from real errors
+- Check `signal.aborted` before continuing in async loops
 
 ### Code Formatting
 - 4-space indentation, no trailing whitespace
@@ -106,6 +143,14 @@ Older tools may use Tailwind CSS. Do not use Tailwind for new features - use bru
 - **Mobile:** Slide-out sidebar, touch-action optimization
 - **Accessibility:** Labels, aria-hidden, keyboard navigation
 - **Performance:** Cache DOM references, debounce handlers, use RAF
+
+### Log Reader Specific Patterns
+For tools handling large files:
+- **Line indexing:** Build `lineIndex[]` array with byte offsets for each line start
+- **Reading lines:** Use `file.slice(startPos, endPos)` for efficient random access
+- **Chunk size:** Use 1MB chunks (`CHUNK_SIZE = 1024 * 1024`)
+- **Search:** Leverage pre-built lineIndex for accurate line numbers, avoid re-counting
+- **Memory:** Process files in chunks, never load entire file into memory
 
 ### Adding New Tools
 1. Create `tools/tool-name/` directory
@@ -126,3 +171,4 @@ Older tools may use Tailwind CSS. Do not use Tailwind for new features - use bru
 - Use existing CSS classes and variables from brutalist.min.css
 - Test manually in browser before considering complete
 - Reference existing tools for implementation patterns
+- When fixing bugs, analyze root cause before implementing (see log-reader search line numbering)
