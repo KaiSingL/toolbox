@@ -126,19 +126,34 @@
             <path d="M9 12l2 2 4-4"/>
             <circle cx="12" cy="12" r="10"/>
           </svg>
-          <h3>Captured Frame</h3>
+          <h3>Captured Frames</h3>
         </div>
-        <div class="results-content" style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
-          <canvas id="canvas" style="display:none;"></canvas>
-          <img id="previewImg" alt="Captured Frame" draggable="true" style="max-width: 100%; border: 1px solid var(--accent);">
-          <button id="download" class="btn-primary">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="7 10 12 15 17 10"/>
-              <line x1="12" y1="15" x2="12" y2="3"/>
-            </svg>
-            Download PNG
-          </button>
+        <div class="results-content">
+          <div id="bulk-actions" class="bulk-actions hidden">
+            <label class="select-all">
+              <input type="checkbox" id="select-all">
+              Select All
+            </label>
+            <span id="selected-count">0 selected</span>
+            <button id="download-selected" class="btn-primary">Download ZIP</button>
+            <button id="delete-selected" class="btn-secondary">Delete</button>
+          </div>
+          <div id="captured-frames" class="frames-grid"></div>
+        </div>
+      </div>
+
+      <div id="frame-overlay" class="frame-overlay hidden">
+        <button id="overlay-close" class="overlay-close">&times;</button>
+        <div class="overlay-content">
+          <img id="overlay-img" src="" alt="Frame preview">
+          <div class="overlay-actions">
+            <button id="overlay-download" class="btn-primary">Download</button>
+            <label class="overlay-select">
+              <input type="checkbox" id="overlay-checkbox">
+              Select
+            </label>
+            <button id="overlay-delete" class="btn-secondary">Delete</button>
+          </div>
         </div>
       </div>
     </div>
@@ -148,6 +163,10 @@
     <p class="footer-text">&copy; 2025 Web Tools Hub. Open source under GNU Affero General Public License v3.0.</p>
   </footer>
 
+  <canvas id="canvas" style="display:none;"></canvas>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

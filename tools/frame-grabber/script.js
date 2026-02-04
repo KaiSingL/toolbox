@@ -8,37 +8,31 @@ const currentTime = document.getElementById('current-time');
 const captureBtn = document.getElementById('capture');
 const results = document.getElementById('results');
 const canvas = document.getElementById('canvas');
-const previewImg = document.getElementById('previewImg');
-const downloadBtn = document.getElementById('download');
 const frameControls = document.getElementById('frame-controls');
+const capturedFramesContainer = document.getElementById('captured-frames');
+const bulkActions = document.getElementById('bulk-actions');
+const selectedCount = document.getElementById('selected-count');
+const selectAllCheckbox = document.getElementById('select-all');
+const downloadSelectedBtn = document.getElementById('download-selected');
+const deleteSelectedBtn = document.getElementById('delete-selected');
+const frameOverlay = document.getElementById('frame-overlay');
+const overlayImg = document.getElementById('overlay-img');
+const overlayClose = document.getElementById('overlay-close');
+const overlayDownload = document.getElementById('overlay-download');
+const overlayCheckbox = document.getElementById('overlay-checkbox');
+const overlayDelete = document.getElementById('overlay-delete');
 const ctx = canvas.getContext('2d');
 
 let videoUrl = null;
-let currentBlob = null;
-let currentBlobUrl = null;
 let dragCounter = 0;
-
-// Check browser download support
-const supportsDownload = 'download' in document.createElement('a');
-
-if (!supportsDownload) {
-  downloadBtn.disabled = true;
-  downloadBtn.innerHTML = 'Download not supported by the browser';
-}
+let capturedFrames = [];
+let overlayFrameId = null;
 
 document.addEventListener('dragenter', (e) => {
     e.preventDefault();
     if (e.dataTransfer.types.includes('Files')) {
         dragCounter++;
         dropZone.classList.add('drag-over');
-    }
-});
-
-document.addEventListener('dragleave', (e) => {
-    e.preventDefault();
-    dragCounter--;
-    if (dragCounter === 0) {
-        dropZone.classList.remove('drag-over');
     }
 });
 
@@ -73,14 +67,9 @@ uploadInput.addEventListener('change', e => {
     }
 });
 
-
-
 function loadVideo(file) {
     if (videoUrl) {
         URL.revokeObjectURL(videoUrl);
-    }
-    if (currentBlobUrl) {
-        URL.revokeObjectURL(currentBlobUrl);
     }
     videoUrl = URL.createObjectURL(file);
     video.src = videoUrl;
@@ -89,7 +78,8 @@ function loadVideo(file) {
     dropZone.classList.remove('has-video');
     video.classList.remove('show');
     frameControls.classList.add('hidden');
-    currentBlob = null;
+    capturedFrames = [];
+    capturedFramesContainer.innerHTML = '';
 }
 
 video.addEventListener('loadedmetadata', () => {
@@ -128,54 +118,189 @@ captureBtn.addEventListener('click', () => {
     canvas.height = video.videoHeight;
     ctx.drawImage(video, 0, 0);
     canvas.toBlob(blob => {
-        if (currentBlobUrl) {
-            URL.revokeObjectURL(currentBlobUrl);
-        }
-        currentBlobUrl = URL.createObjectURL(blob);
-        previewImg.src = currentBlobUrl;
-        currentBlob = blob;
+        const id = Date.now();
+        const blobUrl = URL.createObjectURL(blob);
+        const frame = { id, blob, blobUrl, selected: false };
+        capturedFrames.push(frame);
+        addFrameToGrid(frame);
+        results.classList.remove('hidden');
     });
-    results.classList.remove('hidden');
 });
 
-downloadBtn.addEventListener('click', () => {
-    if (!supportsDownload) return;
-    
-    if (!currentBlob) {
-        showError('No frame captured to download');
+function addFrameToGrid(frame) {
+    const card = document.createElement('div');
+    card.className = 'frame-card';
+    card.dataset.id = frame.id;
+    card.innerHTML = `
+        <input type="checkbox" class="frame-checkbox" data-id="${frame.id}">
+        <button class="frame-delete" data-id="${frame.id}" title="Delete">×</button>
+        <img src="${frame.blobUrl}" alt="Frame ${frame.id}">
+    `;
+    card.addEventListener('click', (e) => {
+        if (!e.target.classList.contains('frame-checkbox') &&
+            !e.target.classList.contains('frame-delete')) {
+            showOverlay(frame.id);
+        }
+    });
+    capturedFramesContainer.appendChild(card);
+}
+
+capturedFramesContainer.addEventListener('change', (e) => {
+    if (e.target.classList.contains('frame-checkbox')) {
+        const frame = capturedFrames.find(f => f.id === Number(e.target.dataset.id));
+        if (frame) {
+            frame.selected = e.target.checked;
+            e.target.closest('.frame-card').classList.toggle('selected', frame.selected);
+            updateBulkActions();
+        }
+    }
+});
+
+capturedFramesContainer.addEventListener('click', (e) => {
+    if (e.target.classList.contains('frame-delete')) {
+        deleteFrame(Number(e.target.dataset.id));
+    }
+});
+
+function deleteFrame(id) {
+    const index = capturedFrames.findIndex(f => f.id === id);
+    if (index > -1) {
+        URL.revokeObjectURL(capturedFrames[index].blobUrl);
+        capturedFrames.splice(index, 1);
+        document.querySelector(`.frame-card[data-id="${id}"]`)?.remove();
+        if (overlayFrameId === id) {
+            closeOverlay();
+        }
+        updateBulkActions();
+    }
+}
+
+function updateBulkActions() {
+    const selected = capturedFrames.filter(f => f.selected);
+    if (selected.length > 0) {
+        bulkActions.classList.remove('hidden');
+        selectedCount.textContent = `${selected.length} selected`;
+    } else {
+        bulkActions.classList.add('hidden');
+    }
+}
+
+selectAllCheckbox.addEventListener('change', (e) => {
+    capturedFrames.forEach(f => {
+        f.selected = e.target.checked;
+        const checkbox = document.querySelector(`.frame-checkbox[data-id="${f.id}"]`);
+        if (checkbox) {
+            checkbox.checked = e.target.checked;
+            checkbox.closest('.frame-card').classList.toggle('selected', e.target.checked);
+        }
+    });
+    updateBulkActions();
+});
+
+downloadSelectedBtn.addEventListener('click', async () => {
+    const selected = capturedFrames.filter(f => f.selected);
+    if (selected.length === 0) return;
+
+    if (selected.length === 1) {
+        downloadSingleFrame(selected[0]);
         return;
     }
-    
+
     try {
-        const url = URL.createObjectURL(currentBlob);
+        const zip = new JSZip();
+        selected.forEach((frame, i) => {
+            zip.file(`frame-${i + 1}-${frame.id}.png`, frame.blob);
+        });
+        const content = await zip.generateAsync({ type: 'blob' });
+        saveAs(content, 'frames-' + Date.now() + '.zip');
+    } catch (error) {
+        console.error('ZIP creation failed:', error);
+        showError('Failed to create ZIP file');
+    }
+});
+
+deleteSelectedBtn.addEventListener('click', () => {
+    const selectedIds = capturedFrames.filter(f => f.selected).map(f => f.id);
+    selectedIds.forEach(id => deleteFrame(id));
+});
+
+function downloadSingleFrame(frame) {
+    try {
+        const url = URL.createObjectURL(frame.blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'frame-' + Date.now() + '.png';
+        link.download = 'frame-' + frame.id + '.png';
         link.style.display = 'none';
-        
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        
         URL.revokeObjectURL(url);
-        hideError();
     } catch (error) {
         console.error('Download failed:', error);
-        showError();
+        showError('Download failed');
+    }
+}
+
+function showOverlay(id) {
+    const frame = capturedFrames.find(f => f.id === id);
+    if (!frame) return;
+    overlayFrameId = id;
+    overlayImg.src = frame.blobUrl;
+    overlayCheckbox.checked = frame.selected;
+    frameOverlay.classList.remove('hidden');
+}
+
+function closeOverlay() {
+    overlayFrameId = null;
+    frameOverlay.classList.add('hidden');
+}
+
+overlayClose.addEventListener('click', closeOverlay);
+frameOverlay.addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeOverlay();
+});
+overlayCheckbox.addEventListener('change', (e) => {
+    const frame = capturedFrames.find(f => f.id === overlayFrameId);
+    if (frame) {
+        frame.selected = e.target.checked;
+        const checkbox = document.querySelector(`.frame-checkbox[data-id="${overlayFrameId}"]`);
+        if (checkbox) {
+            checkbox.checked = e.target.checked;
+            checkbox.closest('.frame-card')?.classList.toggle('selected', e.target.checked);
+        }
+        updateBulkActions();
+    }
+});
+overlayDelete.addEventListener('click', () => {
+    if (overlayFrameId) {
+        deleteFrame(overlayFrameId);
+        closeOverlay();
+    }
+});
+overlayDownload.addEventListener('click', () => {
+    const frame = capturedFrames.find(f => f.id === overlayFrameId);
+    if (frame) {
+        downloadSingleFrame(frame);
     }
 });
 
-// Hide video controls initially
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeOverlay();
+});
+
 video.controls = false;
 
-// Error overlay functions
 function showError(message = 'Download blocked by browser settings') {
-  const overlay = document.getElementById('error-overlay');
-  overlay.querySelector('span').textContent = message;
-  overlay.classList.remove('hidden');
-  setTimeout(() => overlay.classList.add('hidden'), 5000);
+    const overlay = document.getElementById('error-overlay');
+    overlay.querySelector('span').textContent = message;
+    overlay.classList.remove('hidden');
+    setTimeout(() => overlay.classList.add('hidden'), 5000);
 }
 
 function hideError() {
-  document.getElementById('error-overlay').classList.add('hidden');
+    document.getElementById('error-overlay').classList.add('hidden');
 }
+
+window.addEventListener('beforeunload', () => {
+    capturedFrames.forEach(f => URL.revokeObjectURL(f.blobUrl));
+});
