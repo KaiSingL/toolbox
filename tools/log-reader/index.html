@@ -181,7 +181,15 @@
                 <!-- Search -->
                 <div class="card-brutal search-section">
                     <div class="search-container">
-                        <input type="text" id="search-input" class="input-brutal search-input" placeholder="Search in file...">
+                        <div class="search-input-wrapper">
+                            <input type="text" id="search-input" class="input-brutal search-input" placeholder="Search in file..." autocomplete="off">
+                            <button id="clear-search" class="clear-search-btn hidden" title="Clear search">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"/>
+                                    <line x1="6" y1="6" x2="18" y2="18"/>
+                                </svg>
+                            </button>
+                        </div>
                         <button id="search-btn" class="btn-primary search-btn">
                             <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="11" cy="11" r="8"/>
@@ -214,13 +222,6 @@
                                 </span>
                             </label>
                         </div>
-                        <button id="clear-search" class="btn-secondary clear-btn hidden">
-                            <svg class="clear-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="18" y1="6" x2="6" y2="18"/>
-                                <line x1="6" y1="6" x2="18" y2="18"/>
-                            </svg>
-                            Clear
-                        </button>
                     </div>
                     <div id="search-progress" class="progress-bar hidden">
                         <div id="search-progress-fill" class="progress-fill"></div>
