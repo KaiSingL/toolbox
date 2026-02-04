@@ -873,7 +873,7 @@ async function downloadCurrentPage() {
     
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${currentFile.name.replace(/\.[^/.]+$/, '')}_page${currentPage}.log`;
+    a.download = `${currentFile.name.replace(/\.[^/.]+$/, '')}_line${startLine + 1}-line${endLine}.log`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
