@@ -145,13 +145,11 @@
       <div id="frame-overlay" class="frame-overlay hidden">
         <button id="overlay-close" class="overlay-close">&times;</button>
         <div class="overlay-content">
+          <button id="overlay-prev" class="overlay-nav overlay-nav--left" disabled>&lt;</button>
           <img id="overlay-img" src="" alt="Frame preview">
+          <button id="overlay-next" class="overlay-nav overlay-nav--right" disabled>&gt;</button>
           <div class="overlay-actions">
-            <button id="overlay-download" class="btn-primary">Download</button>
-            <label class="overlay-select">
-              <input type="checkbox" id="overlay-checkbox">
-              Select
-            </label>
+            <button id="overlay-select" class="overlay-btn" title="Select">Select</button>
             <button id="overlay-delete" class="btn-secondary">Delete</button>
           </div>
         </div>

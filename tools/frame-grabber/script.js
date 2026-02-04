@@ -18,8 +18,9 @@ const deleteSelectedBtn = document.getElementById('delete-selected');
 const frameOverlay = document.getElementById('frame-overlay');
 const overlayImg = document.getElementById('overlay-img');
 const overlayClose = document.getElementById('overlay-close');
-const overlayDownload = document.getElementById('overlay-download');
-const overlayCheckbox = document.getElementById('overlay-checkbox');
+const overlayPrev = document.getElementById('overlay-prev');
+const overlayNext = document.getElementById('overlay-next');
+const overlaySelect = document.getElementById('overlay-select');
 const overlayDelete = document.getElementById('overlay-delete');
 const ctx = canvas.getContext('2d');
 
@@ -27,6 +28,7 @@ let videoUrl = null;
 let dragCounter = 0;
 let capturedFrames = [];
 let overlayFrameId = null;
+let overlayFrameIndex = 0;
 
 document.addEventListener('dragenter', (e) => {
     e.preventDefault();
@@ -124,6 +126,7 @@ captureBtn.addEventListener('click', () => {
         capturedFrames.push(frame);
         addFrameToGrid(frame);
         results.classList.remove('hidden');
+        updateBulkActions();
     });
 });
 
@@ -177,9 +180,10 @@ function deleteFrame(id) {
 
 function updateBulkActions() {
     const selected = capturedFrames.filter(f => f.selected);
-    if (selected.length > 0) {
+    const countSpan = document.getElementById('selected-count');
+    if (capturedFrames.length > 0) {
         bulkActions.classList.remove('hidden');
-        selectedCount.textContent = `${selected.length} selected`;
+        countSpan.textContent = selected.length > 0 ? `${selected.length} selected` : `${capturedFrames.length} frame${capturedFrames.length !== 1 ? 's' : ''}`;
     } else {
         bulkActions.classList.add('hidden');
     }
@@ -241,13 +245,40 @@ function downloadSingleFrame(frame) {
     }
 }
 
+function updateNavButtons() {
+  const prevBtn = document.getElementById('overlay-prev');
+  const nextBtn = document.getElementById('overlay-next');
+  prevBtn.disabled = overlayFrameIndex === 0;
+  nextBtn.disabled = overlayFrameIndex === capturedFrames.length - 1;
+}
+
+function showOverlayByIndex(index) {
+  if (index < 0 || index >= capturedFrames.length) return;
+  overlayFrameIndex = index;
+  const frame = capturedFrames[index];
+  overlayFrameId = frame.id;
+  overlayImg.src = frame.blobUrl;
+  overlaySelect.textContent = frame.selected ? 'Selected' : 'Select';
+  overlaySelect.classList.toggle('selected', frame.selected);
+  updateNavButtons();
+}
+
 function showOverlay(id) {
     const frame = capturedFrames.find(f => f.id === id);
     if (!frame) return;
-    overlayFrameId = id;
+    overlayFrameIndex = capturedFrames.indexOf(frame);
+    overlayFrameId = frame.id;
     overlayImg.src = frame.blobUrl;
-    overlayCheckbox.checked = frame.selected;
+    overlaySelect.classList.toggle('selected', frame.selected);
     frameOverlay.classList.remove('hidden');
+    updateNavButtons();
+}
+
+function navigateOverlay(direction) {
+  const newIndex = overlayFrameIndex + direction;
+  if (newIndex >= 0 && newIndex < capturedFrames.length) {
+    showOverlayByIndex(newIndex);
+  }
 }
 
 function closeOverlay() {
@@ -259,14 +290,19 @@ overlayClose.addEventListener('click', closeOverlay);
 frameOverlay.addEventListener('click', (e) => {
     if (e.target === e.currentTarget) closeOverlay();
 });
-overlayCheckbox.addEventListener('change', (e) => {
+overlayPrev.addEventListener('click', () => navigateOverlay(-1));
+overlayNext.addEventListener('click', () => navigateOverlay(1));
+
+overlaySelect.addEventListener('click', () => {
     const frame = capturedFrames.find(f => f.id === overlayFrameId);
     if (frame) {
-        frame.selected = e.target.checked;
+        frame.selected = !frame.selected;
+        overlaySelect.textContent = frame.selected ? 'Selected' : 'Select';
+        overlaySelect.classList.toggle('selected', frame.selected);
         const checkbox = document.querySelector(`.frame-checkbox[data-id="${overlayFrameId}"]`);
         if (checkbox) {
-            checkbox.checked = e.target.checked;
-            checkbox.closest('.frame-card')?.classList.toggle('selected', e.target.checked);
+            checkbox.checked = frame.selected;
+            checkbox.closest('.frame-card')?.classList.toggle('selected', frame.selected);
         }
         updateBulkActions();
     }
@@ -277,15 +313,11 @@ overlayDelete.addEventListener('click', () => {
         closeOverlay();
     }
 });
-overlayDownload.addEventListener('click', () => {
-    const frame = capturedFrames.find(f => f.id === overlayFrameId);
-    if (frame) {
-        downloadSingleFrame(frame);
-    }
-});
 
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeOverlay();
+    if (e.key === 'ArrowLeft') navigateOverlay(-1);
+    if (e.key === 'ArrowRight') navigateOverlay(1);
 });
 
 video.controls = false;
