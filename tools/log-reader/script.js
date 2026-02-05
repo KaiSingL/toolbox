@@ -1169,16 +1169,26 @@ function setupSearchResultsScrollListener() {
 }
 
 // Update active result item styling
-function updateActiveResultItem() {
-    const items = searchResultsItems.querySelectorAll('.search-result-item');
-    items.forEach((item, index) => {
-        if (index === currentMatchIndex) {
-            item.classList.add('active');
-            item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        } else {
-            item.classList.remove('active');
-        }
-    });
+async function updateActiveResultItem() {
+    let item = searchResultsItems.querySelector(`.search-result-item[data-index="${currentMatchIndex}"]`);
+
+    // Lazy load until the target item exists in DOM
+    while (!item && loadedResultsCount < searchResults.length) {
+        await loadSearchResultBatch(loadedResultsCount, LAZY_LOAD_BATCH_SIZE);
+        item = searchResultsItems.querySelector(`.search-result-item[data-index="${currentMatchIndex}"]`);
+    }
+
+    if (item) {
+        const items = searchResultsItems.querySelectorAll('.search-result-item');
+        items.forEach((el, idx) => {
+            if (idx === currentMatchIndex) {
+                el.classList.add('active');
+                el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            } else {
+                el.classList.remove('active');
+            }
+        });
+    }
 }
 
 // Download current page
