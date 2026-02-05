@@ -610,11 +610,28 @@
 
 .search-results-list {
     border-top: 1px solid var(--border-color);
+    position: relative;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
 }
 
 .search-results-items {
-    max-height: 400px;
     overflow-y: auto;
+    height: 100%;
+    will-change: scroll-position;
+}
+
+.loading-more-indicator {
+    text-align: center;
+    padding: 12px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-family: var(--font-mono);
+}
+
+.loading-more-indicator.hidden {
+    display: none;
 }
 
 .search-result-item {

@@ -3,6 +3,9 @@
 
 // Configuration
 const CHUNK_SIZE = 1024 * 1024; // 1MB chunks
+const INITIAL_BATCH_SIZE = 50; // Initial results to display
+const LAZY_LOAD_BATCH_SIZE = 30; // Additional results per scroll
+const LAZY_LOAD_THRESHOLD = 200; // px from bottom to trigger load
 
 // State
 let currentFile = null;
@@ -16,7 +19,9 @@ let currentMatchIndex = -1; // Index of currently highlighted match
 let isSearching = false;
 let searchAbortController = null;
 let fileReadAbortController = null;
-const MAX_RESULTS_DISPLAY = 50; // Limit results shown for performance
+let loadedResultsCount = 0;
+let isLazyLoading = false;
+let searchScrollHandler = null;
 let syntaxHighlightingEnabled = true; // One Dark syntax highlighting (default: on)
 let matchWholeWord = false; // Match whole word only
 let matchCase = false; // Match case sensitive
@@ -63,7 +68,7 @@ const btnNextMatchHeader = document.getElementById('btn-next-match-header');
 const searchResultsTitleText = document.getElementById('search-results-title-text');
 const searchResultsList = document.getElementById('search-results-list');
 const searchResultsItems = document.getElementById('search-results-items');
-const btnLoadMore = document.getElementById('btn-load-more');
+const lazyLoadIndicator = document.getElementById('lazy-load-indicator');
 const wholeWordCheckbox = document.getElementById('option-whole-word');
 const matchCaseCheckbox = document.getElementById('option-match-case');
 const searchHeader = document.getElementById('search-header');
@@ -116,9 +121,6 @@ if (btnNextMatchHeader) {
         navigateMatch(1);
     });
 }
-
-// Load more results button
-btnLoadMore.addEventListener('click', loadMoreResults);
 
 // Side panel toggle button
 toggleSidePanelBtn.addEventListener('click', toggleSidePanel);
@@ -905,6 +907,7 @@ function clearSearch() {
     searchResults = [];
     currentMatchIndex = -1;
     isSearching = false;
+    loadedResultsCount = 0;
 
     searchInput.value = '';
     searchProgress.classList.add('hidden');
@@ -916,6 +919,13 @@ function clearSearch() {
     sidePanelVisible = false;
     toggleSidePanelBtn.classList.remove('active');
     searchResultsList.classList.add('hidden');
+    lazyLoadIndicator.classList.add('hidden');
+
+    // Remove scroll listener
+    if (searchScrollHandler) {
+        searchResultsItems.removeEventListener('scroll', searchScrollHandler);
+        searchScrollHandler = null;
+    }
 
     // Terminate search worker
     terminateSearchWorker();
@@ -1038,11 +1048,22 @@ async function populateSearchResults() {
     }
 
     searchResultsItems.innerHTML = '';
+    loadedResultsCount = 0;
 
-    // Limit results for performance
-    const resultsToShow = Math.min(searchResults.length, MAX_RESULTS_DISPLAY);
+    // Load initial batch
+    await loadSearchResultBatch(0, INITIAL_BATCH_SIZE);
 
-    for (let i = 0; i < resultsToShow; i++) {
+    // Set up lazy load scroll listener
+    setupSearchResultsScrollListener();
+
+    searchResultsList.classList.remove('hidden');
+}
+
+// Load a batch of search results
+async function loadSearchResultBatch(startIndex, count) {
+    const endIndex = Math.min(startIndex + count, searchResults.length);
+
+    for (let i = startIndex; i < endIndex; i++) {
         const lineNum = searchResults[i];
         const line = await readLine(lineNum);
 
@@ -1112,91 +1133,39 @@ async function populateSearchResults() {
         searchResultsItems.appendChild(resultItem);
     }
 
-    searchResultsList.classList.remove('hidden');
+    loadedResultsCount = endIndex;
 
-    // Show load more button if there are more results
-    if (searchResults.length > MAX_RESULTS_DISPLAY) {
-        btnLoadMore.classList.remove('hidden');
-        btnLoadMore.textContent = `Load more (${searchResults.length - MAX_RESULTS_DISPLAY} remaining)`;
+    // Show/hide lazy load indicator based on whether there are more results
+    if (loadedResultsCount < searchResults.length) {
+        lazyLoadIndicator.classList.remove('hidden');
     } else {
-        btnLoadMore.classList.add('hidden');
+        lazyLoadIndicator.classList.add('hidden');
     }
 }
 
-// Load more search results
-let loadedResultsCount = MAX_RESULTS_DISPLAY;
+// Set up scroll listener for lazy loading
+function setupSearchResultsScrollListener() {
+    // Remove existing listener if any
+    if (searchScrollHandler) {
+        searchResultsItems.removeEventListener('scroll', searchScrollHandler);
+        searchScrollHandler = null;
+    }
 
-async function loadMoreResults() {
-    if (searchResults.length <= loadedResultsCount) return;
+    searchScrollHandler = async () => {
+        const scrollTop = searchResultsItems.scrollTop;
+        const scrollHeight = searchResultsItems.scrollHeight;
+        const clientHeight = searchResultsItems.clientHeight;
+        const distanceToBottom = scrollHeight - scrollTop - clientHeight;
 
-    const startIndex = loadedResultsCount;
-    const endIndex = Math.min(startIndex + MAX_RESULTS_DISPLAY, searchResults.length);
-
-    for (let i = startIndex; i < endIndex; i++) {
-        const lineNum = searchResults[i];
-        const line = await readLine(lineNum);
-
-        const resultItem = document.createElement('div');
-        resultItem.className = 'search-result-item';
-        resultItem.dataset.index = i;
-        resultItem.dataset.line = lineNum;
-
-        // Line number header
-        const lineHeader = document.createElement('div');
-        lineHeader.className = 'search-result-header';
-
-        const lineNumEl = document.createElement('span');
-        lineNumEl.className = 'search-result-line-num';
-        lineNumEl.textContent = `Line ${lineNum}`;
-
-        lineHeader.appendChild(lineNumEl);
-        resultItem.appendChild(lineHeader);
-
-        // Line content
-        const contentEl = document.createElement('div');
-        contentEl.className = 'search-result-content';
-
-        const MAX_PREVIEW_LENGTH = 300;
-        const isLongLine = line.length > MAX_PREVIEW_LENGTH;
-
-        if (isLongLine) {
-            const truncated = line.substring(0, MAX_PREVIEW_LENGTH);
-            const regex = new RegExp(escapeRegExp(searchTerm), matchCase ? '' : 'gi');
-            const match = regex.exec(truncated);
-            const matchStart = match ? match.index : 0;
-            const matchEnd = match ? match.index + match[0].length : 0;
-            let contextStart = Math.max(0, matchStart - 50);
-            let contextEnd = Math.min(truncated.length, matchEnd + 100);
-            let truncatedContent = line.substring(contextStart, contextEnd);
-            if (contextStart > 0) truncatedContent = '...' + truncatedContent;
-            if (contextEnd < line.length) truncatedContent = truncatedContent + '...';
-            contentEl.innerHTML = `<span class="line-text">${escapeHtml(truncatedContent)}</span><span class="expand-indicator">Show more</span>`;
-            resultItem.classList.add('truncated');
-        } else {
-            const regex = new RegExp(escapeRegExp(searchTerm), matchCase ? '' : 'gi');
-            const highlighted = line.replace(regex, match => `<span class="search-highlight">${escapeHtml(match)}</span>`);
-            contentEl.innerHTML = `<span class="line-text">${highlighted}</span>`;
+        if (distanceToBottom < LAZY_LOAD_THRESHOLD && !isLazyLoading && loadedResultsCount < searchResults.length) {
+            isLazyLoading = true;
+            lazyLoadIndicator.classList.remove('hidden');
+            await loadSearchResultBatch(loadedResultsCount, LAZY_LOAD_BATCH_SIZE);
+            isLazyLoading = false;
         }
+    };
 
-        resultItem.appendChild(contentEl);
-
-        // Click handler
-        resultItem.addEventListener('click', () => {
-            currentMatchIndex = i;
-            navigateMatch(0);
-            updateActiveResultItem();
-        });
-
-        searchResultsItems.appendChild(resultItem);
-    }
-
-    loadedResultsCount = endIndex;
-
-    if (endIndex >= searchResults.length) {
-        btnLoadMore.classList.add('hidden');
-    } else {
-        btnLoadMore.textContent = `Load more (${searchResults.length - endIndex} remaining)`;
-    }
+    searchResultsItems.addEventListener('scroll', searchScrollHandler);
 }
 
 // Update active result item styling
