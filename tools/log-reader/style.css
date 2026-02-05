@@ -1,5 +1,263 @@
 /* Log Reader - Neo-Brutalist Styles */
 
+/* ============================================
+   Unified Header with Expandable Search
+   ============================================ */
+
+.unified-header {
+    border-bottom: var(--border-medium);
+}
+
+.unified-header-inner {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 24px;
+    align-items: center;
+    height: auto;
+    min-height: 64px;
+    padding: 12px 24px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+}
+
+.logo-icon img {
+    width: 30px;
+    height: 30px;
+}
+
+/* Search expandable section */
+.search-expandable {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: opacity 0.3s ease, max-height 0.3s ease;
+}
+
+.search-expandable.expanded {
+    opacity: 1;
+    max-height: 80px;
+}
+
+.search-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.search-input-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: var(--bg-tertiary);
+    border: 2px solid var(--border-color);
+    border-radius: 2px;
+    padding: 0 8px;
+    transition: border-color var(--transition-fast);
+}
+
+.search-input-wrapper:hover {
+    border-color: var(--accent);
+}
+
+.search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    padding: 8px 4px;
+}
+
+.search-input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.clear-search-btn {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.clear-search-btn:hover {
+    color: var(--text-primary);
+}
+
+.clear-search-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.search-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+.search-icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Search options */
+.search-option.input-suffix {
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 2px;
+    transition: background 0.2s ease;
+}
+
+.search-option.input-suffix:hover {
+    background: var(--accent-glow);
+}
+
+.search-option.input-suffix input[type="checkbox"] {
+    display: none;
+}
+
+.search-option.input-suffix .checkbox-custom {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--border-color);
+    border-radius: 2px;
+    background: var(--bg-primary);
+    transition: all 0.2s ease;
+}
+
+.search-option.input-suffix .checkbox-custom svg {
+    width: 14px;
+    height: 14px;
+    color: var(--text-muted);
+    transition: color 0.2s ease;
+}
+
+.search-option.input-suffix input[type="checkbox"]:checked + .checkbox-custom {
+    border-color: var(--accent);
+    background: rgba(202, 200, 244, 0.2);
+}
+
+.search-option.input-suffix input[type="checkbox"]:checked + .checkbox-custom svg {
+    color: var(--accent);
+}
+
+/* Progress bar in header */
+.search-expandable .progress-bar {
+    width: 100%;
+    max-width: 700px;
+    margin: 8px auto 0;
+    height: 3px;
+}
+
+.search-expandable .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.2s ease;
+}
+
+/* Side panel toggle button */
+.toggle-panel-btn {
+    flex-shrink: 0;
+}
+
+.toggle-panel-btn.active {
+    background: rgba(202, 200, 244, 0.2);
+    border-color: var(--accent);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .unified-header-inner {
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+    }
+    
+    .search-expandable {
+        order: 3;
+        grid-column: 1 / -1;
+    }
+    
+    .search-row {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    .unified-header-inner {
+        padding: 12px 16px;
+    }
+    
+    .logo {
+        font-size: 16px;
+    }
+    
+    .logo-icon img {
+        width: 26px;
+        height: 26px;
+    }
+    
+    .search-row {
+        flex-wrap: wrap;
+    }
+    
+    .search-input-wrapper {
+        order: 1;
+        flex: 1 1 100%;
+    }
+    
+    .search-btn {
+        order: 2;
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+    
+    .toggle-panel-btn {
+        order: 3;
+    }
+}
+
+@media (max-width: 480px) {
+    .unified-header-inner {
+        padding: 10px 12px;
+    }
+    
+    .logo {
+        font-size: 14px;
+    }
+    
+    .logo-icon img {
+        width: 24px;
+        height: 24px;
+    }
+}
+
 /* Layout */
 .log-reader-layout {
     display: grid;
@@ -107,40 +365,6 @@
 
 .hidden {
     display: none !important;
-}
-
-/* Sticky Search Header */
-.search-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.search-header-content {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.search-input-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.search-input-row .search-input-wrapper {
-    flex: 1;
-}
-
-.toggle-panel-btn {
-    flex-shrink: 0;
-}
-
-.toggle-panel-btn.active {
-    background: rgba(202, 200, 244, 0.2);
-    border-color: var(--accent);
 }
 
 /* Viewer Grid Layout */
@@ -304,141 +528,6 @@
 .lines-per-page-select {
     width: auto;
     padding: 8px 12px;
-}
-
-/* Search Section */
-.search-section {
-    padding: 24px;
-}
-
-.search-container {
-    display: flex;
-    gap: 8px;
-}
-
-.search-input-wrapper {
-    position: relative;
-    flex: 1;
-    display: flex;
-    align-items: center;
-    background: var(--bg-tertiary);
-    border: 2px solid var(--border-color);
-    border-radius: 2px;
-    padding: 0 8px;
-    transition: border-color var(--transition-fast);
-}
-
-.search-input-wrapper:hover {
-    border-color: var(--accent);
-}
-
-.search-input {
-    flex: 1;
-    background: transparent;
-    border: none;
-    outline: none;
-    box-shadow: none;
-    color: var(--text-primary);
-    font-family: var(--font-mono);
-    font-size: 14px;
-}
-
-.search-input:focus {
-    outline: none;
-    box-shadow: none;
-}
-
-.clear-search-btn {
-    background: none;
-    border: none;
-    padding: 4px;
-    cursor: pointer;
-    color: var(--text-muted);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: color 0.2s ease;
-}
-
-.clear-search-btn:hover {
-    color: var(--text-primary);
-}
-
-.clear-search-btn svg {
-    width: 18px;
-    height: 18px;
-}
-
-.search-option.input-suffix {
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 2px;
-    transition: background 0.2s ease;
-}
-
-.search-option.input-suffix:hover {
-    background: var(--accent-glow);
-}
-
-.search-option.input-suffix input[type="checkbox"] {
-    display: none;
-}
-
-.search-option.input-suffix .checkbox-custom {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    border: 1px solid var(--border-color);
-    border-radius: 2px;
-    background: var(--bg-primary);
-    transition: all 0.2s ease;
-}
-
-.search-option.input-suffix .checkbox-custom svg {
-    width: 14px;
-    height: 14px;
-    color: var(--text-muted);
-    transition: color 0.2s ease;
-}
-
-.search-option.input-suffix input[type="checkbox"]:checked + .checkbox-custom {
-    border-color: var(--accent);
-    background: rgba(202, 200, 244, 0.2);
-}
-
-.search-option.input-suffix input[type="checkbox"]:checked + .checkbox-custom svg {
-    color: var(--accent);
-}
-
-.search-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-
-.search-icon {
-    width: 16px;
-    height: 16px;
-}
-
-/* Search Options - moved to inline input-suffix */
-
-/* Progress Bar */
-.progress-bar {
-    width: 100%;
-    height: 4px;
-    background: rgba(202, 200, 244, 0.2);
-    margin-top: 8px;
-    position: relative;
-    overflow: hidden;
-}
-
-.progress-fill {
-    height: 100%;
-    background: var(--accent);
-    transition: width 0.2s ease;
 }
 
 /* Search Navigation */

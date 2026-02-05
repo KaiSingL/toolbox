@@ -678,6 +678,9 @@ async function startSearch() {
     const term = searchInput.value.trim();
     if (!term || isSearching) return;
 
+    // Expand search bar
+    expandSearchBar();
+
     // Abort previous search
     if (searchAbortController) {
         searchAbortController.abort();
@@ -1248,16 +1251,62 @@ function toggleSyntaxHighlighting() {
     loadPage(currentPage);
 }
 
+// Scroll Detection for Unified Header
+let uploadSectionObserver = null;
+let hasSearchBeenExpanded = false;
+
+function initScrollDetection() {
+    const uploadSection = document.getElementById('upload-section');
+    const searchExpandable = document.querySelector('.search-expandable');
+
+    if (!uploadSection || !searchExpandable) return;
+
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0
+    };
+
+    uploadSectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (!entry.isIntersecting) {
+                // Upload section is off-screen - expand search
+                searchExpandable.classList.add('expanded');
+                hasSearchBeenExpanded = true;
+            } else {
+                // Upload section is visible - collapse search (only if we haven't searched yet)
+                if (!hasSearchBeenExpanded) {
+                    searchExpandable.classList.remove('expanded');
+                }
+            }
+        });
+    }, observerOptions);
+
+    uploadSectionObserver.observe(uploadSection);
+}
+
+function expandSearchBar() {
+    const searchExpandable = document.querySelector('.search-expandable');
+    if (searchExpandable) {
+        searchExpandable.classList.add('expanded');
+        hasSearchBeenExpanded = true;
+    }
+}
+
 // Initialize Prism Worker and Search Worker when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     if (syntaxHighlightingEnabled) {
         initPrismWorker();
     }
     initSearchWorker();
+    initScrollDetection();
 });
 
 // Cleanup on page unload
 window.addEventListener('beforeunload', () => {
+    if (uploadSectionObserver) {
+        uploadSectionObserver.disconnect();
+    }
     terminatePrismWorker();
     terminateSearchWorker();
 });
