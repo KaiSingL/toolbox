@@ -103,9 +103,32 @@
                 <div id="search-progress" class="progress-bar hidden">
                     <div id="search-progress-fill" class="progress-fill"></div>
                 </div>
+                    </div>
+                </div>
+                <div id="search-progress" class="progress-bar hidden">
+                    <div id="search-progress-fill" class="progress-fill"></div>
+                </div>
             </div>
-        </div>
-    </header>
+
+            <!-- Match Navigation (in header, visible when results exist) -->
+            <div id="match-navigation" class="match-navigation hidden">
+                <div class="match-navigation-content">
+                    <span id="match-counter-header" class="match-counter">0 of 0</span>
+                    <div class="search-nav-buttons">
+                        <button id="btn-prev-match-header" class="btn-secondary search-nav-btn" title="Previous (Shift+Enter)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 18 9 12 15 6"/>
+                            </svg>
+                        </button>
+                        <button id="btn-next-match-header" class="btn-secondary search-nav-btn" title="Next (Enter)">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
 
     <main id="main" class="main" style="padding: 48px 24px;">
         <div class="container log-reader-layout">
@@ -292,14 +315,14 @@
                                     <span id="search-results-title-text">Search Results</span>
                                 </div>
                                 <div id="side-panel-nav" class="side-panel-nav hidden">
-                                    <span id="match-counter" class="match-counter">0 of 0</span>
+                                    <span id="match-counter-side" class="match-counter">0 of 0</span>
                                     <div class="search-nav-buttons">
-                                        <button id="btn-prev-match" class="btn-secondary search-nav-btn" title="Previous (Shift+Enter)">
+                                        <button id="btn-prev-match-side" class="btn-secondary search-nav-btn" title="Previous (Shift+Enter)">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                 <polyline points="15 18 9 12 15 6"/>
                                             </svg>
                                         </button>
-                                        <button id="btn-next-match" class="btn-secondary search-nav-btn" title="Next (Enter)">
+                                        <button id="btn-next-match-side" class="btn-secondary search-nav-btn" title="Next (Enter)">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                                 <polyline points="9 18 15 12 9 6"/>
                                             </svg>

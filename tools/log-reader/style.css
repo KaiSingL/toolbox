@@ -196,6 +196,31 @@
     border-color: var(--accent);
 }
 
+/* Match Navigation in Header */
+.match-navigation {
+    display: flex;
+    justify-content: center;
+    padding: 8px 0;
+    border-top: 1px solid var(--border-color);
+    background: var(--bg-primary);
+}
+
+.match-navigation.hidden {
+    display: none;
+}
+
+.match-navigation-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.match-counter {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     .unified-header-inner {

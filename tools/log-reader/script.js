@@ -54,9 +54,13 @@ const clearSearchBtn = document.getElementById('clear-search');
 const searchProgress = document.getElementById('search-progress');
 const searchProgressFill = document.getElementById('search-progress-fill');
 const sidePanelNav = document.getElementById('side-panel-nav');
-const matchCounter = document.getElementById('match-counter');
-const btnPrevMatch = document.getElementById('btn-prev-match');
-const btnNextMatch = document.getElementById('btn-next-match');
+const matchCounterSide = document.getElementById('match-counter-side');
+const btnPrevMatchSide = document.getElementById('btn-prev-match-side');
+const btnNextMatchSide = document.getElementById('btn-next-match-side');
+const matchNavigation = document.getElementById('match-navigation');
+const matchCounterHeader = document.getElementById('match-counter-header');
+const btnPrevMatchHeader = document.getElementById('btn-prev-match-header');
+const btnNextMatchHeader = document.getElementById('btn-next-match-header');
 const searchResultsTitleText = document.getElementById('search-results-title-text');
 const searchResultsList = document.getElementById('search-results-list');
 const searchResultsItems = document.getElementById('search-results-items');
@@ -91,15 +95,29 @@ searchInput.addEventListener('keypress', (e) => {
 // Syntax highlighting toggle
 document.getElementById('highlight-toggle').addEventListener('click', toggleSyntaxHighlighting);
 
-// Search navigation
-btnPrevMatch.addEventListener('click', (e) => {
+// Search navigation - Side panel
+btnPrevMatchSide.addEventListener('click', (e) => {
     e.stopPropagation();
     navigateMatch(-1);
 });
-btnNextMatch.addEventListener('click', (e) => {
+btnNextMatchSide.addEventListener('click', (e) => {
     e.stopPropagation();
     navigateMatch(1);
 });
+
+// Search navigation - Header
+if (btnPrevMatchHeader) {
+    btnPrevMatchHeader.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navigateMatch(-1);
+    });
+}
+if (btnNextMatchHeader) {
+    btnNextMatchHeader.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navigateMatch(1);
+    });
+}
 
 // Load more results button
 btnLoadMore.addEventListener('click', loadMoreResults);
@@ -179,6 +197,7 @@ async function loadFile(file) {
     // Reset search UI
     searchInput.value = '';
     sidePanelNav.classList.add('hidden');
+    matchNavigation.classList.add('hidden');
     sidePanel.classList.add('hidden');
     searchResultsList.classList.add('hidden');
     searchResultsItems.innerHTML = '';
@@ -725,12 +744,17 @@ searchProgressFill.style.width = '0%';
         // Handle empty file or no matches
         if (totalLines === 0 || searchResults.length === 0) {
             sidePanelNav.classList.add('hidden');
+            matchNavigation.classList.add('hidden');
             if (searchResults.length === 0) {
                 sidePanel.classList.add('hidden');
                 sidePanelVisible = false;
                 toggleSidePanelBtn.classList.remove('active');
             }
         } else {
+            // Show match navigation in header (always visible when results exist)
+            matchNavigation.classList.remove('hidden');
+            
+            // Show side panel nav when results exist
             sidePanelNav.classList.remove('hidden');
             
             // Ensure side panel is visible
@@ -882,6 +906,7 @@ function clearSearch() {
     searchProgress.classList.add('hidden');
     clearSearchBtn.classList.add('hidden');
     sidePanelNav.classList.add('hidden');
+    matchNavigation.classList.add('hidden');
     sidePanel.classList.add('hidden');
     sidePanelVisible = false;
     toggleSidePanelBtn.classList.remove('active');
@@ -956,13 +981,11 @@ function scrollToBottom() {
     document.getElementById('log-bottom-anchor').scrollIntoView({ behavior: 'smooth', block: 'end' });
 }
 
-// Update match counter display
+// Update match counter display (syncs both header and side panel)
 function updateMatchCounter() {
-    if (searchResults.length === 0) {
-        matchCounter.textContent = 'No matches';
-    } else {
-        matchCounter.textContent = `${currentMatchIndex + 1} of ${searchResults.length}`;
-    }
+    const text = searchResults.length === 0 ? 'No matches' : `${currentMatchIndex + 1} of ${searchResults.length}`;
+    if (matchCounterSide) matchCounterSide.textContent = text;
+    if (matchCounterHeader) matchCounterHeader.textContent = text;
 }
 
 // Toggle side panel
@@ -972,9 +995,14 @@ function toggleSidePanel() {
     if (sidePanelVisible) {
         sidePanel.classList.remove('hidden');
         toggleSidePanelBtn.classList.add('active');
+        // Show side panel nav only if there are results
+        if (searchResults.length > 0) {
+            sidePanelNav.classList.remove('hidden');
+        }
     } else {
         sidePanel.classList.add('hidden');
         toggleSidePanelBtn.classList.remove('active');
+        sidePanelNav.classList.add('hidden');
     }
 }
 
