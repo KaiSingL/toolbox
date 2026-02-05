@@ -201,6 +201,10 @@
     gap: 8px;
 }
 
+.match-navigation.no-results .search-nav-buttons {
+    display: none;
+}
+
 .match-counter {
     font-size: 12px;
     font-family: var(--font-mono);

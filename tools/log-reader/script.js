@@ -742,12 +742,18 @@ searchProgressFill.style.width = '0%';
         // Handle empty file or no matches
         if (totalLines === 0 || searchResults.length === 0) {
             sidePanelNav.classList.add('hidden');
-            matchNavigation.classList.add('hidden');
-            if (searchResults.length === 0) {
-                sidePanel.classList.add('hidden');
-                sidePanelVisible = false;
-                toggleSidePanelBtn.classList.remove('active');
+            if (searchResults.length === 0 && searchTerm) {
+                // Show "No results" in match navigation
+                matchNavigation.classList.remove('hidden');
+                matchNavigation.classList.add('no-results');
+                matchCounterHeader.textContent = 'No results';
+            } else {
+                matchNavigation.classList.add('hidden');
+                matchNavigation.classList.remove('no-results');
             }
+            sidePanel.classList.add('hidden');
+            sidePanelVisible = false;
+            toggleSidePanelBtn.classList.remove('active');
         } else {
             // Show match navigation in header (always visible when results exist)
             matchNavigation.classList.remove('hidden');
@@ -905,6 +911,7 @@ function clearSearch() {
     clearSearchBtn.classList.add('hidden');
     sidePanelNav.classList.add('hidden');
     matchNavigation.classList.add('hidden');
+    matchNavigation.classList.remove('no-results');
     sidePanel.classList.add('hidden');
     sidePanelVisible = false;
     toggleSidePanelBtn.classList.remove('active');
