@@ -275,6 +275,9 @@ async function buildLineIndex(file) {
     if (remainder.length > 0) {
         lineIndex.push(position - remainder.length);
         totalLines++;
+    } else if (totalSize > 0 && lineIndex.length === totalLines) {
+        // File ends with newline - add position for final empty line
+        lineIndex.push(position);
     }
 
     }
@@ -335,7 +338,7 @@ async function readLines(startLine, endLine) {
         }
     }
 
-    if (currentLine || lines.length === 0) {
+    if (currentLine || lines.length < (endLine - startLine)) {
         lines.push(currentLine);
     }
 
