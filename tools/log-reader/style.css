@@ -55,14 +55,18 @@
     gap: 8px;
     align-items: center;
     width: 100%;
-    max-width: 700px;
-    margin: 0 auto;
+}
+
+.search-spacer {
+    flex: 1;
+    min-width: 24px;
 }
 
 .search-input-wrapper {
-    flex: 1;
+    flex: 2;
     display: flex;
     align-items: center;
+    flex: 0 1 500px;
     background: var(--bg-tertiary);
     border: 2px solid var(--border-color);
     border-radius: 2px;
