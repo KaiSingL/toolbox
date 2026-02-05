@@ -53,7 +53,6 @@ const searchBtn = document.getElementById('search-btn');
 const clearSearchBtn = document.getElementById('clear-search');
 const searchProgress = document.getElementById('search-progress');
 const searchProgressFill = document.getElementById('search-progress-fill');
-const searchInfo = document.getElementById('search-info');
 const sidePanelNav = document.getElementById('side-panel-nav');
 const matchCounter = document.getElementById('match-counter');
 const btnPrevMatch = document.getElementById('btn-prev-match');
@@ -692,8 +691,7 @@ async function startSearch() {
 
     // Show progress
     searchProgress.classList.remove('hidden');
-    searchProgressFill.style.width = '0%';
-    searchInfo.textContent = 'Searching...';
+searchProgressFill.style.width = '0%';
     clearSearchBtn.classList.remove('hidden');
 
     searchAbortController = new AbortController();
@@ -717,7 +715,6 @@ async function startSearch() {
 
         // Handle empty file or no matches
         if (totalLines === 0 || searchResults.length === 0) {
-            searchInfo.textContent = totalLines === 0 ? 'File is empty' : 'No matches found';
             sidePanelNav.classList.add('hidden');
             if (searchResults.length === 0) {
                 sidePanel.classList.add('hidden');
@@ -725,7 +722,6 @@ async function startSearch() {
                 toggleSidePanelBtn.classList.remove('active');
             }
         } else {
-            searchInfo.textContent = `Found ${formatNumber(searchResults.length)} matches`;
             sidePanelNav.classList.remove('hidden');
             
             // Ensure side panel is visible
@@ -744,9 +740,8 @@ async function startSearch() {
         }
 
     } catch (error) {
-        if (error.name !== 'AbortError') {
+if (error.name !== 'AbortError') {
             console.error('Search error:', error);
-            searchInfo.textContent = 'Search failed';
         }
     } finally {
         isSearching = false;
@@ -796,11 +791,10 @@ async function searchWithWorker(term) {
             startLine
         });
 
-        // Update progress
+// Update progress
         processedChunks++;
         const progress = Math.round((processedChunks / totalChunks) * 100);
         searchProgressFill.style.width = `${progress}%`;
-        searchInfo.textContent = `Searching... ${progress}%`;
     }
 
     // Signal done
@@ -859,16 +853,14 @@ async function searchOnMainThread(term) {
             currentLine++;
         }
 
-        // Update progress
+// Update progress
         processedChunks++;
         const progress = Math.round((processedChunks / totalChunks) * 100);
         searchProgressFill.style.width = `${progress}%`;
-        searchInfo.textContent = `Searching... ${progress}%`;
     }
 }
 
 function clearSearch() {
-    // Abort ongoing search
     if (searchAbortController) {
         searchAbortController.abort();
     }
@@ -880,7 +872,6 @@ function clearSearch() {
 
     searchInput.value = '';
     searchProgress.classList.add('hidden');
-    searchInfo.textContent = '';
     clearSearchBtn.classList.add('hidden');
     sidePanelNav.classList.add('hidden');
     sidePanel.classList.add('hidden');

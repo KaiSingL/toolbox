@@ -441,12 +441,6 @@
     transition: width 0.2s ease;
 }
 
-.search-results-info {
-    font-size: 14px;
-    color: var(--text-secondary);
-    margin-top: 8px;
-}
-
 /* Search Navigation */
 .search-nav {
     margin-top: 16px;
