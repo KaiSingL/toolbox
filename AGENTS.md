@@ -152,6 +152,14 @@ For tools handling large files:
 - **Search:** Leverage pre-built lineIndex for accurate line numbers, avoid re-counting
 - **Memory:** Process files in chunks, never load entire file into memory
 
+### Side Panel Layout (Log Reader)
+The search side panel uses these patterns:
+- **Structure:** Side panel is a **sibling** of `.viewer-grid` inside `.viewer-container` (not a child). This allows sticky positioning to work correctly (parent overflow clips sticky children).
+- **Sticky positioning:** `position: sticky; top: 140px; height: calc(100vh - 220px)`
+- **Hidden/visible state:** Uses `width: 0` → `width: 320px` transition (animating width triggers layout but works reliably)
+- **Container queries:** `@container viewer (min-width: 1025px)` for sticky panel, `@container viewer (max-width: 899px)` for fixed overlay on mobile
+- **Match navigation:** Located in header (below search row) AND in side panel, synchronized via JavaScript. Header nav shows when results exist (regardless of panel state), side panel nav toggles with panel.
+
 ### Adding New Tools
 1. Create `tools/tool-name/` directory
 2. Copy existing tool structure (index.html + optional script/style)
