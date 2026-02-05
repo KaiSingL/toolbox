@@ -220,6 +220,10 @@ async function buildLineIndex(file) {
     let position = 0;
     let remainder = '';
 
+    // Initialize lineIndex with position 0 (first line always starts at byte 0)
+    lineIndex = [0];
+    totalLines = 1;
+
     while (position < totalSize) {
         if (fileReadAbortController.signal.aborted) {
             throw new Error('AbortError');

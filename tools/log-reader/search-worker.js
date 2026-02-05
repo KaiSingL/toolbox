@@ -15,12 +15,12 @@ self.onmessage = function(event) {
         let pattern = escapeRegExp(term);
         if (matchWholeWord) pattern = `\\b${pattern}\\b`;
 regex = new RegExp(pattern, flags);
-        currentLineNum = (startLine || 0) + 1;
+        currentLineNum = startLine || 0;
         return;
     }
 
     if (type === 'chunk') {
-        currentLineNum = startLine + 1;
+        currentLineNum = startLine;
         let lineStart = 0;
         for (let i = 0; i < chunk.length; i++) {
             if (chunk[i] === '\n') {
