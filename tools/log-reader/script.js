@@ -375,11 +375,10 @@ async function renderLines(lines, startLineNum) {
                 lineEl.classList.add(`level-${logLevel}`);
             }
             
-            // Check if this is the current match
-            const absoluteLineIndex = lineNum - 1;
+// Check if this is the current match
             if (searchResults.length > 0 && currentMatchIndex >= 0) {
                 const currentMatchLine = searchResults[currentMatchIndex];
-                if (absoluteLineIndex === currentMatchLine) {
+                if (lineNum === currentMatchLine) {
                     lineEl.classList.add('current-match');
                 }
             }
