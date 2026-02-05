@@ -85,13 +85,23 @@
                             </span>
                         </label>
                     </div>
-                    <button id="search-btn" class="btn-primary search-btn">
-                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"/>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                        </svg>
-                        Search
-                    </button>
+                    <div id="match-navigation" class="match-navigation hidden">
+                        <div class="match-navigation-content">
+                            <span id="match-counter-header" class="match-counter">0 of 0</span>
+                            <div class="search-nav-buttons">
+                                <button id="btn-prev-match-header" class="btn-secondary search-nav-btn" title="Previous (Shift+Enter)">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="18 15 12 9 6 15"/>
+                                    </svg>
+                                </button>
+                                <button id="btn-next-match-header" class="btn-secondary search-nav-btn" title="Next (Enter)">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="search-spacer"></div>
                     <button id="toggle-side-panel" class="btn-secondary toggle-panel-btn" title="Toggle search results (B)">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -102,30 +112,6 @@
                 </div>
                 <div id="search-progress" class="progress-bar hidden">
                     <div id="search-progress-fill" class="progress-fill"></div>
-                </div>
-                    </div>
-                </div>
-                <div id="search-progress" class="progress-bar hidden">
-                    <div id="search-progress-fill" class="progress-fill"></div>
-                </div>
-            </div>
-
-            <!-- Match Navigation (in header, visible when results exist) -->
-            <div id="match-navigation" class="match-navigation hidden">
-                <div class="match-navigation-content">
-                    <span id="match-counter-header" class="match-counter">0 of 0</span>
-                    <div class="search-nav-buttons">
-                        <button id="btn-prev-match-header" class="btn-secondary search-nav-btn" title="Previous (Shift+Enter)">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="18 15 12 9 6 15"/>
-                            </svg>
-                        </button>
-                        <button id="btn-next-match-header" class="btn-secondary search-nav-btn" title="Next (Enter)">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
-                        </button>
-                    </div>
                 </div>
             </div>
         </header>

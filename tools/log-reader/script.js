@@ -49,7 +49,6 @@ const pageInput = document.getElementById('page-input');
 const pageTotal = document.getElementById('page-total');
 const pageInfo = document.getElementById('page-info');
 const searchInput = document.getElementById('search-input');
-const searchBtn = document.getElementById('search-btn');
 const clearSearchBtn = document.getElementById('clear-search');
 const searchProgress = document.getElementById('search-progress');
 const searchProgressFill = document.getElementById('search-progress-fill');
@@ -86,7 +85,6 @@ document.getElementById('btn-top').addEventListener('click', () => scrollToTop()
 document.getElementById('btn-bottom').addEventListener('click', () => scrollToBottom());
 pageInput.addEventListener('change', handlePageInput);
 document.getElementById('download-page').addEventListener('click', downloadCurrentPage);
-searchBtn.addEventListener('click', startSearch);
 clearSearchBtn.addEventListener('click', clearSearch);
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') startSearch();
