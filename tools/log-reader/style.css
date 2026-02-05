@@ -371,40 +371,64 @@
     display: none !important;
 }
 
-/* Viewer Grid Layout */
-.viewer-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0;
-    min-height: 0;
-    transition: grid-template-columns 0.3s ease;
+/* ============================================
+   Viewer Container & Grid Layout (Container Queries)
+   ============================================ */
+
+.viewer-container {
+    container-type: inline-size;
+    container-name: viewer;
+    overflow: visible;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 24px;
 }
 
-.viewer-grid.with-panel {
-    grid-template-columns: 1fr 320px;
+.viewer-grid {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 0;
+    transition: all 0.3s ease;
 }
 
 .viewer-main {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    padding: 16px 0;
     min-width: 0;
-    transition: all 0.3s ease;
 }
 
-/* Search Side Panel */
+/* Search Side Panel - Default Hidden State */
 .search-side-panel {
     position: sticky;
     top: 140px;
+    width: 0;
+    flex-shrink: 0;
     height: calc(100vh - 220px);
     max-height: calc(100vh - 220px);
     display: flex;
     flex-direction: column;
-    border-left: 1px solid var(--border-color);
-    border-radius: 0;
+    border: 2px solid var(--border-color);
+    border-radius: 2px;
     overflow: hidden;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+    transition: width 0.3s ease, opacity 0.3s ease;
+}
+
+/* Panel Visible State */
+.search-side-panel:not(.hidden) {
+    width: 320px;
+    opacity: 1;
+    border-color: var(--accent);
+}
+
+/* Panel Hidden State */
+.search-side-panel.hidden {
+    pointer-events: none;
 }
 
 .side-panel-header {
@@ -458,33 +482,6 @@
 .search-nav-btn svg {
     width: 12px;
     height: 12px;
-}
-
-.search-side-panel.hidden {
-    transform: translateX(100%);
-    opacity: 0;
-    pointer-events: none;
-}
-
-.search-side-panel:not(.hidden) {
-    transform: translateX(0);
-    opacity: 1;
-}
-
-.search-side-panel .search-results-list {
-    flex: 1;
-    overflow-y: auto;
-    border-top: none;
-    max-height: none;
-}
-
-.search-side-panel .search-results-items {
-    max-height: none;
-}
-
-.search-side-panel .btn-load-more {
-    border-top: 1px solid var(--border-color);
-    margin-top: auto;
 }
 
 /* File Stats Bar */
@@ -896,20 +893,58 @@
     height: 16px;
 }
 
-/* Responsive */
-@media (max-width: 1024px) {
-    .viewer-grid {
-        grid-template-columns: 1fr 280px;
+/* ============================================
+   Responsive - Container Queries
+   ============================================ */
+
+/* Large screens (> 1024px): Standard sticky panel */
+@container viewer (min-width: 1025px) {
+    .viewer-container {
+        flex-direction: row;
+        gap: 24px;
     }
 
     .search-side-panel {
+        position: sticky;
+        top: 140px;
+        width: 0;
+        height: calc(100vh - 220px);
+        max-height: calc(100vh - 220px);
+    }
+
+    .search-side-panel:not(.hidden) {
+        width: 320px;
+    }
+}
+
+/* Medium screens (900px - 1024px): Smaller sticky panel */
+@container viewer (min-width: 900px) and (max-width: 1024px) {
+    .viewer-container {
+        flex-direction: row;
+        gap: 20px;
+    }
+
+    .search-side-panel {
+        position: sticky;
+        top: 140px;
+        width: 0;
+        height: calc(100vh - 220px);
+        max-height: calc(100vh - 220px);
+    }
+
+    .search-side-panel:not(.hidden) {
         width: 280px;
     }
 }
 
-@media (max-width: 900px) {
+/* Small screens (< 900px): Fixed overlay panel */
+@container viewer (max-width: 899px) {
+    .viewer-container {
+        flex-direction: column;
+    }
+
     .viewer-grid {
-        grid-template-columns: 1fr;
+        width: 100%;
     }
 
     .search-side-panel {
@@ -918,20 +953,21 @@
         bottom: 70px;
         right: 16px;
         left: 16px;
-        width: auto;
+        width: 0;
         max-width: 400px;
         height: auto;
         max-height: 300px;
         z-index: 100;
         border: 2px solid var(--accent);
-        border-radius: 2px;
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-        transform: translateX(100%);
         opacity: 0;
     }
 
     .search-side-panel:not(.hidden) {
-        transform: translateX(0);
+        width: auto;
+        left: 16px;
+        right: 16px;
+        max-width: none;
         opacity: 1;
     }
 

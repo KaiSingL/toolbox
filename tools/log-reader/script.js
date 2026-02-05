@@ -183,7 +183,6 @@ async function loadFile(file) {
     searchResultsList.classList.add('hidden');
     searchResultsItems.innerHTML = '';
     toggleSidePanelBtn.classList.remove('active');
-    viewerGrid.classList.remove('with-panel');
     
     // Update UI
     fileNameEl.textContent = file.name;
@@ -738,7 +737,6 @@ searchProgressFill.style.width = '0%';
             sidePanel.classList.remove('hidden');
             sidePanelVisible = true;
             toggleSidePanelBtn.classList.add('active');
-            viewerGrid.classList.add('with-panel');
             searchResultsTitleText.textContent = `Search Results (${formatNumber(searchResults.length)} matches)`;
 
             // Auto-jump to first match
@@ -974,11 +972,9 @@ function toggleSidePanel() {
     if (sidePanelVisible) {
         sidePanel.classList.remove('hidden');
         toggleSidePanelBtn.classList.add('active');
-        viewerGrid.classList.add('with-panel');
     } else {
         sidePanel.classList.add('hidden');
         toggleSidePanelBtn.classList.remove('active');
-        viewerGrid.classList.remove('with-panel');
     }
 }
 

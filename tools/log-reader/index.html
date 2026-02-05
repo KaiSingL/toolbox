@@ -141,177 +141,179 @@
                 </div>
             </div>
 
-            <!-- Viewer Section -->
-            <div id="viewer-section" class="viewer-section hidden">
-                <!-- Main Content Grid -->
-                <div id="viewer-grid" class="viewer-grid">
-                    <!-- Main Log Content -->
-                    <div class="viewer-main">
-                        <!-- File Stats -->
-                        <div class="card-brutal file-stats-bar">
-                            <div class="file-stats-bar-content">
-                                <div class="file-stats">
-                                    <span class="file-stat">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                                            <polyline points="14 2 14 8 20 8"/>
-                                        </svg>
-                                        <span id="file-name" class="file-stat-value">-</span>
-                                    </span>
-                                    <span class="file-stat">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
-                                            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
-                                        </svg>
-                                        <span id="file-size">-</span>
-                                    </span>
-                                    <span class="file-stat">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <line x1="8" y1="6" x2="21" y2="6"/>
-                                            <line x1="8" y1="12" x2="21" y2="12"/>
-                                            <line x1="8" y1="18" x2="21" y2="18"/>
-                                            <line x1="3" y1="6" x2="3.01" y2="6"/>
-                                            <line x1="3" y1="12" x2="3.01" y2="12"/>
-                                            <line x1="3" y1="18" x2="3.01" y2="18"/>
-                                        </svg>
-                                        <span id="total-lines">-</span>
-                                    </span>
-                                </div>
-                                <div class="settings-group">
-                                    <label for="lines-per-page" class="settings-label">Lines per page:</label>
-                                    <select id="lines-per-page" class="input-brutal lines-per-page-select">
-                                        <option value="100">100</option>
-                                        <option value="500">500</option>
-                                        <option value="1000" selected>1000</option>
-                                        <option value="5000">5000</option>
-                                        <option value="10000">10000</option>
-                                    </select>
-                                    <button id="highlight-toggle" class="btn-secondary highlight-toggle active">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="m9 11-6 6v3h9l3-3"/>
-                                            <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/>
-                                        </svg>
-                                        <span>Highlight</span>
-                                    </button>
-                                    <button id="download-page" class="btn-secondary download-btn">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                            <polyline points="7 10 12 15 17 10"/>
-                                            <line x1="12" y1="15" x2="12" y2="3"/>
-                                        </svg>
-                                        Download Page
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Log Display -->
-                        <div class="card-brutal log-card">
-                            <div id="log-container" class="log-container">
-                                <div id="loading-overlay" class="loading-overlay hidden">
-                                    <div class="loading-content">
-                                        <div class="loading-title section-title">Loading...</div>
-                                        <div id="loading-text" class="loading-text"></div>
+                <!-- Viewer Section -->
+                <div id="viewer-section" class="viewer-section hidden">
+                    <!-- Main Content Grid -->
+                    <div class="viewer-container">
+                        <div id="viewer-grid" class="viewer-grid">
+                            <!-- Main Log Content -->
+                            <div class="viewer-main">
+                                <!-- File Stats -->
+                                <div class="card-brutal file-stats-bar">
+                                    <div class="file-stats-bar-content">
+                                        <div class="file-stats">
+                                            <span class="file-stat">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                                    <polyline points="14 2 14 8 20 8"/>
+                                                </svg>
+                                                <span id="file-name" class="file-stat-value">-</span>
+                                            </span>
+                                            <span class="file-stat">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
+                                                    <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
+                                                </svg>
+                                                <span id="file-size">-</span>
+                                            </span>
+                                            <span class="file-stat">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <line x1="8" y1="6" x2="21" y2="6"/>
+                                                    <line x1="8" y1="12" x2="21" y2="12"/>
+                                                    <line x1="8" y1="18" x2="21" y2="18"/>
+                                                    <line x1="3" y1="6" x2="3.01" y2="6"/>
+                                                    <line x1="3" y1="12" x2="3.01" y2="12"/>
+                                                    <line x1="3" y1="18" x2="3.01" y2="18"/>
+                                                </svg>
+                                                <span id="total-lines">-</span>
+                                            </span>
+                                        </div>
+                                        <div class="settings-group">
+                                            <label for="lines-per-page" class="settings-label">Lines per page:</label>
+                                            <select id="lines-per-page" class="input-brutal lines-per-page-select">
+                                                <option value="100">100</option>
+                                                <option value="500">500</option>
+                                                <option value="1000" selected>1000</option>
+                                                <option value="5000">5000</option>
+                                                <option value="10000">10000</option>
+                                            </select>
+                                            <button id="highlight-toggle" class="btn-secondary highlight-toggle active">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="m9 11-6 6v3h9l3-3"/>
+                                                    <path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/>
+                                                </svg>
+                                                <span>Highlight</span>
+                                            </button>
+                                            <button id="download-page" class="btn-secondary download-btn">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                                    <polyline points="7 10 12 15 17 10"/>
+                                                    <line x1="12" y1="15" x2="12" y2="3"/>
+                                                </svg>
+                                                Download Page
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                                <div id="log-top-anchor" style="position: relative; top: -60px;"></div>
-                                <div id="log-content" class="log-content"></div>
-                                <div id="log-bottom-anchor" style="position: relative; top: -60px;"></div>
-                            </div>
-                        </div>
 
-                        <!-- Pagination -->
-                        <div class="card-brutal pagination-card">
-                            <div class="pagination-controls">
-                                <div class="pagination-group">
-                                    <button id="btn-first" class="btn-secondary pagination-btn">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="11 17 6 12 11 7"/>
-                                            <polyline points="18 17 13 12 18 7"/>
-                                        </svg>
-                                        First
-                                    </button>
-                                    <button id="btn-prev" class="btn-secondary pagination-btn">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="15 18 9 12 15 6"/>
-                                        </svg>
-                                        Previous
-                                    </button>
-                                    <div class="page-input-group">
-                                        <span>Page</span>
-                                        <input type="number" id="page-input" class="input-brutal page-input" value="1" min="1">
-                                        <span id="page-total" class="page-total">of 1</span>
+                                <!-- Log Display -->
+                                <div class="card-brutal log-card">
+                                    <div id="log-container" class="log-container">
+                                        <div id="loading-overlay" class="loading-overlay hidden">
+                                            <div class="loading-content">
+                                                <div class="loading-title section-title">Loading...</div>
+                                                <div id="loading-text" class="loading-text"></div>
+                                            </div>
+                                        </div>
+                                        <div id="log-top-anchor" style="position: relative; top: -60px;"></div>
+                                        <div id="log-content" class="log-content"></div>
+                                        <div id="log-bottom-anchor" style="position: relative; top: -60px;"></div>
                                     </div>
-                                    <button id="btn-next" class="btn-secondary pagination-btn">
-                                        Next
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="9 18 15 12 9 6"/>
-                                        </svg>
-                                    </button>
-                                    <button id="btn-last" class="btn-secondary pagination-btn">
-                                        Last
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="13 17 18 12 13 7"/>
-                                            <polyline points="6 17 11 12 6 7"/>
-                                        </svg>
-                                    </button>
                                 </div>
-                                <div class="pagination-group">
-                                    <button id="btn-top" class="btn-secondary pagination-btn" title="Scroll to top">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="18 15 12 9 6 15"/>
-                                        </svg>
-                                        Top
-                                    </button>
-                                    <button id="btn-bottom" class="btn-secondary pagination-btn" title="Scroll to bottom">
-                                        Bottom
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="6 9 12 15 18 9"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                                <span id="page-info" class="page-info"></span>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Search Side Panel -->
-                    <div id="search-side-panel" class="card-brutal search-side-panel">
-                        <div class="side-panel-header">
-                            <div class="side-panel-title">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="8" y1="6" x2="21" y2="6"/>
-                                    <line x1="8" y1="12" x2="21" y2="12"/>
-                                    <line x1="8" y1="18" x2="21" y2="18"/>
-                                    <line x1="3" y1="6" x2="3.01" y2="6"/>
-                                    <line x1="3" y1="12" x2="3.01" y2="12"/>
-                                    <line x1="3" y1="18" x2="3.01" y2="18"/>
-                                </svg>
-                                <span id="search-results-title-text">Search Results</span>
-                            </div>
-                            <div id="side-panel-nav" class="side-panel-nav hidden">
-                                <span id="match-counter" class="match-counter">0 of 0</span>
-                                <div class="search-nav-buttons">
-                                    <button id="btn-prev-match" class="btn-secondary search-nav-btn" title="Previous (Shift+Enter)">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="15 18 9 12 15 6"/>
-                                        </svg>
-                                    </button>
-                                    <button id="btn-next-match" class="btn-secondary search-nav-btn" title="Next (Enter)">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="9 18 15 12 9 6"/>
-                                        </svg>
-                                    </button>
+                                <!-- Pagination -->
+                                <div class="card-brutal pagination-card">
+                                    <div class="pagination-controls">
+                                        <div class="pagination-group">
+                                            <button id="btn-first" class="btn-secondary pagination-btn">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <polyline points="11 17 6 12 11 7"/>
+                                                    <polyline points="18 17 13 12 18 7"/>
+                                                </svg>
+                                                First
+                                            </button>
+                                            <button id="btn-prev" class="btn-secondary pagination-btn">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <polyline points="15 18 9 12 15 6"/>
+                                                </svg>
+                                                Previous
+                                            </button>
+                                            <div class="page-input-group">
+                                                <span>Page</span>
+                                                <input type="number" id="page-input" class="input-brutal page-input" value="1" min="1">
+                                                <span id="page-total" class="page-total">of 1</span>
+                                            </div>
+                                            <button id="btn-next" class="btn-secondary pagination-btn">
+                                                Next
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <polyline points="9 18 15 12 9 6"/>
+                                                </svg>
+                                            </button>
+                                            <button id="btn-last" class="btn-secondary pagination-btn">
+                                                Last
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <polyline points="13 17 18 12 13 7"/>
+                                                    <polyline points="6 17 11 12 6 7"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="pagination-group">
+                                            <button id="btn-top" class="btn-secondary pagination-btn" title="Scroll to top">
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <polyline points="18 15 12 9 6 15"/>
+                                                </svg>
+                                                Top
+                                            </button>
+                                            <button id="btn-bottom" class="btn-secondary pagination-btn" title="Scroll to bottom">
+                                                Bottom
+                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <polyline points="6 9 12 15 18 9"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <span id="page-info" class="page-info"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div id="search-results-list" class="search-results-list">
-                            <div id="search-results-items" class="search-results-items"></div>
-                            <button id="btn-load-more" class="btn-secondary btn-load-more hidden">Load more results</button>
+
+                        <!-- Search Side Panel (outside grid, sibling to viewer-grid) -->
+                        <div id="search-side-panel" class="card-brutal search-side-panel">
+                            <div class="side-panel-header">
+                                <div class="side-panel-title">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="8" y1="6" x2="21" y2="6"/>
+                                        <line x1="8" y1="12" x2="21" y2="12"/>
+                                        <line x1="8" y1="18" x2="21" y2="18"/>
+                                        <line x1="3" y1="6" x2="3.01" y2="6"/>
+                                        <line x1="3" y1="12" x2="3.01" y2="12"/>
+                                        <line x1="3" y1="18" x2="3.01" y2="18"/>
+                                    </svg>
+                                    <span id="search-results-title-text">Search Results</span>
+                                </div>
+                                <div id="side-panel-nav" class="side-panel-nav hidden">
+                                    <span id="match-counter" class="match-counter">0 of 0</span>
+                                    <div class="search-nav-buttons">
+                                        <button id="btn-prev-match" class="btn-secondary search-nav-btn" title="Previous (Shift+Enter)">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="15 18 9 12 15 6"/>
+                                            </svg>
+                                        </button>
+                                        <button id="btn-next-match" class="btn-secondary search-nav-btn" title="Next (Enter)">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <polyline points="9 18 15 12 9 6"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="search-results-list" class="search-results-list">
+                                <div id="search-results-items" class="search-results-items"></div>
+                                <button id="btn-load-more" class="btn-secondary btn-load-more hidden">Load more results</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
     </main>
 
