@@ -177,3 +177,27 @@
     flex: 1;
     text-align: center;
 }
+
+@media (max-width: 768px) {
+    .tool-sidebar {
+        position: fixed;
+        top: 56px;
+        left: 0;
+        width: 100%;
+        height: auto;
+        max-height: 0;
+        z-index: 50;
+        overflow: hidden;
+        transition: max-height var(--transition-medium);
+        border-right: none;
+        border-bottom: var(--border-medium);
+    }
+
+    .tool-sidebar.open {
+        max-height: 60vh;
+    }
+
+    .tool-sidebar-content {
+        padding: 16px;
+    }
+}
