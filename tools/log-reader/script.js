@@ -1008,7 +1008,7 @@ function scrollToMatch(lineNum) {
     
     if (logLines[relativeLineIndex]) {
         logLines[relativeLineIndex].classList.add('current-match');
-        logLines[relativeLineIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        logLines[relativeLineIndex].scrollIntoView({ behavior: 'instant', block: 'center' });
     }
 }
 
@@ -1108,7 +1108,7 @@ async function loadSearchResultBatch(startIndex, count) {
 
         const lineNumEl = document.createElement('span');
         lineNumEl.className = 'search-result-line-num';
-        lineNumEl.textContent = `Line ${lineNum}`;
+        lineNumEl.textContent = `Line ${lineNum + 1}`;
 
         lineHeader.appendChild(lineNumEl);
         resultItem.appendChild(lineHeader);
@@ -1209,7 +1209,7 @@ async function updateActiveResultItem() {
         items.forEach((el, idx) => {
             if (idx === currentMatchIndex) {
                 el.classList.add('active');
-                el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                el.scrollIntoView({ behavior: 'instant', block: 'nearest' });
             } else {
                 el.classList.remove('active');
             }
