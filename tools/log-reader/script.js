@@ -20,7 +20,6 @@ let isSearching = false;
 let searchAbortController = null;
 let fileReadAbortController = null;
 let loadedResultsCount = 0;
-let isLazyLoading = false;
 let searchScrollHandler = null;
 let syntaxHighlightingEnabled = true; // One Dark syntax highlighting (default: on)
 let matchWholeWord = false; // Match whole word only
@@ -91,6 +90,8 @@ const downloadExecute = document.getElementById('download-execute');
 
 let downloadAbortController = null;
 let lastFocusedElement = null;
+let currentLoadPromise = null;
+let isInitialLoadComplete = false;
 
 // Event Listeners
 uploadInput.addEventListener('change', handleFileSelect);
@@ -1075,9 +1076,12 @@ async function populateSearchResults() {
 
     searchResultsItems.innerHTML = '';
     loadedResultsCount = 0;
+    isInitialLoadComplete = false;
 
     // Load initial batch
     await loadSearchResultBatch(0, INITIAL_BATCH_SIZE);
+
+    isInitialLoadComplete = true;
 
     // Set up lazy load scroll listener
     setupSearchResultsScrollListener();
@@ -1087,6 +1091,11 @@ async function populateSearchResults() {
 
 // Load a batch of search results
 async function loadSearchResultBatch(startIndex, count) {
+    // Cancel any pending load
+    if (currentLoadPromise) {
+        currentLoadPromise = null;
+    }
+
     const endIndex = Math.min(startIndex + count, searchResults.length);
 
     for (let i = startIndex; i < endIndex; i++) {
@@ -1151,6 +1160,9 @@ async function loadSearchResultBatch(startIndex, count) {
 
         // Click handler - navigate to line
         resultItem.addEventListener('click', () => {
+            if (currentLoadPromise) {
+                currentLoadPromise = null;
+            }
             currentMatchIndex = i;
             navigateMatch(0);
             updateActiveResultItem();
@@ -1183,11 +1195,11 @@ function setupSearchResultsScrollListener() {
         const clientHeight = searchResultsItems.clientHeight;
         const distanceToBottom = scrollHeight - scrollTop - clientHeight;
 
-        if (distanceToBottom < LAZY_LOAD_THRESHOLD && !isLazyLoading && loadedResultsCount < searchResults.length) {
-            isLazyLoading = true;
+        if (distanceToBottom < LAZY_LOAD_THRESHOLD && !currentLoadPromise && loadedResultsCount < searchResults.length) {
             lazyLoadIndicator.classList.remove('hidden');
-            await loadSearchResultBatch(loadedResultsCount, LAZY_LOAD_BATCH_SIZE);
-            isLazyLoading = false;
+            currentLoadPromise = loadSearchResultBatch(loadedResultsCount, LAZY_LOAD_BATCH_SIZE);
+            await currentLoadPromise;
+            currentLoadPromise = null;
         }
     };
 
@@ -1196,11 +1208,19 @@ function setupSearchResultsScrollListener() {
 
 // Update active result item styling
 async function updateActiveResultItem() {
+    // Skip if a load is in progress OR initial population hasn't completed
+    if (currentLoadPromise || !isInitialLoadComplete) return;
+
     let item = searchResultsItems.querySelector(`.search-result-item[data-index="${currentMatchIndex}"]`);
 
     // Lazy load until the target item exists in DOM
     while (!item && loadedResultsCount < searchResults.length) {
-        await loadSearchResultBatch(loadedResultsCount, LAZY_LOAD_BATCH_SIZE);
+        if (currentLoadPromise) {
+            currentLoadPromise = null;
+        }
+        currentLoadPromise = loadSearchResultBatch(loadedResultsCount, LAZY_LOAD_BATCH_SIZE);
+        await currentLoadPromise;
+        currentLoadPromise = null;
         item = searchResultsItems.querySelector(`.search-result-item[data-index="${currentMatchIndex}"]`);
     }
 
