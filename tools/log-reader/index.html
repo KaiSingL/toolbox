@@ -209,7 +209,7 @@
                                                     <polyline points="7 10 12 15 17 10"/>
                                                     <line x1="12" y1="15" x2="12" y2="3"/>
                                                 </svg>
-                                                Download Page
+                                                Download
                                             </button>
                                         </div>
                                     </div>
@@ -329,6 +329,57 @@
     <footer class="footer">
         <p class="footer-text">&copy; 2025 Web Tools Hub. Open source under GNU Affero General Public License v3.0.</p>
     </footer>
+
+    <!-- Download Modal -->
+    <div id="download-modal" class="download-modal hidden" role="dialog" aria-modal="true" aria-labelledby="download-title">
+        <div class="download-backdrop"></div>
+        <div class="download-content">
+            <div class="download-header">
+                <h2 id="download-title" class="section-title">Download Lines</h2>
+                <button id="download-close" class="download-close" aria-label="Close download dialog">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="download-body">
+                <div class="download-inputs">
+                    <div class="download-input-group">
+                        <label for="download-start-line" class="label-brutal">Start Line</label>
+                        <input type="number" id="download-start-line" class="input-brutal" min="1" value="1">
+                    </div>
+                    <div class="download-input-group">
+                        <label for="download-end-line" class="label-brutal">End Line</label>
+                        <input type="number" id="download-end-line" class="input-brutal" min="1" value="1000">
+                    </div>
+                </div>
+                <p id="download-preview" class="download-preview"></p>
+                <div id="download-progress" class="download-progress hidden">
+                    <div class="download-progress-bar">
+                        <div id="download-progress-fill" class="download-progress-fill"></div>
+                    </div>
+                    <span id="download-progress-text" class="download-progress-text">0%</span>
+                </div>
+                <div id="download-success" class="download-success hidden">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                    <span>Download complete!</span>
+                </div>
+            </div>
+            <div class="download-footer">
+                <button id="download-execute" class="btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Download
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- Prism.js Core -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>

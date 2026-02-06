@@ -76,6 +76,22 @@ const sidePanel = document.getElementById('search-side-panel');
 const toggleSidePanelBtn = document.getElementById('toggle-side-panel');
 const viewerGrid = document.getElementById('viewer-grid');
 
+// Download modal elements
+const downloadModal = document.getElementById('download-modal');
+const downloadClose = document.getElementById('download-close');
+const downloadBackdrop = document.querySelector('.download-backdrop');
+const downloadStartLine = document.getElementById('download-start-line');
+const downloadEndLine = document.getElementById('download-end-line');
+const downloadPreview = document.getElementById('download-preview');
+const downloadProgress = document.getElementById('download-progress');
+const downloadProgressFill = document.getElementById('download-progress-fill');
+const downloadProgressText = document.getElementById('download-progress-text');
+const downloadSuccess = document.getElementById('download-success');
+const downloadExecute = document.getElementById('download-execute');
+
+let downloadAbortController = null;
+let lastFocusedElement = null;
+
 // Event Listeners
 uploadInput.addEventListener('change', handleFileSelect);
 dropZone.addEventListener('dragover', handleDragOver);
@@ -89,7 +105,7 @@ document.getElementById('btn-last').addEventListener('click', () => goToPage(get
 document.getElementById('btn-top').addEventListener('click', () => scrollToTop());
 document.getElementById('btn-bottom').addEventListener('click', () => scrollToBottom());
 pageInput.addEventListener('change', handlePageInput);
-document.getElementById('download-page').addEventListener('click', downloadCurrentPage);
+document.getElementById('download-page').addEventListener('click', openDownloadModal);
 clearSearchBtn.addEventListener('click', clearSearch);
 searchInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') startSearch();
@@ -125,16 +141,18 @@ if (btnNextMatchHeader) {
 // Side panel toggle button
 toggleSidePanelBtn.addEventListener('click', toggleSidePanel);
 
-// Search option toggles
-wholeWordCheckbox.addEventListener('change', () => {
-    matchWholeWord = wholeWordCheckbox.checked;
-});
-matchCaseCheckbox.addEventListener('change', () => {
-    matchCase = matchCaseCheckbox.checked;
-});
+// Download modal handlers
+downloadClose.addEventListener('click', closeDownloadModal);
+downloadBackdrop.addEventListener('click', closeDownloadModal);
+downloadStartLine.addEventListener('input', updateDownloadPreview);
+downloadEndLine.addEventListener('input', updateDownloadPreview);
+downloadExecute.addEventListener('click', executeDownload);
 
-// Keyboard shortcuts
+// Close modal on Escape
 document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !downloadModal.classList.contains('hidden')) {
+        closeDownloadModal();
+    }
     if (e.key === 'Escape' && searchTerm) {
         clearSearch();
     }
@@ -154,6 +172,14 @@ document.addEventListener('keydown', (e) => {
         e.preventDefault();
         navigateMatch(1);
     }
+});
+
+// Search option toggles
+wholeWordCheckbox.addEventListener('change', () => {
+    matchWholeWord = wholeWordCheckbox.checked;
+});
+matchCaseCheckbox.addEventListener('change', () => {
+    matchCase = matchCaseCheckbox.checked;
 });
 
 // File Handling
@@ -1191,25 +1217,131 @@ async function updateActiveResultItem() {
     }
 }
 
-// Download current page
-async function downloadCurrentPage() {
-    const startLine = (currentPage - 1) * linesPerPage;
-    const endLine = Math.min(startLine + linesPerPage, totalLines);
-    
-    const lines = await readLines(startLine, endLine);
-    const content = lines.join('\n');
-    
-    const blob = new Blob([content], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${currentFile.name.replace(/\.[^/.]+$/, '')}_line${startLine + 1}-line${endLine}.log`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    
-    URL.revokeObjectURL(url);
+// Download Modal
+function openDownloadModal() {
+    if (!currentFile) return;
+
+    lastFocusedElement = document.activeElement;
+
+    const startLine = (currentPage - 1) * linesPerPage + 1;
+    const endLine = Math.min(startLine + linesPerPage - 1, totalLines);
+    downloadStartLine.value = startLine;
+    downloadEndLine.value = endLine;
+
+    downloadProgress.classList.add('hidden');
+    downloadSuccess.classList.add('hidden');
+    downloadExecute.disabled = false;
+    downloadExecute.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Download
+    `;
+
+    updateDownloadPreview();
+    downloadModal.classList.remove('hidden');
+    downloadStartLine.focus();
+    document.body.style.overflow = 'hidden';
+}
+
+function closeDownloadModal() {
+    if (downloadAbortController) {
+        downloadAbortController.abort();
+        downloadAbortController = null;
+    }
+
+    downloadModal.classList.add('hidden');
+    document.body.style.overflow = '';
+    lastFocusedElement?.focus();
+}
+
+function updateDownloadPreview() {
+    const start = parseInt(downloadStartLine.value) || 1;
+    const end = parseInt(downloadEndLine.value) || 1;
+    const validStart = Math.max(1, Math.min(start, totalLines));
+    const validEnd = Math.max(validStart, Math.min(end, totalLines));
+
+    if (start !== validStart) downloadStartLine.value = validStart;
+    if (end !== validEnd) downloadEndLine.value = validEnd;
+
+    const count = Math.max(0, validEnd - validStart + 1);
+    downloadPreview.textContent = `${formatNumber(count)} lines selected (${formatNumber(validStart)} - ${formatNumber(validEnd)})`;
+}
+
+async function executeDownload() {
+    if (!currentFile) return;
+
+    const start = parseInt(downloadStartLine.value);
+    const end = parseInt(downloadEndLine.value);
+
+    if (start < 1 || end < start || end > totalLines) {
+        downloadPreview.textContent = 'Invalid line range';
+        return;
+    }
+
+    downloadAbortController = new AbortController();
+    downloadProgress.classList.remove('hidden');
+    downloadSuccess.classList.add('hidden');
+    downloadExecute.disabled = true;
+
+    try {
+        const lines = await readLinesWithProgress(start - 1, end);
+        const content = lines.join('\n');
+
+        const ext = currentFile.name.split('.').pop() || 'log';
+        const filename = `${currentFile.name.replace(/\.[^/.]+$/, '')}_lines_${start}-${end}.${ext}`;
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        downloadProgress.classList.add('hidden');
+        downloadSuccess.classList.remove('hidden');
+        downloadProgressFill.style.width = '0%';
+    } catch (error) {
+        if (error.name !== 'AbortError') {
+            downloadPreview.textContent = `Error: ${error.message}`;
+        }
+    }
+
+    downloadExecute.disabled = false;
+    downloadAbortController = null;
+}
+
+async function readLinesWithProgress(startLine, endLine) {
+    const totalToRead = endLine - startLine;
+    const CHUNK_SIZE = 10000;
+    let lines = [];
+    let lastProgress = 0;
+
+    for (let i = startLine; i < endLine; i += CHUNK_SIZE) {
+        if (downloadAbortController?.signal.aborted) {
+            throw new Error('AbortError');
+        }
+
+        const chunkEnd = Math.min(i + CHUNK_SIZE, endLine);
+        const chunkLines = await readLines(i, chunkEnd);
+        lines.push(...chunkLines);
+
+        const progress = Math.round(((chunkEnd - startLine) / totalToRead) * 100);
+        if (progress >= lastProgress + 5) {
+            lastProgress = progress;
+            downloadProgressFill.style.width = `${progress}%`;
+            downloadProgressText.textContent = `${progress}%`;
+            await new Promise(r => setTimeout(r, 0));
+        }
+    }
+
+    return lines;
 }
 
 // UI Helpers
