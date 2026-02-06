@@ -425,15 +425,7 @@ async function renderLines(lines, startLineNum) {
             if (logLevel) {
                 lineEl.classList.add(`level-${logLevel}`);
             }
-            
-// Check if this is the current match
-            if (searchResults.length > 0 && currentMatchIndex >= 0) {
-                const currentMatchLine = searchResults[currentMatchIndex];
-                if (lineNum === currentMatchLine) {
-                    lineEl.classList.add('current-match');
-                }
-            }
-            
+                        
             const lineNumberEl = document.createElement('span');
             lineNumberEl.className = 'line-number';
             lineNumberEl.textContent = lineNum;
@@ -976,7 +968,7 @@ async function navigateMatch(direction) {
     }
     
     // Get the line number of the current match
-    const targetLine = searchResults[currentMatchIndex];
+    const targetLine = searchResults[currentMatchIndex] + 1;
     
     // Calculate which page this line is on
     const targetPage = Math.floor(targetLine / linesPerPage) + 1;
