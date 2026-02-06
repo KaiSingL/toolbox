@@ -1079,100 +1079,13 @@
 }
 
 /* ============================================
-   One Dark Syntax Highlighting
-   ============================================ */
+    One Dark Syntax Highlighting
+    ============================================ */
 
 /* Token Colors - One Dark Theme */
 .token-error { 
     color: #E06C75; 
     font-weight: 600; 
-}
-
-.token-warning { 
-    color: #E5C07B; 
-    font-weight: 500; 
-}
-
-.token-info { 
-    color: #98C379; 
-}
-
-.token-debug { 
-    color: #56B6C2; 
-}
-
-.token-trace { 
-    color: #5C6370; 
-}
-
-.token-date { 
-    color: #5C6370; 
-}
-
-.token-string { 
-    color: #98C379; 
-}
-
-.token-constant { 
-    color: #D19A66; 
-}
-
-.token-url { 
-    color: #61AFEF; 
-    text-decoration: underline;
-}
-
-.token-exception { 
-    color: #C678DD; 
-}
-
-.token-json-key { 
-    color: #E06C75; 
-}
-
-.token-json-string { 
-    color: #98C379; 
-}
-
-.token-json-number { 
-    color: #D19A66; 
-}
-
-.token-json-boolean { 
-    color: #56B6C2; 
-}
-
-/* Line-level background tints based on log level */
-.log-line.level-error { 
-    background: rgba(224, 108, 117, 0.08); 
-}
-
-.log-line.level-error:hover { 
-    background: rgba(224, 108, 117, 0.15); 
-}
-
-.log-line.level-warning { 
-    background: rgba(229, 192, 123, 0.08); 
-}
-
-.log-line.level-warning:hover { 
-    background: rgba(229, 192, 123, 0.15); 
-}
-
-.log-line.level-info { 
-    background: rgba(152, 195, 121, 0.05); 
-}
-
-.log-line.level-info:hover { 
-    background: rgba(152, 195, 121, 0.1); 
-}
-
-.log-line.level-debug { 
-    background: rgba(86, 182, 194, 0.05); 
-}
-
-.log-line.level-debug:hover { 
-    background: rgba(86, 182, 194, 0.1); 
 }
 
 /* ============================================
