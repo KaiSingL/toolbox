@@ -110,9 +110,16 @@
 
               <main id="main" class="tool-canvas">
                   <div id="crop-container" class="tool-canvas-inner" style="max-width: 100%; max-height: calc(100vh - 200px); position: relative;">
+                      <div id="skeleton" class="skeleton">
+                          <div class="skeleton-lines">
+                              <div class="skeleton-line"></div>
+                              <div class="skeleton-line"></div>
+                              <div class="skeleton-line"></div>
+                          </div>
+                      </div>
                       <img id="image" src="" draggable="false">
                   </div>
-                  <div id="crop-overlay"></div>
+                  <div id="crop-overlay" tabindex="0" role="slider" aria-label="Crop area" aria-valuemin="0" aria-valuemax="100"></div>
                 <p id="placeholder" class="tool-placeholder">
                     <span class="tool-placeholder-icon">
                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

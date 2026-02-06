@@ -23,6 +23,8 @@
     position: absolute;
     top: 0;
     left: 0;
+    opacity: 0;
+    transition: opacity 0.2s ease;
 }
 
 #drag-overlay {
@@ -110,4 +112,56 @@
 .zoom-btn:hover {
     background: var(--accent);
     color: var(--bg-primary);
+}
+
+.skeleton {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.skeleton.visible {
+    display: flex;
+}
+
+.skeleton-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.skeleton-line {
+    height: 20px;
+    width: 200px;
+    background: linear-gradient(90deg, var(--bg-surface) 25%, var(--accent) 50%, var(--bg-surface) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 2px;
+}
+
+@keyframes shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+#crop-overlay {
+    transition: box-shadow 0.2s ease;
+}
+
+#crop-overlay:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--accent), 0 0 0 6px rgba(202, 200, 244, 0.3);
+}
+
+#crop-overlay.dragging {
+    transition: none;
+}
+
+#crop-overlay.keyboard-nav {
+    box-shadow: 0 0 0 3px var(--accent), 0 0 0 6px rgba(202, 200, 244, 0.3);
 }

@@ -19,6 +19,7 @@ const centerOverlayBtn = document.getElementById('center-overlay');
 const menuToggle = document.getElementById('menu-toggle');
 const sidebar = document.getElementById('sidebar');
 const sidebarOverlay = document.getElementById('sidebar-overlay');
+const skeleton = document.getElementById('skeleton');
 
 let isDragging = false;
 let startX, startY;
@@ -69,10 +70,19 @@ uploadInput.addEventListener('change', e => {
 });
 
 function loadImage(file) {
+    skeleton.classList.add('visible');
+    img.style.opacity = '0';
+    img.style.display = 'block';
+    placeholder.style.display = 'none';
+
     const reader = new FileReader();
     reader.onload = ev => {
         img.src = ev.target.result;
-        img.onload = initializeCrop;
+        img.onload = () => {
+            skeleton.classList.remove('visible');
+            img.style.opacity = '1';
+            initializeCrop();
+        };
     };
     reader.readAsDataURL(file);
 }
@@ -84,9 +94,12 @@ function initializeCrop() {
     overlay.style.height = `${targetH}px`;
     overlay.classList.remove('hidden');
 
-    const scaleX = targetW / img.naturalWidth;
-    const scaleY = targetH / img.naturalHeight;
-    scale = Math.max(scaleX, scaleY);
+    const containerWidth = Math.max(container.offsetWidth || 800, 1);
+    const containerHeight = Math.max(container.offsetHeight || 600, 1);
+    const scaleX = containerWidth / img.naturalWidth;
+    const scaleY = containerHeight / img.naturalHeight;
+    scale = Math.min(scaleX, scaleY);
+    scale = Math.max(scale, 0.05);
 
     const displayW = img.naturalWidth * scale;
     const displayH = img.naturalHeight * scale;
@@ -250,11 +263,29 @@ function handleSizeChange() {
     updateOverlayPosition();
 }
 
+function clampOverlayToBounds() {
+    if (!img.src) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+    const containerOffsetLeft = containerRect.left - canvasRect.left;
+    const containerOffsetTop = containerRect.top - canvasRect.top;
+
+    const minLeft = containerOffsetLeft + imgLeft;
+    const maxLeft = containerOffsetLeft + imgLeft + (img.naturalWidth * scale) - targetW;
+    const minTop = containerOffsetTop + imgTop;
+    const maxTop = containerOffsetTop + imgTop + (img.naturalHeight * scale) - targetH;
+
+    overlayLeft = Math.max(minLeft, Math.min(overlayLeft, maxLeft));
+    overlayTop = Math.max(minTop, Math.min(overlayTop, maxTop));
+}
+
 overlay.addEventListener('mousedown', (e) => {
     if (!img.src) return;
     isDragging = true;
     startX = e.clientX - overlayLeft;
     startY = e.clientY - overlayTop;
+    overlay.classList.add('dragging');
     overlay.style.cursor = 'grabbing';
 });
 
@@ -270,6 +301,7 @@ document.addEventListener('mousemove', (e) => {
     if (!isDragging) return;
     overlayLeft = e.clientX - startX;
     overlayTop = e.clientY - startY;
+    clampOverlayToBounds();
     updateOverlayPosition();
 });
 
@@ -279,18 +311,78 @@ document.addEventListener('touchmove', (e) => {
     const touch = e.touches[0];
     overlayLeft = touch.clientX - startX;
     overlayTop = touch.clientY - startY;
+    clampOverlayToBounds();
     updateOverlayPosition();
 }, { passive: false });
 
 document.addEventListener('mouseup', () => {
     isDragging = false;
+    overlay.classList.remove('dragging');
     overlay.style.cursor = 'grab';
 });
 
 document.addEventListener('touchend', () => {
     isDragging = false;
+    overlay.classList.remove('dragging');
     overlay.style.cursor = 'grab';
 });
+
+overlay.addEventListener('keydown', (e) => {
+    if (!img.src) return;
+
+    const step = e.shiftKey ? 10 : 1;
+
+    switch (e.key) {
+        case 'ArrowLeft':
+            overlayLeft -= step;
+            e.preventDefault();
+            break;
+        case 'ArrowRight':
+            overlayLeft += step;
+            e.preventDefault();
+            break;
+        case 'ArrowUp':
+            overlayTop -= step;
+            e.preventDefault();
+            break;
+        case 'ArrowDown':
+            overlayTop += step;
+            e.preventDefault();
+            break;
+        case '+':
+        case '=':
+            zoomBy(0.01);
+            e.preventDefault();
+            break;
+        case '-':
+            zoomBy(-0.01);
+            e.preventDefault();
+            break;
+        case 'Enter':
+        case ' ':
+            confirmBtn.click();
+            e.preventDefault();
+            break;
+        case 'Escape':
+            centerOverlay();
+            e.preventDefault();
+            break;
+        default:
+            return;
+    }
+
+    clampOverlayToBounds();
+    updateOverlayPosition();
+    overlay.classList.add('keyboard-nav');
+    setTimeout(() => overlay.classList.remove('keyboard-nav'), 200);
+});
+
+container.addEventListener('wheel', (e) => {
+    if (!img.src) return;
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.01 : 0.01;
+    zoomBy(delta);
+}, { passive: false });
 
 menuToggle.addEventListener('click', () => {
     sidebar.classList.toggle('open');
