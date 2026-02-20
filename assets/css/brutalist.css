@@ -875,7 +875,6 @@ img {
     left: -100%;
     top: 56px;
     width: 100%;
-    max-width: 320px;
     height: calc(100% - 56px);
     z-index: 50;
     transition: left var(--transition-medium);

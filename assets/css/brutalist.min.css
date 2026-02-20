@@ -870,16 +870,15 @@ img {
  display:flex;
  }
 
- .tool-sidebar {
- position:fixed;
- left:-100%;
- top:56px;
- width:100%;
- max-width:320px;
- height:calc(100% - 56px);
- z-index:50;
- transition:left var(--transition-medium);
- }
+.tool-sidebar {
+  position:fixed;
+  left:-100%;
+  top:56px;
+  width:100%;
+  height:calc(100% - 56px);
+  z-index:50;
+  transition:left var(--transition-medium);
+  }
 
  .tool-sidebar.open {
  left:0;
