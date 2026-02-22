@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WiFi QR Code Generator - Web Tools Hub</title>
-  <meta name="description" content="Generate scannable QR codes for WiFi networks. Supports WPA2 security and open networks.">
+  <title>QR Code Generator - Web Tools Hub</title>
+  <meta name="description" content="Generate scannable QR codes for WiFi, URLs, text, and email.">
   
-  <meta property="og:title" content="WiFi QR Code Generator - Web Tools Hub">
-  <meta property="og:description" content="Generate scannable QR codes for WiFi networks. Supports WPA2 security and open networks.">
+  <meta property="og:title" content="QR Code Generator - Web Tools Hub">
+  <meta property="og:description" content="Generate scannable QR codes for WiFi, URLs, text, and email.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://kaisingl.github.io/tool-box/tools/wifi-qr-code-gen/">
   <meta property="og:image" content="https://kaisingl.github.io/tool-box/assets/icons/icon-512x512.png">
@@ -17,8 +17,8 @@
   <meta property="og:site_name" content="Web Tools Hub">
   
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="WiFi QR Code Generator - Web Tools Hub">
-  <meta name="twitter:description" content="Generate scannable QR codes for WiFi networks. Supports WPA2 security and open networks.">
+  <meta name="twitter:title" content="QR Code Generator - Web Tools Hub">
+  <meta name="twitter:description" content="Generate scannable QR codes for WiFi, URLs, text, and email.">
   <meta name="twitter:image" content="https://kaisingl.github.io/tool-box/assets/icons/icon-512x512.png">
   
   <link rel="image_src" href="https://kaisingl.github.io/tool-box/assets/icons/icon-512x512.png">
@@ -30,58 +30,153 @@
   <link rel="icon" href="../../assets/icons/icon-180x180.png" sizes="any">
 
   <link rel="preconnect" href="https://cdn.fontshare.com">
-  <style>@font-face{font-family:'Clash Display';src:url('//cdn.fontshare.com/wf/VFMK2COV3DN37JR7JQ4CAOJPZ7KWKNY7/ODD5YJNDLHZZB2MIT3DPVH4EIHAMZ34D/BSY64LPTT3OPLVKAZKL3AHKRWZ3D74AC.woff2') format('woff2'),url('//cdn.fontshare.com/wf/VFMK2COV3DN37JR7JQ4CAOJPZ7KWKNY7/ODD5YJNDLHZZB2MIT3DPVH4EIHAMZ34D/BSY64LPTT3OPLVKAZKL3AHKRWZ3D74AC.woff') format('woff'),url('//cdn.fontshare.com/wf/VFMK2COV3DN37JR7JQ4CAOJPZ7KWKNY7/ODD5YJNDLHZZB2MIT3DPVH4EIHAMZ34D/BSY64LPTT3OPLVKAZKL3AHKRWZ3D74AC.ttf') format('truetype');font-weight:400;font-display:swap;font-style:normal}@font-face{font-family:'Clash Display';src:url('//cdn.fontshare.com/wf/2GQIT54GKQY3JRFTSHS4ARTRNRQISSAA/3CIP5EBHRRHE5FVQU3VFROPUERNDSTDF/JTSL5QESUXATU47LCPUNHZQBDDIWDOSW.woff2') format('woff2'),url('//cdn.fontshare.com/wf/2GQIT54GKQY3JRFTSHS4ARTRNRQISSAA/3CIP5EBHRRHE5FVQU3VFROPUERNDSTDF/JTSL5QESUXATU47LCPUNHZQBDDIWDOSW.woff') format('woff'),url('//cdn.fontshare.com/wf/2GQIT54GKQY3JRFTSHS4ARTRNRQISSAA/3CIP5EBHRRHE5FVQU3VFROPUERNDSTDF/JTSL5QESUXATU47LCPUNHZQBDDIWDOSW.ttf') format('truetype');font-weight:500;font-display:swap;font-style:normal}@font-face{font-family:'Clash Display';src:url('//cdn.fontshare.com/wf/FPDAZ2S6SW4QMSRIIKNNGTPM6VIXYMKO/5HNPQ453FRLIQWV2FNOBUU3FKTDZQVSG/Z3MGHFHX6DCTLQ55LJYRJ5MDCZPMFZU6.woff2') format('woff2'),url('//cdn.fontshare.com/wf/FPDAZ2S6SW4QMSRIIKNNGTPM6VIXYMKO/5HNPQ453FRLIQWV2FNOBUU3FKTDZQVSG/Z3MGHFHX6DCTLQ55LJYRJ5MDCZPMFZU6.woff') format('woff'),url('//cdn.fontshare.com/wf/FPDAZ2S6SW4QMSRIIKNNGTPM6VIXYMKO/5HNPQ453FRLIQWV2FNOBUU3FKTDZQVSG/Z3MGHFHX6DCTLQ55LJYRJ5MDCZPMFZU6.ttf') format('truetype');font-weight:600;font-display:swap;font-style:normal}@font-face{font-family:'Clash Display';src:url('//cdn.fontshare.com/wf/BFBSY7LX5W2U2EROCLVVTQP4VS7S4PC3/IIUX4FGTMD2LK2VWD3RVTAS4SSMUN7B5/53RZKGODFYDW3QHTIL7IPOWTBCSUEZK7.woff2') format('woff2'),url('//cdn.fontshare.com/wf/BFBSY7LX5W2U2EROCLVVTQP4VS7S4PC3/IIUX4FGTMD2LK2VWD3RVTAS4SSMUN7B5/53RZKGODFYDW3QHTIL7IPOWTBCSUEZK7.woff') format('woff'),url('//cdn.fontshare.com/wf/BFBSY7LX5W2U2EROCLVVTQP4VS7S4PC3/IIUX4FGTMD2LK2VWD3RVTAS4SSMUN7B5/53RZKGODFYDW3QHTIL7IPOWTBCSUEZK7.ttf') format('truetype');font-weight:700;font-display:swap;font-style:normal}</style>
+  <style>@font-face{font-family:'Clash Display';src:url('//cdn.fontshare.com/wf/VFMK2COV3DN37JR7JQ4CAOJPZ7KWKNY7/ODD5YJNDLHZZB2MIT3DPVH4EIHAMZ34D/BSY64LPTT3OPLVKAZKL3AHKRWZ3D74AC.woff2') format('woff2'),url('//cdn.fontshare.com/wf/VFMK2COV3DN37JR7JQ4CAOJPZ7KWKNY7/ODD5YJNDLHZZB2MIT3DPVH4EIHAMZ34D/BSY64LPTT3OPLVKAZKL3AHKRWZ3D74AC.woff') format('woff'),url('//cdn.fontshare.com/wf/VFMK2COV3DN37JR7JQ4CAOJPZ7KWKNY7/ODD5YJNDLHZZB2MIT3DPVH4EIHAMZ34D/BSY64LPTT3OPLVKAZKL3AHKRWZ3D74AC.ttf') format('truetype');font-weight:400;font-display:swap;font-style:normal}@font-face{font-family:'Clash Display';src:url('//cdn.fontshare.com/wf/2GQIT54GKQY3JRFTSHS4ARTRNRQISSAA/3CIP5EBHRRHE5FVQU3VFROPUERNDSTDF/JTSL5QESUXATU47LCPUNHZQBDDIWDOSW.woff2') format('woff2'),url('//cdn.fontshare.com/wf/2GQIT54GKQY3JRFTSHS4ARTRNRQISSAA/3CIP5EBHRRHE5FVQU3VFROPUERNDSTDF/JTSL5QESUXATU47LCPUNHZQBDDIWDOSW.woff') format('woff'),url('//cdn.fontshare.com/wf/2GQIT54GKQY3JRFTSHS4ARTRNRQISSAA/3CIP5EBHRRHE5FVQU3VFROPUERNDSTDF/JTSL5QESUXATU47LCPUNHZQBDDIWDOSW.ttf') format('truetype');font-weight:500;font-display:swap;font-style:normal}@font-face{font-family:'Clash Display';src:url('//cdn.fontshare.com/wf/FPDAZ2S6SW4QMSRIIKNNGTPM6VIXYMKO/5HNPQ453FRLIQWV2FNOBUU3FKTDZQVSG/Z3MGHFHX6DCTLQ55LJYRJ5MDCZPMFZU6.woff2') format('woff2'),url('//cdn.fontshare.com/wf/FPDAZ2S6SW4QMSRIIKNNGTPM6VIXYMKO/5HNPQ453FRLIQWV2FNOBUU3FKTDZQVSG/Z3MGHFHX6DCTLQ55LJYRJ5MDCZPMFZU6.woff') format('woff'),url('//cdn.fontshare.com/wf/FPDAZ2S6SW4QMSRIIKNNGTPM6VIXYMKO/5HNPQ453FRLIQWV2FNOBUU3FKTDZQVSG/Z3MGHFHX6DCTLQ55LJYRJ5MDCZPMFZU6.ttf') format('truetype');font-weight:600;font-display:swap;font-style:normal}@font-face{font-family:'Clash Display';src:url('//cdn.fontshare.com/wf/BFBSY7LX5W2U2EROCLVVTQP4VS7S4PC3/IIUX4FGTMD2LK2VWD3RVTAS4SSMUN7B5/53RZKGODFYDW3QHTIL7IPOWTBCSUEZK7.woff2') format('woff2'),url('//cdn.fontshare.com/wf/BFBSY7LX5W2U2EROCLVVTQP4VS7S4PC3/IIUX4FGTMD2LK2VWD3RVTAS4SSMUN7B5/53RZKGODFYDW3QHTIL7IPOWTBCSUEZK7.woff') format('woff'),url('//cdn.fontshare.com/wf/BFBSY7LX5W2U2EROCLVVTQP4VS7S4PC3/IIUX4FGTMD2LK2VWD3RVTAS4SSMUN7B5/53RZKGODFYDW3QHTIL7IPOWTBCSUEZK7.ttf') format('truetype');font-weight:700;font-display:swap;font-style:normal}@font-face{font-family:'JetBrains Mono';src:url('https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.18/files/jetbrains-mono-latin-400-normal.woff2') format('woff2');font-weight:400;font-display:swap;font-style:normal}@font-face{font-family:'JetBrains Mono';src:url('https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.18/files/jetbrains-mono-latin-500-normal.woff2') format('woff2');font-weight:500;font-display:swap;font-style:normal}@font-face{font-family:'JetBrains Mono';src:url('https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.18/files/jetbrains-mono-latin-600-normal.woff2') format('woff2');font-weight:600;font-display:swap;font-style:normal}</style>
   <link rel="stylesheet" href="../../assets/css/brutalist.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <link rel="stylesheet" href="style.css">
- </head>
- <body>
-   <a href="#main" class="skip-link">Skip to main content</a>
-   <header class="header">
-    <div class="header-inner">
-      <a href="../../index.html" class="logo">
-        <div class="logo-icon">
-          <img src="../../assets/icons/icon-60x60.png" alt="Web Tools Hub Logo" style="width: 30px; height: 30px;">
-        </div>
-        Web Tools Hub
-      </a>
-      <a href="https://github.com/KaiSingL/tool-box" target="_blank" class="github-link">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-        </svg>
-        <span>GitHub</span>
-      </a>
-    </div>
-  </header>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+  <header class="header">
+   <div class="header-inner">
+     <a href="../../index.html" class="logo">
+       <div class="logo-icon">
+         <img src="../../assets/icons/icon-60x60.png" alt="Web Tools Hub Logo" style="width: 30px; height: 30px;">
+       </div>
+       Web Tools Hub
+     </a>
+     <a href="https://github.com/KaiSingL/tool-box" target="_blank" class="github-link">
+       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+         <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+       </svg>
+       <span>GitHub</span>
+     </a>
+   </div>
+ </header>
 
   <main id="main" class="main">
     <div class="tool-container">
       <div class="tool-hero">
-        <h1 class="section-title">WiFi QR Code Generator</h1>
-        <p class="section-subtitle">Enter WiFi details to generate a scannable QR code. Uses WPA2 encryption by default.</p>
+        <h1 class="section-title">QR Code Generator</h1>
+        <p class="section-subtitle">Generate scannable QR codes for WiFi, URLs, text, and email.</p>
       </div>
 
       <div class="tool-form">
-        <div class="form-group">
-          <label for="ssid" class="label-brutal">Network Name (SSID)</label>
-          <input
-            type="text"
-            id="ssid"
-            class="input-brutal"
-            placeholder="e.g., MyHomeWiFi"
-            required
-          />
+        <div class="type-selector" role="tablist" aria-label="QR code type">
+          <button class="type-btn active" data-type="wifi" role="tab" aria-selected="true" aria-controls="form-wifi">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
+              <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
+              <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
+              <line x1="12" y1="20" x2="12.01" y2="20"/>
+            </svg>
+            <span>WiFi</span>
+          </button>
+          <button class="type-btn" data-type="url" role="tab" aria-selected="false" aria-controls="form-url">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+            <span>URL</span>
+          </button>
+          <button class="type-btn" data-type="text" role="tab" aria-selected="false" aria-controls="form-text">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 5h6"/>
+              <path d="M15 12h6"/>
+              <path d="M3 19h18"/>
+              <path d="m3 12 3.553-7.724a.5.5 0 0 1 .894 0L11 12"/>
+              <path d="M3.92 10h6.16"/>
+            </svg>
+            <span>Text</span>
+          </button>
+          <button class="type-btn" data-type="email" role="tab" aria-selected="false" aria-controls="form-email">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/>
+            </svg>
+            <span>Email</span>
+          </button>
         </div>
 
-        <div class="form-group">
-          <label for="pwd" class="label-brutal">Password</label>
-          <input
-            type="password"
-            id="pwd"
-            class="input-brutal"
-            placeholder="Enter password"
-          />
-          <p class="helper-text">Leave blank for open networks</p>
+        <div id="form-wifi" class="form-section" role="tabpanel">
+          <div class="form-group">
+            <label for="ssid" class="label-brutal">Network Name (SSID)</label>
+            <input
+              type="text"
+              id="ssid"
+              class="input-brutal"
+              placeholder="e.g., MyHomeWiFi"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="pwd" class="label-brutal">Password</label>
+            <input
+              type="password"
+              id="pwd"
+              class="input-brutal"
+              placeholder="Enter password"
+            />
+            <p class="helper-text">Leave blank for open networks</p>
+          </div>
+        </div>
+
+        <div id="form-url" class="form-section hidden" role="tabpanel">
+          <div class="form-group">
+            <label for="url-input" class="label-brutal">Website URL</label>
+            <input
+              type="url"
+              id="url-input"
+              class="input-brutal"
+              placeholder="https://example.com"
+            />
+            <p class="helper-text">Enter the full URL including https://</p>
+          </div>
+        </div>
+
+        <div id="form-text" class="form-section hidden" role="tabpanel">
+          <div class="form-group">
+            <label for="text-input" class="label-brutal">Text Content</label>
+            <textarea
+              id="text-input"
+              class="input-brutal"
+              rows="6"
+              placeholder="Enter your text here..."
+            ></textarea>
+            <p class="helper-text">Supports multiple lines</p>
+          </div>
+        </div>
+
+        <div id="form-email" class="form-section hidden" role="tabpanel">
+          <div class="form-group">
+            <label for="email-to" class="label-brutal">Email Address</label>
+            <input
+              type="email"
+              id="email-to"
+              class="input-brutal"
+              placeholder="someone@example.com"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email-subject" class="label-brutal">Subject <span class="optional">(optional)</span></label>
+            <input
+              type="text"
+              id="email-subject"
+              class="input-brutal"
+              placeholder="Email subject line"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email-body" class="label-brutal">Body <span class="optional">(optional)</span></label>
+            <textarea
+              id="email-body"
+              class="input-brutal"
+              rows="4"
+              placeholder="Message content..."
+            ></textarea>
+          </div>
         </div>
 
         <button id="generate-btn" class="btn-primary w-full">
@@ -98,7 +193,18 @@
 
         <div id="error" class="error-message hidden"></div>
 
-        <div id="qrcode" class="qr-result hidden"></div>
+        <div id="qrcode" class="qr-result hidden">
+          <div class="qr-container">
+          </div>
+          <button id="download-btn" class="btn-secondary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download PNG
+          </button>
+        </div>
       </div>
     </div>
   </main>
