@@ -1,4 +1,5 @@
 let currentType = 'wifi';
+let logoImage = null;
 
 function showError(msg) {
   const errorDiv = document.getElementById("error");
@@ -87,6 +88,57 @@ function escapeSemiColon(str) {
   return str.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/:/g, '\\:').replace(/"/g, '\\"');
 }
 
+function loadLogo(file) {
+  if (!file || !file.type.startsWith('image/')) {
+    showError('Please select a valid image file.');
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      logoImage = img;
+      document.getElementById('logo-preview-img').src = e.target.result;
+      document.getElementById('logo-preview').classList.remove('hidden');
+      clearError();
+    };
+    img.onerror = () => {
+      showError('Failed to load image. Try a different file.');
+    };
+    img.src = e.target.result;
+  };
+  reader.onerror = () => {
+    showError('Failed to read file.');
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearLogo() {
+  logoImage = null;
+  document.getElementById('logo-input').value = '';
+  document.getElementById('logo-preview').classList.add('hidden');
+  document.getElementById('logo-preview-img').src = '';
+}
+
+function drawLogoOnCanvas(canvas) {
+  if (!logoImage) return;
+
+  const ctx = canvas.getContext('2d');
+  const qrSize = canvas.width;
+  const logoSize = Math.floor(qrSize * 0.22);
+  const padding = Math.floor(logoSize * 0.1);
+  const totalSize = logoSize + padding * 2;
+  const position = (qrSize - totalSize) / 2;
+
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(position, position, totalSize, totalSize);
+
+  const logoX = position + padding;
+  const logoY = position + padding;
+  ctx.drawImage(logoImage, logoX, logoY, logoSize, logoSize);
+}
+
 function generateQR() {
   clearError();
   clearQR();
@@ -135,6 +187,12 @@ function generateQR() {
       correctLevel: QRCode.CorrectLevel.H,
     });
     console.log("QR generated!");
+
+    const canvas = container.querySelector('canvas');
+    if (canvas && logoImage) {
+      drawLogoOnCanvas(canvas);
+    }
+
     qrDiv.classList.remove("hidden");
     setTimeout(() => qrDiv.classList.add("show"), 0);
   } catch (err) {
@@ -193,5 +251,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const downloadBtn = document.getElementById("download-btn");
   if (generateBtn) generateBtn.addEventListener("click", generateQR);
   if (downloadBtn) downloadBtn.addEventListener("click", downloadQR);
+
+  const logoInput = document.getElementById('logo-input');
+  const uploadLogoBtn = document.getElementById('upload-logo-btn');
+  const removeLogoBtn = document.getElementById('remove-logo-btn');
+
+  if (uploadLogoBtn && logoInput) {
+    uploadLogoBtn.addEventListener('click', () => logoInput.click());
+    logoInput.addEventListener('change', (e) => {
+      if (e.target.files && e.target.files[0]) {
+        loadLogo(e.target.files[0]);
+      }
+    });
+  }
+
+  if (removeLogoBtn) {
+    removeLogoBtn.addEventListener('click', clearLogo);
+  }
+
   console.log("Ready. Library loaded:", typeof QRCode !== "undefined");
 });
