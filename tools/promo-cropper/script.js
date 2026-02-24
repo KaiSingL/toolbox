@@ -6,6 +6,9 @@ const container = document.getElementById('crop-container');
 const canvas = document.querySelector('.tool-canvas');
 const overlay = document.getElementById('crop-overlay');
 const sizeSelect = document.getElementById('size');
+const customSizeSection = document.getElementById('custom-size-section');
+const customWidth = document.getElementById('custom-width');
+const customHeight = document.getElementById('custom-height');
 const previewCanvas = document.getElementById('preview');
 const previewContainer = document.getElementById('preview-container');
 const downloadBtn = document.getElementById('download');
@@ -88,7 +91,14 @@ function loadImage(file) {
 }
 
 function initializeCrop() {
-    [targetW, targetH] = sizeSelect.value.split('x').map(Number);
+    if (sizeSelect.value === 'custom') {
+        targetW = parseInt(customWidth.value) || 440;
+        targetH = parseInt(customHeight.value) || 280;
+        customSizeSection.classList.remove('hidden');
+    } else {
+        [targetW, targetH] = sizeSelect.value.split('x').map(Number);
+        customSizeSection.classList.add('hidden');
+    }
 
     overlay.style.width = `${targetW}px`;
     overlay.style.height = `${targetH}px`;
@@ -245,7 +255,14 @@ sizeSelect.addEventListener('change', handleSizeChange);
 function handleSizeChange() {
     if (!img.src) return;
 
-    [targetW, targetH] = sizeSelect.value.split('x').map(Number);
+    if (sizeSelect.value === 'custom') {
+        customSizeSection.classList.remove('hidden');
+        targetW = parseInt(customWidth.value) || 440;
+        targetH = parseInt(customHeight.value) || 280;
+    } else {
+        customSizeSection.classList.add('hidden');
+        [targetW, targetH] = sizeSelect.value.split('x').map(Number);
+    }
 
     overlay.style.width = `${targetW}px`;
     overlay.style.height = `${targetH}px`;
@@ -262,6 +279,31 @@ function handleSizeChange() {
     overlayTop = containerOffsetTop + imgTop + (displayH - targetH) / 2;
     updateOverlayPosition();
 }
+
+function handleCustomSizeChange() {
+    if (sizeSelect.value !== 'custom' || !img.src) return;
+    
+    targetW = Math.max(1, parseInt(customWidth.value) || 1);
+    targetH = Math.max(1, parseInt(customHeight.value) || 1);
+
+    overlay.style.width = `${targetW}px`;
+    overlay.style.height = `${targetH}px`;
+
+    const displayW = img.naturalWidth * scale;
+    const displayH = img.naturalHeight * scale;
+
+    const containerRect = container.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+    const containerOffsetLeft = containerRect.left - canvasRect.left;
+    const containerOffsetTop = containerRect.top - canvasRect.top;
+
+    overlayLeft = containerOffsetLeft + imgLeft + (displayW - targetW) / 2;
+    overlayTop = containerOffsetTop + imgTop + (displayH - targetH) / 2;
+    updateOverlayPosition();
+}
+
+customWidth.addEventListener('input', handleCustomSizeChange);
+customHeight.addEventListener('input', handleCustomSizeChange);
 
 function clampOverlayToBounds() {
     if (!img.src) return;
@@ -421,8 +463,11 @@ confirmBtn.addEventListener('click', () => {
 });
 
 downloadBtn.addEventListener('click', () => {
+    const sizeLabel = sizeSelect.value === 'custom' 
+        ? `${targetW}x${targetH}` 
+        : sizeSelect.value;
     const link = document.createElement('a');
-    link.download = `chrome-promo-${sizeSelect.value}.png`;
+    link.download = `chrome-promo-${sizeLabel}.png`;
     link.href = previewCanvas.toDataURL('image/png');
     link.click();
 });

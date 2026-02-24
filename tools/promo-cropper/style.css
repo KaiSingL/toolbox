@@ -178,6 +178,26 @@
     text-align: center;
 }
 
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+.custom-size-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.custom-size-row .input-brutal {
+    width: 80px;
+}
+.custom-size-row .label-brutal {
+    margin: 0;
+}
+
 @media (max-width: 768px) {
     .tool-sidebar {
         position: fixed;
