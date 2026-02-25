@@ -31,11 +31,11 @@ Resize icons to multiple standard sizes at once. Perfect for web and mobile deve
   - Drag & drop support
 - **Tech:** HTML5 Canvas, Vanilla JavaScript, JSZip, FileSaver.js
 
-### WiFi QR Code Generator
-Generate scannable QR codes for WiFi networks. Supports WPA2 security and open networks.
+### QR Code Generator
+Generate QR codes for various types. Supports WiFi networks, URLs, text, and more.
 - **Features:**
-  - Enter network SSID and password
-  - Choose security type (WPA2, WEP, or open)
+  - Multiple QR code types: WiFi, URL, Text, Email, Phone, SMS
+  - Optional logo overlay for WiFi QR codes
   - Download QR code as PNG
   - Works on all devices with QR scanner
 - **Tech:** QRCode.js, Vanilla JavaScript
@@ -66,7 +66,28 @@ Extract frames from videos as PNG images. Upload a video and grab any frame inst
   - Frame capture at exact playback position
   - Download captured frame as PNG
   - Drag & drop video support
-- **Tech:** HTML5 Video, Canvas, Vanilla JavaScript, FileSaver.js
+  - View captured frames in grid
+  - Bulk download all frames as ZIP
+- **Tech:** HTML5 Video, Canvas, Vanilla JavaScript, JSZip, FileSaver.js
+
+### Log Reader
+View and search large log files directly in your browser. Handles files up to 10GB+.
+- **Features:**
+  - Streaming support for massive files (10GB+)
+  - Web Worker-powered search for fast results
+  - Syntax highlighting
+  - Navigate to specific line numbers
+  - Download by line range
+  - Match navigation with keyboard shortcuts
+- **Tech:** Vanilla JavaScript, Web Workers
+
+### Gif Frame Grabber
+Extract frames from animated GIFs as PNG images.
+- **Features:**
+  - Browse and select frames from GIF
+  - Download individual frames
+  - Bulk download all frames as ZIP
+- **Tech:** HTML5 Canvas, Vanilla JavaScript, JSZip, FileSaver.js
 
 ## 🛠️ Tech Stack
 
