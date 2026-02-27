@@ -110,14 +110,16 @@ export const markdownTheme = EditorView.baseTheme({
     // RENDERED MODE STYLES
     // ========================================
     '&.mode-rendered .cm-md-bold': {
-        fontWeight: '700 !important'
+        fontWeight: '700 !important',
+        color: 'inherit !important'
     },
     '&.mode-rendered .cm-md-italic': {
         fontStyle: 'italic !important',
         color: '#4ec9b0 !important'
     },
     '&.mode-rendered .cm-md-strike': {
-        textDecoration: 'line-through !important'
+        textDecoration: 'line-through !important',
+        color: 'inherit !important'
     },
     '&.mode-rendered .cm-md-code': {
         fontFamily: 'var(--font-mono, "JetBrains Mono", monospace) !important',
@@ -501,10 +503,10 @@ export const markdownTheme = EditorView.baseTheme({
     '.cm-content .ͼ7': {
         color: '#cac8f4 !important'
     },
-    '.cm-content .ͼ8': {
+    '&.mode-raw .cm-content .ͼ8': {
         fontWeight: '700 !important'
     },
-    '.cm-content .ͼ9': {
+    '&.mode-raw .cm-content .ͼ9': {
         color: '#4ec9b0 !important',
         fontStyle: 'normal !important',
         fontWeight: 'normal !important'

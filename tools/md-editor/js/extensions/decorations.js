@@ -126,8 +126,6 @@ function parseLineDecorations(line, lineFrom, cursorPos, mode) {
             }
             decorations.push({ from: contentFrom, to: contentTo, decoration: blockquoteMark });
         }
-        
-        return decorations;
     }
     
     const taskMatch = line.match(/^(\s*)(- \[[ x]\])(\s+)(.*)$/);
