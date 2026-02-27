@@ -45,6 +45,32 @@ export const markdownTheme = EditorView.baseTheme({
         padding: '0 4px',
         borderRadius: '2px'
     },
+    '.cm-foldGutter': {
+        width: '16px !important'
+    },
+    '.cm-foldGutter .cm-gutterElement': {
+        cursor: 'pointer !important',
+        color: 'var(--text-muted, #666) !important',
+        fontSize: '16px !important',
+        lineHeight: '1.7 !important',
+        padding: '0 2px !important',
+        transition: 'color 0.15s ease, transform 0.15s ease'
+    },
+    '.cm-foldGutter .cm-gutterElement:hover': {
+        color: 'var(--accent, #cac8f4) !important'
+    },
+    '.cm-foldGutter .cm-gutterElement::after': {
+        content: '"▸"',
+        display: 'inline-block',
+        transition: 'transform 0.15s ease'
+    },
+    '.cm-foldGutter .cm-gutterElement.cm-canFold::after': {
+        content: '"▾"'
+    },
+    '.cm-foldGutter .cm-gutterElement.cm-canUnfold::after': {
+        content: '"▸"',
+        transform: 'rotate(-90deg)'
+    },
     '.cm-scroller': {
         overflow: 'auto'
     },
@@ -61,14 +87,16 @@ export const markdownTheme = EditorView.baseTheme({
         textDecoration: 'none !important'
     },
     '.cm-md-bold': {
-        fontWeight: '700 !important'
+        fontWeight: '700 !important',
+        color: '#ffd700 !important'
     },
     '.cm-md-bold-color': {
         color: '#ffd700 !important',
         fontWeight: 'normal !important'
     },
     '.cm-md-italic': {
-        fontStyle: 'italic !important'
+        fontStyle: 'italic !important',
+        color: '#4ec9b0 !important'
     },
     '.cm-md-italic-color': {
         color: '#4ec9b0 !important',
@@ -207,9 +235,12 @@ export const markdownTheme = EditorView.baseTheme({
     },
     '.cm-md-table': {
         borderCollapse: 'collapse !important',
-        margin: '8px 0 !important',
+        margin: '12px 0 !important',
         display: 'table !important',
-        width: '100% !important'
+        width: '100% !important',
+        border: '1px solid var(--border-color, #333) !important',
+        borderRadius: '2px !important',
+        overflow: 'hidden !important'
     },
     '.cm-md-table-row': {
         display: 'table-row !important'
@@ -217,11 +248,14 @@ export const markdownTheme = EditorView.baseTheme({
     '.cm-md-table-cell': {
         border: '1px solid var(--border-color, #333) !important',
         padding: '8px 12px !important',
-        display: 'table-cell !important'
+        display: 'table-cell !important',
+        verticalAlign: 'middle !important'
     },
     '.cm-md-table-header': {
-        background: 'rgba(255, 255, 255, 0.05) !important',
-        fontWeight: '600 !important'
+        background: 'rgba(202, 200, 244, 0.1) !important',
+        fontWeight: '600 !important',
+        color: 'var(--accent, #cac8f4) !important',
+        textAlign: 'left !important'
     },
     '.cm-md-emoji': {
         fontFamily: '"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif !important'

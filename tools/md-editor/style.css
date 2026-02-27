@@ -188,10 +188,12 @@
 
 .cm-md-bold {
     font-weight: 700 !important;
+    color: #ffd700 !important;
 }
 
 .cm-md-italic {
     font-style: italic !important;
+    color: #4ec9b0 !important;
 }
 
 .cm-md-strike {
@@ -391,4 +393,55 @@
 .cm-tooltip-autocomplete li[aria-selected="true"] {
     background: var(--accent, #cac8f4) !important;
     color: var(--bg-primary, #050505) !important;
+}
+
+.cm-foldGutter {
+    width: 20px !important;
+}
+
+.cm-foldGutter .cm-gutterElement {
+    cursor: pointer !important;
+    color: var(--text-muted, #666) !important;
+    font-size: 14px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: color 0.15s ease !important;
+}
+
+.cm-foldGutter .cm-gutterElement:hover {
+    color: var(--accent, #cac8f4) !important;
+}
+
+.cm-foldGutter span[title="Fold line"],
+.cm-foldGutter span[title="Unfold line"] {
+    position: relative;
+    width: 16px;
+    height: 16px;
+}
+
+.cm-foldGutter span[title="Fold line"]::before,
+.cm-foldGutter span[title="Unfold line"]::before {
+    content: '';
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-color: currentColor transparent transparent transparent;
+}
+
+.cm-foldGutter span[title="Fold line"]::before {
+    border-width: 5px 4px 0 4px;
+    transform: rotate(180deg);
+}
+
+.cm-foldGutter span[title="Unfold line"]::before {
+    border-width: 5px 4px 0 4px;
+}
+
+.cm-gutter .cm-foldMarker {
+    color: var(--accent, #cac8f4) !important;
+    font-size: 12px !important;
+    padding: 0 2px !important;
 }

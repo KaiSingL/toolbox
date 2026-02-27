@@ -1,5 +1,5 @@
 import { Decoration, WidgetType, EditorView } from '@codemirror/view';
-import { StateField } from '@codemirror/state';
+import { StateField, RangeSetBuilder } from '@codemirror/state';
 import { getEmoji, parseMermaidBlock } from '../utils/markdown-parser.js';
 import { renderModeField, setRenderMode } from './decorations.js';
 
@@ -239,11 +239,11 @@ class TableWidget extends WidgetType {
             const tr = document.createElement('tr');
             tr.className = 'cm-md-table-row';
             
-            row.forEach(cell => {
-                const td = document.createElement('td');
-                td.className = rowIndex === 0 ? 'cm-md-table-cell cm-md-table-header' : 'cm-md-table-cell';
-                td.textContent = cell;
-                tr.appendChild(td);
+            row.forEach((cell, cellIndex) => {
+                const cellEl = rowIndex === 0 ? document.createElement('th') : document.createElement('td');
+                cellEl.className = rowIndex === 0 ? 'cm-md-table-cell cm-md-table-header' : 'cm-md-table-cell';
+                cellEl.textContent = cell;
+                tr.appendChild(cellEl);
             });
             
             table.appendChild(tr);
@@ -258,12 +258,42 @@ class TableWidget extends WidgetType {
     }
 }
 
+function parseTableRow(line) {
+    const cells = [];
+    let current = '';
+    let inCode = false;
+    
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        
+        if (char === '`') {
+            inCode = !inCode;
+            current += char;
+        } else if (char === '|' && !inCode) {
+            cells.push(current.trim());
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    
+    if (current.trim()) {
+        cells.push(current.trim());
+    }
+    
+    return cells.filter(cell => cell !== '');
+}
+
+function isTableSeparator(line) {
+    return /^\|?[\s]*:?-+:?[\s]*\|/.test(line) || /^[\s]*:?-+:?[\s]*\|/.test(line);
+}
+
 export function buildWidgets(state) {
     if (state.field(renderModeField) === 'raw') {
         return Decoration.none;
     }
     
-    const widgets = [];
+    const builder = new RangeSetBuilder();
     const doc = state.doc;
     const text = doc.toString();
     const lines = text.split('\n');
@@ -271,80 +301,117 @@ export function buildWidgets(state) {
     let inCodeBlock = false;
     let codeBlockLang = '';
     let codeBlockStart = 0;
+    let codeBlockEnd = 0;
     let codeBlockContent = '';
     
     let inMathBlock = false;
     let mathBlockStart = 0;
+    let mathBlockEnd = 0;
     let mathBlockContent = '';
     
     let inMermaidBlock = false;
     let mermaidBlockStart = 0;
+    let mermaidBlockEnd = 0;
     let mermaidBlockContent = '';
     
     let inTable = false;
     let tableStart = 0;
+    let tableEnd = 0;
     let tableRows = [];
     
-    for (let i = 0; i < lines.length; i++) {
+    let i = 0;
+    while (i < lines.length) {
         const line = lines[i];
         const lineStart = doc.line(i + 1).from;
         const lineEnd = doc.line(i + 1).to;
         
         if (inMermaidBlock) {
             if (line.trim() === '```') {
-                const widget = Decoration.widget({
+                mermaidBlockEnd = lineEnd;
+                const widget = Decoration.replace({
                     widget: new MermaidWidget(mermaidBlockContent.trim()),
-                    side: 1,
                     block: true
                 });
-                widgets.push(widget.range(lineStart));
+                builder.add(mermaidBlockStart, mermaidBlockEnd, widget);
                 
                 inMermaidBlock = false;
                 mermaidBlockContent = '';
             } else {
                 mermaidBlockContent += line + '\n';
             }
+            i++;
             continue;
         }
         
         if (inCodeBlock) {
             if (line.trim() === '```') {
-                const widget = Decoration.widget({
+                codeBlockEnd = lineEnd;
+                const widget = Decoration.replace({
                     widget: new CodeBlockWidget(codeBlockContent.trimEnd(), codeBlockLang),
-                    side: 1,
                     block: true
                 });
-                widgets.push(widget.range(codeBlockStart));
+                builder.add(codeBlockStart, codeBlockEnd, widget);
                 
                 inCodeBlock = false;
                 codeBlockContent = '';
             } else {
                 codeBlockContent += line + '\n';
             }
+            i++;
             continue;
         }
         
         if (inMathBlock) {
             if (line.trim() === '$$') {
-                const widget = Decoration.widget({
+                mathBlockEnd = lineEnd;
+                const widget = Decoration.replace({
                     widget: new KatexWidget(mathBlockContent.trim(), true),
-                    side: 1,
                     block: true
                 });
-                widgets.push(widget.range(mathBlockStart));
+                builder.add(mathBlockStart, mathBlockEnd, widget);
                 
                 inMathBlock = false;
                 mathBlockContent = '';
             } else {
                 mathBlockContent += line + '\n';
             }
+            i++;
+            continue;
+        }
+        
+        if (inTable) {
+            if (line.trim() === '' || !line.includes('|')) {
+                tableEnd = doc.line(i).from;
+                if (tableRows.length > 0) {
+                    const widget = Decoration.replace({
+                        widget: new TableWidget(tableRows),
+                        block: true
+                    });
+                    builder.add(tableStart, tableEnd, widget);
+                }
+                inTable = false;
+                tableRows = [];
+                continue;
+            } else if (isTableSeparator(line)) {
+                i++;
+                continue;
+            } else {
+                const cells = parseTableRow(line);
+                if (cells.length > 0) {
+                    tableRows.push(cells);
+                }
+                tableEnd = lineEnd;
+            }
+            i++;
             continue;
         }
         
         if (line.trim() === '```mermaid') {
             inMermaidBlock = true;
             mermaidBlockStart = lineStart;
+            mermaidBlockEnd = lineEnd;
             mermaidBlockContent = '';
+            i++;
             continue;
         }
         
@@ -353,25 +420,43 @@ export function buildWidgets(state) {
             inCodeBlock = true;
             codeBlockLang = codeMatch[1] || 'text';
             codeBlockStart = lineStart;
+            codeBlockEnd = lineEnd;
             codeBlockContent = '';
+            i++;
             continue;
         }
         
         if (line.trim() === '$$') {
             inMathBlock = true;
             mathBlockStart = lineStart;
+            mathBlockEnd = lineEnd;
             mathBlockContent = '';
+            i++;
             continue;
         }
         
         if (/^[-]{3,}$|^[*]{3,}$|^[_]{3,}$/.test(line.trim()) && line.trim().length >= 3) {
-            const widget = Decoration.widget({
+            const widget = Decoration.replace({
                 widget: new HorizontalRuleWidget(),
-                side: 1,
                 block: true
             });
-            widgets.push(widget.range(lineStart));
+            builder.add(lineStart, lineEnd, widget);
+            i++;
             continue;
+        }
+        
+        if (line.includes('|') && !line.includes('`|`') && !line.trim().startsWith('>')) {
+            if (!isTableSeparator(line)) {
+                const cells = parseTableRow(line);
+                if (cells.length >= 2) {
+                    inTable = true;
+                    tableStart = lineStart;
+                    tableEnd = lineEnd;
+                    tableRows = [cells];
+                    i++;
+                    continue;
+                }
+            }
         }
         
         const imageMatch = line.match(/!\[([^\]]*)\]\(([^)]+)\)/);
@@ -379,11 +464,11 @@ export function buildWidgets(state) {
             const idx = line.indexOf(imageMatch[0]);
             if (idx !== -1) {
                 const pos = lineStart + idx;
-                const widget = Decoration.widget({
-                    widget: new ImageWidget(imageMatch[2], imageMatch[1]),
-                    side: 1
+                const endPos = pos + imageMatch[0].length;
+                const widget = Decoration.replace({
+                    widget: new ImageWidget(imageMatch[2], imageMatch[1])
                 });
-                widgets.push(widget.range(pos));
+                builder.add(pos, endPos, widget);
             }
         }
         
@@ -393,11 +478,11 @@ export function buildWidgets(state) {
             const emoji = getEmoji(emojiMatch[1]);
             if (emoji) {
                 const pos = lineStart + emojiMatch.index;
-                const widget = Decoration.widget({
-                    widget: new EmojiWidget(emoji),
-                    side: 0
+                const endPos = pos + emojiMatch[0].length;
+                const widget = Decoration.replace({
+                    widget: new EmojiWidget(emoji)
                 });
-                widgets.push(widget.range(pos));
+                builder.add(pos, endPos, widget);
             }
         }
         
@@ -405,11 +490,11 @@ export function buildWidgets(state) {
         let mathMatch;
         while ((mathMatch = inlineMathRegex.exec(line)) !== null) {
             const pos = lineStart + mathMatch.index;
-            const widget = Decoration.widget({
-                widget: new KatexWidget(mathMatch[1], false),
-                side: 0
+            const endPos = pos + mathMatch[0].length;
+            const widget = Decoration.replace({
+                widget: new KatexWidget(mathMatch[1], false)
             });
-            widgets.push(widget.range(pos));
+            builder.add(pos, endPos, widget);
         }
         
         const taskMatch = line.match(/^(\s*)- \[([ x])\]/);
@@ -418,16 +503,26 @@ export function buildWidgets(state) {
             const idx = line.indexOf('- [');
             if (idx !== -1) {
                 const pos = lineStart + idx;
-                const widget = Decoration.widget({
-                    widget: new CheckboxWidget(checked, lineStart),
-                    side: 0
+                const endPos = pos + taskMatch[0].trim().length;
+                const widget = Decoration.replace({
+                    widget: new CheckboxWidget(checked, lineStart)
                 });
-                widgets.push(widget.range(pos));
+                builder.add(pos, endPos, widget);
             }
         }
+        
+        i++;
     }
     
-    return Decoration.set(widgets, true);
+    if (inTable && tableRows.length > 0) {
+        const widget = Decoration.replace({
+            widget: new TableWidget(tableRows),
+            block: true
+        });
+        builder.add(tableStart, doc.length, widget);
+    }
+    
+    return builder.finish();
 }
 
 export const widgetExtension = () => {

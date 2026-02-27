@@ -201,8 +201,8 @@ function parseLineDecorations(line, lineFrom, cursorPos, mode) {
         { regex: /\*\*\*(.+?)\*\*\*/g, markerLen: 3, styleMark: boldMark, colorMark: boldColorMark, ghostMark: ghostBoldMark },
         { regex: /\*\*(.+?)\*\*/g, markerLen: 2, styleMark: boldMark, colorMark: boldColorMark, ghostMark: ghostBoldMark },
         { regex: /__(.+?)__/g, markerLen: 2, styleMark: boldMark, colorMark: boldColorMark, ghostMark: ghostBoldMark },
-        { regex: /\*(.+?)\*/g, markerLen: 1, styleMark: italicMark, colorMark: italicColorMark, ghostMark: ghostItalicMark },
-        { regex: /_(.+?)_/g, markerLen: 1, styleMark: italicMark, colorMark: italicColorMark, ghostMark: ghostItalicMark },
+        { regex: /(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)/g, markerLen: 1, styleMark: italicMark, colorMark: italicColorMark, ghostMark: ghostItalicMark },
+        { regex: /(?<!_)_(?!_)(.+?)(?<!_)_(?!_)/g, markerLen: 1, styleMark: italicMark, colorMark: italicColorMark, ghostMark: ghostItalicMark },
         { regex: /~~(.+?)~~/g, markerLen: 2, styleMark: strikeMark, colorMark: strikeColorMark, ghostMark: ghostStrikeMark }
     ];
     
