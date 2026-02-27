@@ -59,18 +59,6 @@ export const markdownTheme = EditorView.baseTheme({
     '.cm-foldGutter .cm-gutterElement:hover': {
         color: 'var(--accent, #cac8f4) !important'
     },
-    '.cm-foldGutter .cm-gutterElement::after': {
-        content: '"▸"',
-        display: 'inline-block',
-        transition: 'transform 0.15s ease'
-    },
-    '.cm-foldGutter .cm-gutterElement.cm-canFold::after': {
-        content: '"▾"'
-    },
-    '.cm-foldGutter .cm-gutterElement.cm-canUnfold::after': {
-        content: '"▸"',
-        transform: 'rotate(-90deg)'
-    },
     '.cm-scroller': {
         overflow: 'auto'
     },
