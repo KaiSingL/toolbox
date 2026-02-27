@@ -55,19 +55,51 @@ export const markdownTheme = EditorView.baseTheme({
         overflow: 'hidden !important'
     },
     '.cm-md-ghost': {
-        opacity: '0.55 !important'
+        opacity: '0.55 !important',
+        fontWeight: 'normal !important',
+        fontStyle: 'normal !important',
+        textDecoration: 'none !important'
     },
     '.cm-md-bold': {
-        fontWeight: '700 !important',
-        color: '#ffd700 !important'
+        fontWeight: '700 !important'
+    },
+    '.cm-md-bold-color': {
+        color: '#ffd700 !important',
+        fontWeight: 'normal !important'
     },
     '.cm-md-italic': {
-        fontStyle: 'italic !important',
-        color: '#4ec9b0 !important'
+        fontStyle: 'italic !important'
+    },
+    '.cm-md-italic-color': {
+        color: '#4ec9b0 !important',
+        fontStyle: 'normal !important'
     },
     '.cm-md-strike': {
-        textDecoration: 'line-through !important',
-        color: '#f14c4c !important'
+        textDecoration: 'line-through !important'
+    },
+    '.cm-md-strike-color': {
+        color: '#f14c4c !important',
+        textDecoration: 'none !important'
+    },
+    '.cm-md-plain': {
+        fontWeight: 'normal !important',
+        fontStyle: 'normal !important',
+        textDecoration: 'none !important'
+    },
+    '.cm-md-code-color': {
+        color: '#98c379 !important',
+        background: 'transparent !important',
+        padding: '0 !important'
+    },
+    '.cm-md-link-color': {
+        color: '#ffa657 !important',
+        textDecoration: 'none !important'
+    },
+    '.cm-md-blockquote-color': {
+        color: '#6a9955 !important',
+        fontStyle: 'normal !important',
+        borderLeft: 'none !important',
+        paddingLeft: '0 !important'
     },
     '.cm-md-code': {
         fontFamily: 'var(--font-mono, "JetBrains Mono", monospace) !important',
@@ -256,34 +288,28 @@ export const markdownTheme = EditorView.baseTheme({
         color: '#888888 !important'
     },
     '.cm-strong': {
-        color: '#ffd700 !important',
-        fontWeight: '700 !important'
+        color: '#ffd700 !important'
     },
     '.cm-em': {
-        color: '#4ec9b0 !important',
-        fontStyle: 'italic !important'
+        color: '#4ec9b0 !important'
     },
     '.cm-strikethrough': {
-        color: '#f14c4c !important',
-        textDecoration: 'line-through !important'
+        color: '#f14c4c !important'
     },
     '.cm-link': {
-        color: '#ffa657 !important',
-        textDecoration: 'underline !important'
+        color: '#ffa657 !important'
     },
     '.cm-url': {
         color: '#888888 !important'
     },
     '.cm-monospace': {
-        color: '#98c379 !important',
-        background: 'rgba(152, 195, 121, 0.15) !important'
+        color: '#98c379 !important'
     },
     '.cm-list': {
         color: '#cac8f4 !important'
     },
     '.cm-quote': {
-        color: '#6a9955 !important',
-        fontStyle: 'italic !important'
+        color: '#6a9955 !important'
     },
     '.cm-meta': {
         color: '#888888 !important'
