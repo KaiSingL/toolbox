@@ -222,25 +222,7 @@ function init() {
     setupEventListeners(fileOps);
     updateStats(state);
 
-    injectCMTokenOverrides();
-
     editor.focus();
-}
-
-function injectCMTokenOverrides() {
-    const style = document.createElement('style');
-    style.id = 'cm-token-overrides-dynamic';
-    style.textContent = `
-.cm-content .ͼ5 { color: #888888 !important; }
-.cm-content .ͼ7 { color: #cac8f4 !important; }
-.cm-content .ͼ8 { color: #ffd700 !important; }
-.cm-content .ͼ9 { color: #4ec9b0 !important; font-style: normal !important; font-weight: normal !important; }
-.cm-content .ͼa { color: #98c379 !important; text-decoration: none !important; }
-.cm-content .ͼb { color: #ffa657 !important; }
-.cm-content .ͼc { color: #6a9955 !important; font-style: normal !important; }
-.cm-content .ͼe { color: #ffa657 !important; }
-`;
-    document.head.appendChild(style);
 }
 
 function toggleMode() {

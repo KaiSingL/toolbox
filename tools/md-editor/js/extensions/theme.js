@@ -75,8 +75,7 @@ export const markdownTheme = EditorView.baseTheme({
         textDecoration: 'none !important'
     },
     '.cm-md-bold': {
-        fontWeight: '700 !important',
-        color: '#ffd700 !important'
+        fontWeight: '700 !important'
     },
     '.cm-md-bold-color': {
         color: '#ffd700 !important',
@@ -310,7 +309,7 @@ export const markdownTheme = EditorView.baseTheme({
         color: '#888888 !important'
     },
     '.cm-strong': {
-        color: '#ffd700 !important'
+        fontWeight: '700 !important'
     },
     '.cm-em': {
         color: '#4ec9b0 !important'
@@ -335,5 +334,33 @@ export const markdownTheme = EditorView.baseTheme({
     },
     '.cm-meta': {
         color: '#888888 !important'
+    },
+    '.cm-content .ͼ5': {
+        color: '#888888 !important'
+    },
+    '.cm-content .ͼ7': {
+        color: '#cac8f4 !important'
+    },
+    '.cm-content .ͼ8': {
+        fontWeight: '700 !important'
+    },
+    '.cm-content .ͼ9': {
+        color: '#4ec9b0 !important',
+        fontStyle: 'normal !important',
+        fontWeight: 'normal !important'
+    },
+    '.cm-content .ͼa': {
+        color: '#98c379 !important',
+        textDecoration: 'none !important'
+    },
+    '.cm-content .ͼb': {
+        color: '#ffa657 !important'
+    },
+    '.cm-content .ͼc': {
+        color: '#6a9955 !important',
+        fontStyle: 'normal !important'
+    },
+    '.cm-content .ͼe': {
+        color: '#ffa657 !important'
     }
 });
