@@ -1,6 +1,7 @@
 import { EditorView } from '@codemirror/view';
 
 export const markdownTheme = EditorView.baseTheme({
+    // Base styles (apply to all modes)
     '&': {
         backgroundColor: 'var(--bg-secondary, #111111)',
         color: 'var(--text-primary, #e0e0e0)',
@@ -62,61 +63,63 @@ export const markdownTheme = EditorView.baseTheme({
     '.cm-scroller': {
         overflow: 'auto'
     },
+    '.cm-tooltip': {
+        background: 'var(--bg-secondary, #111111) !important',
+        border: '1px solid var(--border-color, #333) !important',
+        borderRadius: '2px !important',
+        color: 'var(--text-primary, #e0e0e0) !important',
+        fontFamily: 'var(--font-mono, "JetBrains Mono", monospace) !important',
+        fontSize: '12px !important'
+    },
+    '.cm-tooltip-autocomplete': {
+        padding: '4px !important'
+    },
+    '.cm-tooltip-autocomplete li': {
+        padding: '4px 8px !important',
+        borderRadius: '2px !important'
+    },
+    '.cm-tooltip-autocomplete li[aria-selected="true"]': {
+        background: 'var(--accent, #cac8f4) !important',
+        color: 'var(--bg-primary, #050505) !important'
+    },
+    
+    // Hidden mark (used in rendered mode to hide syntax markers)
     '.cm-md-hidden': {
         fontSize: '0 !important',
         display: 'inline-block !important',
         width: '0 !important',
         overflow: 'hidden !important'
     },
+    
+    // Base ghost class (fallback for elements without dedicated ghost class)
     '.cm-md-ghost': {
         opacity: '0.55 !important',
         fontWeight: 'normal !important',
         fontStyle: 'normal !important',
         textDecoration: 'none !important'
     },
-    '.cm-md-bold': {
-        fontWeight: '700 !important'
-    },
-    '.cm-md-bold-color': {
-        color: '#ffd700 !important',
-        fontWeight: 'normal !important'
-    },
-    '.cm-md-italic': {
-        fontStyle: 'italic !important',
-        color: '#4ec9b0 !important'
-    },
-    '.cm-md-italic-color': {
-        color: '#4ec9b0 !important',
-        fontStyle: 'normal !important'
-    },
-    '.cm-md-strike': {
-        textDecoration: 'line-through !important'
-    },
-    '.cm-md-strike-color': {
-        color: '#f14c4c !important',
-        textDecoration: 'none !important'
-    },
+    
+    // Plain text reset (used in raw mode for content)
     '.cm-md-plain': {
         fontWeight: 'normal !important',
         fontStyle: 'normal !important',
         textDecoration: 'none !important'
     },
-    '.cm-md-code-color': {
-        color: '#98c379 !important',
-        background: 'transparent !important',
-        padding: '0 !important'
+    
+    // ========================================
+    // RENDERED MODE STYLES
+    // ========================================
+    '&.mode-rendered .cm-md-bold': {
+        fontWeight: '700 !important'
     },
-    '.cm-md-link-color': {
-        color: '#ffa657 !important',
-        textDecoration: 'none !important'
+    '&.mode-rendered .cm-md-italic': {
+        fontStyle: 'italic !important',
+        color: '#4ec9b0 !important'
     },
-    '.cm-md-blockquote-color': {
-        color: '#6a9955 !important',
-        fontStyle: 'normal !important',
-        borderLeft: 'none !important',
-        paddingLeft: '0 !important'
+    '&.mode-rendered .cm-md-strike': {
+        textDecoration: 'line-through !important'
     },
-    '.cm-md-code': {
+    '&.mode-rendered .cm-md-code': {
         fontFamily: 'var(--font-mono, "JetBrains Mono", monospace) !important',
         background: 'rgba(152, 195, 121, 0.15) !important',
         color: '#98c379 !important',
@@ -124,70 +127,245 @@ export const markdownTheme = EditorView.baseTheme({
         borderRadius: '2px !important',
         fontSize: '0.9em !important'
     },
-    '.cm-md-h1': {
+    '&.mode-rendered .cm-md-link': {
+        color: '#ffa657 !important',
+        textDecoration: 'underline !important',
+        cursor: 'pointer !important'
+    },
+    '&.mode-rendered .cm-md-link:hover': {
+        textDecoration: 'none !important'
+    },
+    '&.mode-rendered .cm-md-blockquote': {
+        borderLeft: '3px solid #6a9955 !important',
+        paddingLeft: '16px !important',
+        color: '#6a9955 !important',
+        fontStyle: 'italic !important'
+    },
+    '&.mode-rendered .cm-md-list-marker': {
+        color: 'var(--accent, #cac8f4) !important'
+    },
+    '&.mode-rendered .cm-md-h1': {
         fontFamily: '"Clash Display", sans-serif !important',
         fontSize: '2em !important',
         fontWeight: '700 !important',
         lineHeight: '1.3 !important',
         color: '#cac8f4 !important'
     },
-    '.cm-md-h2': {
+    '&.mode-rendered .cm-md-h2': {
         fontFamily: '"Clash Display", sans-serif !important',
         fontSize: '1.5em !important',
         fontWeight: '600 !important',
         lineHeight: '1.3 !important',
         color: '#cac8f4 !important'
     },
-    '.cm-md-h3': {
+    '&.mode-rendered .cm-md-h3': {
         fontFamily: '"Clash Display", sans-serif !important',
         fontSize: '1.25em !important',
         fontWeight: '600 !important',
         lineHeight: '1.3 !important',
         color: '#cac8f4 !important'
     },
-    '.cm-md-h4': {
+    '&.mode-rendered .cm-md-h4': {
         fontFamily: '"Clash Display", sans-serif !important',
         fontSize: '1.1em !important',
         fontWeight: '600 !important',
         lineHeight: '1.3 !important',
         color: '#cac8f4 !important'
     },
-    '.cm-md-h5': {
+    '&.mode-rendered .cm-md-h5': {
         fontFamily: '"Clash Display", sans-serif !important',
         fontSize: '1em !important',
         fontWeight: '600 !important',
         lineHeight: '1.3 !important',
         color: '#cac8f4 !important'
     },
-    '.cm-md-h6': {
+    '&.mode-rendered .cm-md-h6': {
         fontFamily: '"Clash Display", sans-serif !important',
         fontSize: '0.9em !important',
         fontWeight: '600 !important',
         lineHeight: '1.3 !important',
         color: '#888888 !important'
     },
-    '.cm-md-link': {
-        color: '#ffa657 !important',
-        textDecoration: 'underline !important',
-        cursor: 'pointer !important'
+    '&.mode-rendered .cm-md-header': {
+        color: '#cac8f4 !important'
     },
-    '.cm-md-link:hover': {
+    
+    // ========================================
+    // RAW MODE STYLES (color only, no layout changes)
+    // ========================================
+    '&.mode-raw .cm-md-bold': {
+        color: '#ffd700 !important'
+    },
+    '&.mode-raw .cm-md-bold-color': {
+        color: '#ffd700 !important',
+        fontWeight: 'normal !important'
+    },
+    '&.mode-raw .cm-md-italic': {
+        color: '#4ec9b0 !important'
+    },
+    '&.mode-raw .cm-md-italic-color': {
+        color: '#4ec9b0 !important',
+        fontStyle: 'normal !important'
+    },
+    '&.mode-raw .cm-md-strike': {
+        color: '#f14c4c !important'
+    },
+    '&.mode-raw .cm-md-strike-color': {
+        color: '#f14c4c !important',
         textDecoration: 'none !important'
     },
+    '&.mode-raw .cm-md-code': {
+        color: '#98c379 !important',
+        background: 'transparent !important',
+        padding: '0 !important'
+    },
+    '&.mode-raw .cm-md-code-color': {
+        color: '#98c379 !important',
+        background: 'transparent !important',
+        padding: '0 !important'
+    },
+    '&.mode-raw .cm-md-link': {
+        color: '#ffa657 !important',
+        textDecoration: 'none !important'
+    },
+    '&.mode-raw .cm-md-link-color': {
+        color: '#ffa657 !important',
+        textDecoration: 'none !important'
+    },
+    '&.mode-raw .cm-md-blockquote': {
+        color: '#6a9955 !important',
+        fontStyle: 'normal !important',
+        borderLeft: 'none !important',
+        paddingLeft: '0 !important'
+    },
+    '&.mode-raw .cm-md-blockquote-color': {
+        color: '#6a9955 !important',
+        fontStyle: 'normal !important',
+        borderLeft: 'none !important',
+        paddingLeft: '0 !important'
+    },
+    '&.mode-raw .cm-md-list-marker': {
+        color: 'var(--accent, #cac8f4) !important'
+    },
+    '&.mode-raw .cm-md-h1, &.mode-raw .cm-md-h2, &.mode-raw .cm-md-h3, &.mode-raw .cm-md-h4, &.mode-raw .cm-md-h5': {
+        fontFamily: 'var(--font-mono, "JetBrains Mono", monospace) !important',
+        fontSize: '1em !important',
+        fontWeight: 'normal !important',
+        lineHeight: '1.7 !important',
+        color: '#cac8f4 !important'
+    },
+    '&.mode-raw .cm-md-h6': {
+        fontFamily: 'var(--font-mono, "JetBrains Mono", monospace) !important',
+        fontSize: '1em !important',
+        fontWeight: 'normal !important',
+        lineHeight: '1.7 !important',
+        color: '#888888 !important'
+    },
+    '&.mode-raw .cm-md-header': {
+        color: '#cac8f4 !important'
+    },
+    
+    // ========================================
+    // DEDICATED GHOST CLASSES (single class per type)
+    // ========================================
+    '.cm-md-ghost-bold': {
+        opacity: '0.55 !important',
+        color: '#ffd700 !important',
+        fontWeight: 'normal !important'
+    },
+    '.cm-md-ghost-italic': {
+        opacity: '0.55 !important',
+        color: '#4ec9b0 !important',
+        fontStyle: 'normal !important'
+    },
+    '.cm-md-ghost-strike': {
+        opacity: '0.55 !important',
+        color: '#f14c4c !important',
+        textDecoration: 'none !important'
+    },
+    '.cm-md-ghost-code': {
+        opacity: '0.55 !important',
+        color: '#98c379 !important',
+        background: 'transparent !important',
+        padding: '0 !important'
+    },
+    '.cm-md-ghost-link': {
+        opacity: '0.55 !important',
+        color: '#ffa657 !important',
+        textDecoration: 'none !important'
+    },
+    '.cm-md-ghost-blockquote': {
+        opacity: '0.55 !important',
+        color: '#6a9955 !important',
+        fontStyle: 'normal !important',
+        borderLeft: 'none !important',
+        paddingLeft: '0 !important'
+    },
+    '.cm-md-ghost-list-marker': {
+        opacity: '0.55 !important',
+        color: 'var(--accent, #cac8f4) !important'
+    },
+    '.cm-md-ghost-h1': {
+        opacity: '0.55 !important',
+        fontFamily: '"Clash Display", sans-serif !important',
+        fontSize: '2em !important',
+        fontWeight: '700 !important',
+        lineHeight: '1.3 !important',
+        color: '#cac8f4 !important'
+    },
+    '.cm-md-ghost-h2': {
+        opacity: '0.55 !important',
+        fontFamily: '"Clash Display", sans-serif !important',
+        fontSize: '1.5em !important',
+        fontWeight: '600 !important',
+        lineHeight: '1.3 !important',
+        color: '#cac8f4 !important'
+    },
+    '.cm-md-ghost-h3': {
+        opacity: '0.55 !important',
+        fontFamily: '"Clash Display", sans-serif !important',
+        fontSize: '1.25em !important',
+        fontWeight: '600 !important',
+        lineHeight: '1.3 !important',
+        color: '#cac8f4 !important'
+    },
+    '.cm-md-ghost-h4': {
+        opacity: '0.55 !important',
+        fontFamily: '"Clash Display", sans-serif !important',
+        fontSize: '1.1em !important',
+        fontWeight: '600 !important',
+        lineHeight: '1.3 !important',
+        color: '#cac8f4 !important'
+    },
+    '.cm-md-ghost-h5': {
+        opacity: '0.55 !important',
+        fontFamily: '"Clash Display", sans-serif !important',
+        fontSize: '1em !important',
+        fontWeight: '600 !important',
+        lineHeight: '1.3 !important',
+        color: '#cac8f4 !important'
+    },
+    '.cm-md-ghost-h6': {
+        opacity: '0.55 !important',
+        fontFamily: '"Clash Display", sans-serif !important',
+        fontSize: '0.9em !important',
+        fontWeight: '600 !important',
+        lineHeight: '1.3 !important',
+        color: '#888888 !important'
+    },
+    '.cm-md-ghost-header': {
+        opacity: '0.55 !important',
+        color: '#cac8f4 !important'
+    },
+    
+    // ========================================
+    // SHARED STYLES (widgets, tables, etc.)
+    // ========================================
     '.cm-md-link-url': {
         fontSize: '0 !important',
         display: 'inline-block',
         width: '0',
         overflow: 'hidden'
-    },
-    '.cm-md-blockquote': {
-        borderLeft: '3px solid #6a9955 !important',
-        paddingLeft: '16px !important',
-        color: '#6a9955 !important',
-        fontStyle: 'italic !important'
-    },
-    '.cm-md-header': {
-        color: '#cac8f4 !important'
     },
     '.cm-md-hr': {
         border: 'none !important',
@@ -195,9 +373,6 @@ export const markdownTheme = EditorView.baseTheme({
         display: 'block !important',
         margin: '8px 0 !important',
         height: '0 !important'
-    },
-    '.cm-md-list-marker': {
-        color: 'var(--accent, #cac8f4) !important'
     },
     '.cm-md-checkbox': {
         marginRight: '8px !important',
@@ -269,25 +444,8 @@ export const markdownTheme = EditorView.baseTheme({
         margin: '8px 0',
         display: 'block'
     },
-    '.cm-tooltip': {
-        background: 'var(--bg-secondary, #111111) !important',
-        border: '1px solid var(--border-color, #333) !important',
-        borderRadius: '2px !important',
-        color: 'var(--text-primary, #e0e0e0) !important',
-        fontFamily: 'var(--font-mono, "JetBrains Mono", monospace) !important',
-        fontSize: '12px !important'
-    },
-    '.cm-tooltip-autocomplete': {
-        padding: '4px !important'
-    },
-    '.cm-tooltip-autocomplete li': {
-        padding: '4px 8px !important',
-        borderRadius: '2px !important'
-    },
-    '.cm-tooltip-autocomplete li[aria-selected="true"]': {
-        background: 'var(--accent, #cac8f4) !important',
-        color: 'var(--bg-primary, #050505) !important'
-    },
+    
+    // CodeMirror built-in syntax highlighting overrides
     '.cm-header': {
         color: '#ffffff !important',
         fontWeight: '600 !important'
@@ -335,6 +493,8 @@ export const markdownTheme = EditorView.baseTheme({
     '.cm-meta': {
         color: '#888888 !important'
     },
+    
+    // Generated class overrides (ͼ-prefixed)
     '.cm-content .ͼ5': {
         color: '#888888 !important'
     },

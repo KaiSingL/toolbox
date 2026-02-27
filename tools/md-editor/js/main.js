@@ -214,6 +214,9 @@ function init() {
         parent: editorEl
     });
 
+    editor.dom.classList.add('mode-rendered');
+    document.querySelector('.editor-container').classList.add('mode-rendered');
+
     const customKeymap = createKeymap(editor, fileOps);
     editor.dispatch({
         effects: StateEffect.appendConfig.of(customKeymap)
@@ -229,16 +232,23 @@ function toggleMode() {
     const currentMode = editor.state.field(renderModeField);
     const newMode = currentMode === 'rendered' ? 'raw' : 'rendered';
     
+    const cmEditor = editor.dom;
     const container = document.querySelector('.editor-container');
     const modeIndicator = document.getElementById('mode-indicator');
     const toggleBtn = document.getElementById('btn-toggle');
     
     if (newMode === 'raw') {
+        cmEditor.classList.remove('mode-rendered');
+        cmEditor.classList.add('mode-raw');
         container.classList.remove('mode-rendered');
+        container.classList.add('mode-raw');
         modeIndicator.textContent = 'Raw';
         toggleBtn.classList.remove('active');
     } else {
+        cmEditor.classList.add('mode-rendered');
+        cmEditor.classList.remove('mode-raw');
         container.classList.add('mode-rendered');
+        container.classList.remove('mode-raw');
         modeIndicator.textContent = 'Rendered';
         toggleBtn.classList.add('active');
     }

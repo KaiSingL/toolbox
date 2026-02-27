@@ -20,14 +20,14 @@ const linkColorMark = Decoration.mark({ class: 'cm-md-link-color' });
 const blockquoteColorMark = Decoration.mark({ class: 'cm-md-blockquote-color' });
 const plainMark = Decoration.mark({ class: 'cm-md-plain' });
 
-const ghostBoldMark = Decoration.mark({ class: 'cm-md-ghost cm-md-bold-color' });
-const ghostItalicMark = Decoration.mark({ class: 'cm-md-ghost cm-md-italic-color' });
-const ghostStrikeMark = Decoration.mark({ class: 'cm-md-ghost cm-md-strike-color' });
-const ghostCodeMark = Decoration.mark({ class: 'cm-md-ghost cm-md-code-color' });
-const ghostLinkMark = Decoration.mark({ class: 'cm-md-ghost cm-md-link-color' });
-const ghostBlockquoteMark = Decoration.mark({ class: 'cm-md-ghost cm-md-blockquote-color' });
-const ghostListMarkerMark = Decoration.mark({ class: 'cm-md-ghost cm-md-list-marker' });
-const ghostHeaderMark = Decoration.mark({ class: 'cm-md-ghost cm-md-header' });
+const ghostBoldMark = Decoration.mark({ class: 'cm-md-ghost-bold' });
+const ghostItalicMark = Decoration.mark({ class: 'cm-md-ghost-italic' });
+const ghostStrikeMark = Decoration.mark({ class: 'cm-md-ghost-strike' });
+const ghostCodeMark = Decoration.mark({ class: 'cm-md-ghost-code' });
+const ghostLinkMark = Decoration.mark({ class: 'cm-md-ghost-link' });
+const ghostBlockquoteMark = Decoration.mark({ class: 'cm-md-ghost-blockquote' });
+const ghostListMarkerMark = Decoration.mark({ class: 'cm-md-ghost-list-marker' });
+const ghostHeaderMark = Decoration.mark({ class: 'cm-md-ghost-header' });
 const ghostMark = Decoration.mark({ class: 'cm-md-ghost' });
 
 export const setRenderMode = StateEffect.define();
@@ -54,12 +54,12 @@ const headingMarks = {
 };
 
 const ghostHeadingMarks = {
-    1: Decoration.mark({ class: 'cm-md-ghost cm-md-h1' }),
-    2: Decoration.mark({ class: 'cm-md-ghost cm-md-h2' }),
-    3: Decoration.mark({ class: 'cm-md-ghost cm-md-h3' }),
-    4: Decoration.mark({ class: 'cm-md-ghost cm-md-h4' }),
-    5: Decoration.mark({ class: 'cm-md-ghost cm-md-h5' }),
-    6: Decoration.mark({ class: 'cm-md-ghost cm-md-h6' })
+    1: Decoration.mark({ class: 'cm-md-ghost-h1' }),
+    2: Decoration.mark({ class: 'cm-md-ghost-h2' }),
+    3: Decoration.mark({ class: 'cm-md-ghost-h3' }),
+    4: Decoration.mark({ class: 'cm-md-ghost-h4' }),
+    5: Decoration.mark({ class: 'cm-md-ghost-h5' }),
+    6: Decoration.mark({ class: 'cm-md-ghost-h6' })
 };
 
 function getVisibilityState(cursorPos, from, to, lineFrom, lineTo) {
