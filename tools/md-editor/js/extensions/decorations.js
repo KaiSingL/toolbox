@@ -27,7 +27,6 @@ const ghostCodeMark = Decoration.mark({ class: 'cm-md-ghost-code' });
 const ghostLinkMark = Decoration.mark({ class: 'cm-md-ghost-link' });
 const ghostBlockquoteMark = Decoration.mark({ class: 'cm-md-ghost-blockquote' });
 const ghostListMarkerMark = Decoration.mark({ class: 'cm-md-ghost-list-marker' });
-const ghostHeaderMark = Decoration.mark({ class: 'cm-md-ghost-header' });
 const ghostMark = Decoration.mark({ class: 'cm-md-ghost' });
 
 export const setRenderMode = StateEffect.define();
@@ -62,22 +61,16 @@ const ghostHeadingMarks = {
     6: Decoration.mark({ class: 'cm-md-ghost-h6' })
 };
 
-function getVisibilityState(cursorPos, from, to, lineFrom, lineTo) {
-    const cursorInRegion = cursorPos >= from && cursorPos <= to;
+function getVisibilityState(cursorPos, lineFrom, lineTo) {
     const cursorOnLine = cursorPos >= lineFrom && cursorPos <= lineTo;
-    
-    if (cursorInRegion) {
-        return 'raw';
-    } else if (cursorOnLine) {
-        return 'ghost';
-    }
-    return 'hidden';
+    return cursorOnLine ? 'ghost' : 'hidden';
 }
 
 function parseLineDecorations(line, lineFrom, cursorPos, mode) {
     const decorations = [];
     const lineTo = lineFrom + line.length;
     const isRaw = mode === 'raw';
+    const state = getVisibilityState(cursorPos, lineFrom, lineTo);
     
     const headingMatch = line.match(/^(#{1,6})\s+(.*)$/);
     if (headingMatch) {
@@ -87,14 +80,12 @@ function parseLineDecorations(line, lineFrom, cursorPos, mode) {
         const contentFrom = markerTo;
         const contentTo = lineTo;
         
-        const state = getVisibilityState(cursorPos, markerFrom, markerTo, lineFrom, lineTo);
-        
         if (isRaw) {
-            // Raw mode: # and content both stay normal size
+            decorations.push({ from: markerFrom, to: markerTo, decoration: headerMark });
         } else {
             if (state === 'hidden') {
                 decorations.push({ from: markerFrom, to: markerTo, decoration: hiddenMark });
-            } else if (state === 'ghost') {
+            } else {
                 decorations.push({ from: markerFrom, to: markerTo, decoration: ghostHeadingMarks[level] });
             }
             decorations.push({ from: contentFrom, to: contentTo, decoration: headingMarks[level] });
@@ -110,19 +101,13 @@ function parseLineDecorations(line, lineFrom, cursorPos, mode) {
         const contentFrom = markerTo;
         const contentTo = lineTo;
         
-        const state = getVisibilityState(cursorPos, markerFrom, markerTo, lineFrom, lineTo);
-        
         if (isRaw) {
-            if (state === 'ghost') {
-                decorations.push({ from: markerFrom, to: markerTo, decoration: ghostBlockquoteMark });
-            } else {
-                decorations.push({ from: markerFrom, to: markerTo, decoration: blockquoteColorMark });
-            }
+            decorations.push({ from: markerFrom, to: markerTo, decoration: blockquoteColorMark });
         } else {
             if (state === 'hidden') {
                 decorations.push({ from: markerFrom, to: markerTo, decoration: hiddenMark });
-            } else if (state === 'ghost') {
-                decorations.push({ from: markerFrom, to: markerTo, decoration: ghostMark });
+            } else {
+                decorations.push({ from: markerFrom, to: markerTo, decoration: ghostBlockquoteMark });
             }
             decorations.push({ from: contentFrom, to: contentTo, decoration: blockquoteMark });
         }
@@ -134,16 +119,12 @@ function parseLineDecorations(line, lineFrom, cursorPos, mode) {
         const markerFrom = lineFrom + indent;
         const markerTo = markerFrom + taskMatch[2].length;
         
-        const state = getVisibilityState(cursorPos, markerFrom, markerTo, lineFrom, lineTo);
-        
         if (isRaw) {
-            if (state === 'ghost') {
-                decorations.push({ from: markerFrom, to: markerTo, decoration: ghostMark });
-            }
+            // no special decoration in raw mode
         } else {
             if (state === 'hidden') {
                 decorations.push({ from: markerFrom, to: markerTo, decoration: hiddenMark });
-            } else if (state === 'ghost') {
+            } else {
                 decorations.push({ from: markerFrom, to: markerTo, decoration: ghostMark });
             }
         }
@@ -154,14 +135,8 @@ function parseLineDecorations(line, lineFrom, cursorPos, mode) {
             const markerFrom = lineFrom + indent;
             const markerTo = markerFrom + 1;
             
-            const state = getVisibilityState(cursorPos, markerFrom, markerTo, lineFrom, lineTo);
-            
             if (isRaw) {
-                if (state === 'ghost') {
-                    decorations.push({ from: markerFrom, to: markerTo, decoration: ghostListMarkerMark });
-                } else {
-                    decorations.push({ from: markerFrom, to: markerTo, decoration: listMarkerMark });
-                }
+                decorations.push({ from: markerFrom, to: markerTo, decoration: listMarkerMark });
             } else {
                 if (state === 'ghost') {
                     decorations.push({ from: markerFrom, to: markerTo, decoration: ghostListMarkerMark });
@@ -177,14 +152,8 @@ function parseLineDecorations(line, lineFrom, cursorPos, mode) {
             const markerFrom = lineFrom + indent;
             const markerTo = markerFrom + olMatch[2].length;
             
-            const state = getVisibilityState(cursorPos, markerFrom, markerTo, lineFrom, lineTo);
-            
             if (isRaw) {
-                if (state === 'ghost') {
-                    decorations.push({ from: markerFrom, to: markerTo, decoration: ghostListMarkerMark });
-                } else {
-                    decorations.push({ from: markerFrom, to: markerTo, decoration: listMarkerMark });
-                }
+                decorations.push({ from: markerFrom, to: markerTo, decoration: listMarkerMark });
             } else {
                 if (state === 'ghost') {
                     decorations.push({ from: markerFrom, to: markerTo, decoration: ghostListMarkerMark });
@@ -218,41 +187,21 @@ function parseLineDecorations(line, lineFrom, cursorPos, mode) {
             const marker2From = matchTo - markerLen;
             const marker2To = matchTo;
             
-            const state1 = getVisibilityState(cursorPos, marker1From, marker1To, lineFrom, lineTo);
-            const state2 = getVisibilityState(cursorPos, marker2From, marker2To, lineFrom, lineTo);
-            
             const contentFrom = marker1To;
             const contentTo = marker2From;
             
             if (isRaw) {
-                if (state1 === 'ghost') {
-                    decorations.push({ from: marker1From, to: marker1To, decoration: patternGhostMark });
-                } else {
-                    decorations.push({ from: marker1From, to: marker1To, decoration: colorMark });
-                }
-                if (state2 === 'ghost') {
-                    decorations.push({ from: marker2From, to: marker2To, decoration: patternGhostMark });
-                } else {
-                    decorations.push({ from: marker2From, to: marker2To, decoration: colorMark });
-                }
+                decorations.push({ from: marker1From, to: marker1To, decoration: colorMark });
+                decorations.push({ from: marker2From, to: marker2To, decoration: colorMark });
                 decorations.push({ from: contentFrom, to: contentTo, decoration: plainMark });
             } else {
-                if (state1 === 'hidden') {
+                if (state === 'hidden') {
                     decorations.push({ from: marker1From, to: marker1To, decoration: hiddenMark });
-                } else if (state1 === 'ghost') {
-                    decorations.push({ from: marker1From, to: marker1To, decoration: patternGhostMark });
-                } else {
-                    decorations.push({ from: marker1From, to: marker1To, decoration: colorMark });
-                }
-                
-                if (state2 === 'hidden') {
                     decorations.push({ from: marker2From, to: marker2To, decoration: hiddenMark });
-                } else if (state2 === 'ghost') {
-                    decorations.push({ from: marker2From, to: marker2To, decoration: patternGhostMark });
                 } else {
-                    decorations.push({ from: marker2From, to: marker2To, decoration: colorMark });
+                    decorations.push({ from: marker1From, to: marker1To, decoration: patternGhostMark });
+                    decorations.push({ from: marker2From, to: marker2To, decoration: patternGhostMark });
                 }
-                
                 decorations.push({ from: contentFrom, to: contentTo, decoration: styleMark });
             }
         }
@@ -270,41 +219,21 @@ function parseLineDecorations(line, lineFrom, cursorPos, mode) {
         const backtick2From = matchTo - 1;
         const backtick2To = matchTo;
         
-        const state1 = getVisibilityState(cursorPos, backtick1From, backtick1To, lineFrom, lineTo);
-        const state2 = getVisibilityState(cursorPos, backtick2From, backtick2To, lineFrom, lineTo);
-        
         const contentFrom = backtick1To;
         const contentTo = backtick2From;
         
         if (isRaw) {
-            if (state1 === 'ghost') {
-                decorations.push({ from: backtick1From, to: backtick1To, decoration: ghostCodeMark });
-            } else {
-                decorations.push({ from: backtick1From, to: backtick1To, decoration: codeColorMark });
-            }
-            if (state2 === 'ghost') {
-                decorations.push({ from: backtick2From, to: backtick2To, decoration: ghostCodeMark });
-            } else {
-                decorations.push({ from: backtick2From, to: backtick2To, decoration: codeColorMark });
-            }
+            decorations.push({ from: backtick1From, to: backtick1To, decoration: codeColorMark });
+            decorations.push({ from: backtick2From, to: backtick2To, decoration: codeColorMark });
             decorations.push({ from: contentFrom, to: contentTo, decoration: codeMark });
         } else {
-            if (state1 === 'hidden') {
+            if (state === 'hidden') {
                 decorations.push({ from: backtick1From, to: backtick1To, decoration: hiddenMark });
-            } else if (state1 === 'ghost') {
-                decorations.push({ from: backtick1From, to: backtick1To, decoration: ghostCodeMark });
-            } else {
-                decorations.push({ from: backtick1From, to: backtick1To, decoration: codeMark });
-            }
-            
-            if (state2 === 'hidden') {
                 decorations.push({ from: backtick2From, to: backtick2To, decoration: hiddenMark });
-            } else if (state2 === 'ghost') {
-                decorations.push({ from: backtick2From, to: backtick2To, decoration: ghostCodeMark });
             } else {
-                decorations.push({ from: backtick2From, to: backtick2To, decoration: codeMark });
+                decorations.push({ from: backtick1From, to: backtick1To, decoration: ghostCodeMark });
+                decorations.push({ from: backtick2From, to: backtick2To, decoration: ghostCodeMark });
             }
-            
             decorations.push({ from: contentFrom, to: contentTo, decoration: codeMark });
         }
     }
@@ -328,34 +257,21 @@ function parseLineDecorations(line, lineFrom, cursorPos, mode) {
         const textFrom = bracket1To;
         const textTo = bracket2From;
         
-        const state = getVisibilityState(cursorPos, bracket1From, parenEnd, lineFrom, lineTo);
-        
         if (isRaw) {
-            if (state === 'ghost') {
-                decorations.push({ from: bracket1From, to: bracket1To, decoration: ghostLinkMark });
-                decorations.push({ from: bracket2From, to: bracket2To, decoration: ghostLinkMark });
-                decorations.push({ from: parenStart, to: parenEnd, decoration: ghostLinkMark });
-            } else {
-                decorations.push({ from: bracket1From, to: bracket1To, decoration: linkColorMark });
-                decorations.push({ from: bracket2From, to: bracket2To, decoration: linkColorMark });
-                decorations.push({ from: parenStart, to: parenEnd, decoration: linkColorMark });
-            }
+            decorations.push({ from: bracket1From, to: bracket1To, decoration: linkColorMark });
+            decorations.push({ from: bracket2From, to: bracket2To, decoration: linkColorMark });
+            decorations.push({ from: parenStart, to: parenEnd, decoration: linkColorMark });
             decorations.push({ from: textFrom, to: textTo, decoration: linkColorMark });
         } else {
             if (state === 'hidden') {
                 decorations.push({ from: bracket1From, to: bracket1To, decoration: hiddenMark });
                 decorations.push({ from: bracket2From, to: bracket2To, decoration: hiddenMark });
                 decorations.push({ from: parenStart, to: parenEnd, decoration: hiddenMark });
-            } else if (state === 'ghost') {
+            } else {
                 decorations.push({ from: bracket1From, to: bracket1To, decoration: ghostLinkMark });
                 decorations.push({ from: bracket2From, to: bracket2To, decoration: ghostLinkMark });
                 decorations.push({ from: parenStart, to: parenEnd, decoration: ghostLinkMark });
-            } else {
-                decorations.push({ from: bracket1From, to: bracket1To, decoration: linkMark });
-                decorations.push({ from: bracket2From, to: bracket2To, decoration: linkMark });
-                decorations.push({ from: parenStart, to: parenEnd, decoration: linkMark });
             }
-            
             decorations.push({ from: textFrom, to: textTo, decoration: linkMark });
         }
     }
@@ -366,16 +282,12 @@ function parseLineDecorations(line, lineFrom, cursorPos, mode) {
         const matchFrom = lineFrom + emojiMatch.index;
         const matchTo = matchFrom + emojiMatch[0].length;
         
-        const state = getVisibilityState(cursorPos, matchFrom, matchTo, lineFrom, lineTo);
-        
         if (isRaw) {
-            if (state === 'ghost') {
-                decorations.push({ from: matchFrom, to: matchTo, decoration: ghostMark });
-            }
+            // no decoration in raw mode
         } else {
             if (state === 'hidden') {
                 decorations.push({ from: matchFrom, to: matchTo, decoration: hiddenMark });
-            } else if (state === 'ghost') {
+            } else {
                 decorations.push({ from: matchFrom, to: matchTo, decoration: ghostMark });
             }
         }
@@ -391,26 +303,14 @@ function parseLineDecorations(line, lineFrom, cursorPos, mode) {
         const dollar2From = matchTo - 1;
         const dollar2To = matchTo;
         
-        const state1 = getVisibilityState(cursorPos, dollar1From, dollar1To, lineFrom, lineTo);
-        const state2 = getVisibilityState(cursorPos, dollar2From, dollar2To, lineFrom, lineTo);
-        
         if (isRaw) {
-            if (state1 === 'ghost') {
-                decorations.push({ from: dollar1From, to: dollar1To, decoration: ghostMark });
-            }
-            if (state2 === 'ghost') {
-                decorations.push({ from: dollar2From, to: dollar2To, decoration: ghostMark });
-            }
+            // no decoration in raw mode
         } else {
-            if (state1 === 'hidden') {
+            if (state === 'hidden') {
                 decorations.push({ from: dollar1From, to: dollar1To, decoration: hiddenMark });
-            } else if (state1 === 'ghost') {
-                decorations.push({ from: dollar1From, to: dollar1To, decoration: ghostMark });
-            }
-            
-            if (state2 === 'hidden') {
                 decorations.push({ from: dollar2From, to: dollar2To, decoration: hiddenMark });
-            } else if (state2 === 'ghost') {
+            } else {
+                decorations.push({ from: dollar1From, to: dollar1To, decoration: ghostMark });
                 decorations.push({ from: dollar2From, to: dollar2To, decoration: ghostMark });
             }
         }
