@@ -4,7 +4,7 @@ A collection of lightweight, open-source browser utilities. All tools run entire
 
 ## 🚀 Live Demo
 
-Check out the live site here: **[https://kaisingl.github.io/tool-box/](https://kaisingl.github.io/tool-box/)**
+Check out the live site here: **[https://kaisingl.github.io/toolbox/](https://kaisingl.github.io/toolbox/)**
 
 ## 🛠️ Available Tools
 
@@ -104,12 +104,12 @@ Since these tools are client-side only, you don't need a complex backend to run 
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/kaisingl/tool-box.git
+    git clone https://github.com/KaiSingL/toolbox.git
     ```
 
 2.  **Navigate to the project folder:**
     ```bash
-    cd tool-box
+    cd toolbox
     ```
 
 3.  **Run locally:**
