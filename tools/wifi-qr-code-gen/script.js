@@ -125,8 +125,11 @@ function drawLogoOnCanvas(canvas) {
   if (!logoImage) return;
 
   const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  
   const qrSize = canvas.width;
-  const logoSize = Math.floor(qrSize * 0.22);
+  const logoSize = Math.floor(qrSize * 0.25);
   const padding = Math.floor(logoSize * 0.1);
   const totalSize = logoSize + padding * 2;
   const position = (qrSize - totalSize) / 2;
@@ -164,8 +167,6 @@ function generateQR() {
     return;
   }
 
-  console.log("QR Data:", qrData);
-
   const qrDiv = document.getElementById("qrcode");
   if (!qrDiv) return;
   const container = qrDiv.querySelector('.qr-container');
@@ -180,14 +181,12 @@ function generateQR() {
   try {
     new QRCode(container, {
       text: qrData,
-      width: 256,
-      height: 256,
+      width: 1024,
+      height: 1024,
       colorDark: "#000000",
       colorLight: "#ffffff",
       correctLevel: QRCode.CorrectLevel.H,
     });
-    console.log("QR generated!");
-
     const canvas = container.querySelector('canvas');
     if (canvas && logoImage) {
       drawLogoOnCanvas(canvas);
@@ -207,15 +206,10 @@ function downloadQR() {
   const container = qrDiv.querySelector('.qr-container');
   if (!container) return;
 
-  const canvas = container.querySelector("canvas");
+  const existingCanvas = container.querySelector("canvas");
   const img = container.querySelector("img");
 
-  let url;
-  if (canvas) {
-    url = canvas.toDataURL("image/png");
-  } else if (img) {
-    url = img.src;
-  } else {
+  if (!existingCanvas && !img) {
     showError("No QR code to download.");
     return;
   }
@@ -236,9 +230,18 @@ function downloadQR() {
 
   const filename = filenames[currentType]();
 
+  const downloadCanvas = document.createElement('canvas');
+  downloadCanvas.width = 1024;
+  downloadCanvas.height = 1024;
+  const ctx = downloadCanvas.getContext('2d');
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+
+  ctx.drawImage(existingCanvas || img, 0, 0, 1024, 1024);
+
   const link = document.createElement("a");
   link.download = filename;
-  link.href = url;
+  link.href = downloadCanvas.toDataURL("image/png");
   link.click();
 }
 

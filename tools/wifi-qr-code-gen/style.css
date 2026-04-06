@@ -95,6 +95,8 @@
 .qr-container canvas,
 .qr-container img {
   display: block;
+  max-width: 280px;
+  height: auto;
 }
 
 .error-message {
