@@ -64,6 +64,15 @@
             <div style="margin-bottom: 48px;">
                 <h1 class="section-title" style="font-size: 48px; margin-bottom: 12px;">Available Tools</h1>
                 <p class="section-subtitle">A collection of open-source browser utilities.</p>
+                <div class="search-container">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <input type="text" id="tool-search" class="search-input" placeholder="Search tools..." autocomplete="off" aria-label="Search tools">
+                    <kbd class="search-shortcut">Ctrl K</kbd>
+                    <button id="search-clear" class="search-clear-btn hidden" aria-label="Clear search">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                </div>
+                <p id="search-no-results" class="search-no-results hidden">No tools found matching your search.</p>
             </div>
 
             <div class="grid-brutal" style="grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));">
@@ -219,6 +228,127 @@
     </footer>
 
     <style>
+        .search-container {
+            position: relative;
+            max-width: 480px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            color: var(--text-muted);
+            pointer-events: none;
+            transition: color var(--transition-fast);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 96px 12px 42px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 14px;
+            border: var(--border-medium);
+            border-radius: 2px;
+            transition: border-color var(--transition-medium), box-shadow var(--transition-medium);
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+            outline: none;
+        }
+
+        .search-input:focus ~ .search-icon {
+            color: var(--accent);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-shortcut {
+            position: absolute;
+            right: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: var(--bg-elevated);
+            border: var(--border-thin);
+            border-radius: 2px;
+            font-family: var(--font-mono);
+            font-size: 11px;
+            color: var(--text-muted);
+            pointer-events: none;
+            transition: opacity var(--transition-fast);
+        }
+
+        .search-input:focus ~ .search-shortcut,
+        .search-input:not(:placeholder-shown) ~ .search-shortcut {
+            opacity: 0;
+        }
+
+        .search-clear-btn {
+            position: absolute;
+            right: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-radius: 2px;
+            transition: color var(--transition-fast);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .search-clear-btn:not(.hidden) {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .search-clear-btn:hover {
+            color: var(--accent);
+        }
+
+        .search-no-results {
+            margin-top: 16px;
+            font-family: var(--font-mono);
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .tool-card.hidden {
+            display: none;
+        }
+
+        .grid-brutal.search-active {
+            background: transparent;
+            border: none;
+        }
+
+        .grid-brutal.search-active > * {
+            background: var(--bg-surface);
+        }
+
+        @media (max-width: 768px) {
+            .search-shortcut {
+                display: none;
+            }
+
+            .search-container {
+                max-width: 100%;
+            }
+        }
+
         .tool-card {
             animation: slideUp 0.5s ease-out forwards;
             opacity: 0;
@@ -244,5 +374,76 @@
             }
         }
     </style>
+
+    <script>
+        (function() {
+            const searchInput = document.getElementById('tool-search');
+            const searchClearBtn = document.getElementById('search-clear');
+            const searchNoResults = document.getElementById('search-no-results');
+            const toolCards = document.querySelectorAll('.tool-card');
+            const gridContainer = document.querySelector('#main .grid-brutal');
+
+            let debounceTimer = null;
+
+            function filterTools(query) {
+                const searchTerm = query.toLowerCase().trim();
+                let visibleCount = 0;
+
+                toolCards.forEach(card => {
+                    const title = card.querySelector('.tool-card-title')?.textContent.toLowerCase() || '';
+                    const desc = card.querySelector('.tool-card-desc')?.textContent.toLowerCase() || '';
+                    const matches = title.includes(searchTerm) || desc.includes(searchTerm);
+
+                    if (matches) {
+                        card.classList.remove('hidden');
+                        visibleCount++;
+                    } else {
+                        card.classList.add('hidden');
+                    }
+                });
+
+                if (searchTerm && visibleCount === 0) {
+                    searchNoResults.classList.remove('hidden');
+                } else {
+                    searchNoResults.classList.add('hidden');
+                }
+
+                if (searchTerm) {
+                    searchClearBtn.classList.remove('hidden');
+                    gridContainer.classList.add('search-active');
+                } else {
+                    searchClearBtn.classList.add('hidden');
+                    gridContainer.classList.remove('search-active');
+                }
+            }
+
+            searchInput.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    filterTools(searchInput.value);
+                }, 150);
+            });
+
+            searchClearBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                filterTools('');
+                searchInput.focus();
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                    e.preventDefault();
+                    searchInput.focus();
+                    searchInput.select();
+                }
+
+                if (e.key === 'Escape' && document.activeElement === searchInput) {
+                    searchInput.value = '';
+                    filterTools('');
+                    searchInput.blur();
+                }
+            });
+        })();
+    </script>
 </body>
 </html>
