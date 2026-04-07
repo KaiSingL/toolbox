@@ -1,0 +1,107 @@
+.tool-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 48px 24px;
+}
+
+.tool-hero {
+    text-align: center;
+    margin-bottom: 48px;
+}
+
+.tool-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.controls-row {
+    display: flex;
+    gap: 16px;
+    align-items: flex-end;
+}
+
+.tps-group {
+    flex: 0 0 140px;
+}
+
+.controls-buttons {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.output-wrapper {
+    position: relative;
+}
+
+.output-brutal {
+    background: var(--bg-primary);
+    border: var(--border-thin);
+    border-radius: 2px;
+    padding: 16px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--text-primary);
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-y: auto;
+    min-height: 300px;
+    max-height: 500px;
+    line-height: 1.6;
+}
+
+.output-brutal:empty::before {
+    content: 'Press Start to begin streaming tokens...';
+    color: var(--text-secondary);
+}
+
+.error-message {
+    color: #ff6b6b;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    margin: 8px 0;
+    padding: 8px;
+    background: rgba(255, 107, 107, 0.1);
+    border: 1px solid #ff6b6b;
+    border-radius: 2px;
+}
+
+.hidden {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .tool-container {
+        padding: 24px 16px;
+    }
+
+    .controls-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .tps-group {
+        flex: 1 1 auto;
+    }
+
+    .controls-buttons {
+        justify-content: stretch;
+    }
+
+    .controls-buttons .btn-primary,
+    .controls-buttons .btn-secondary {
+        flex: 1;
+    }
+
+    .output-brutal {
+        font-size: 12px;
+        padding: 12px;
+        min-height: 200px;
+    }
+}

@@ -55,7 +55,7 @@
 
     <div class="marquee-container">
         <div class="marquee-content">
-             <span class="marquee-item">/// LOG READER /// FRAME GRABBER /// GIF FRAME GRABBER /// PROMO CROPPER /// ICON RESIZER /// QR CODE GEN /// SVG COLLECTION /// LOG READER /// FRAME GRABBER /// GIF FRAME GRABBER /// PROMO CROPPER /// ICON RESIZER /// QR CODE GEN /// SVG COLLECTION ///</span>
+             <span class="marquee-item">/// LOG READER /// FRAME GRABBER /// GIF FRAME GRABBER /// PROMO CROPPER /// ICON RESIZER /// QR CODE GEN /// SVG COLLECTION /// TOKEN SPEED VIZ /// LOG READER /// FRAME GRABBER /// GIF FRAME GRABBER /// PROMO CROPPER /// ICON RESIZER /// QR CODE GEN /// SVG COLLECTION /// TOKEN SPEED VIZ ///</span>
         </div>
     </div>
 
@@ -175,26 +175,42 @@
                     </a>
 
                    <a href="./tools/log-reader/index.html" class="tool-card" style="animation-delay: 0.6s;" aria-label="Open Log Reader tool for reading and searching large log files">
-                       <div class="tool-card-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M15 12h-5" />
-                            <path d="M15 8h-5" />
-                            <path d="M19 17V5a2 2 0 0 0-2-2H4" />
-                            <path
-                                d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3" />
-                        </svg>
-                       </div>
-                       <h3 class="tool-card-title">Log Reader</h3>
-                       <p class="tool-card-desc">Read and search large log files with pagination. Handles files up to 10GB entirely in your browser.</p>
-                       <div class="tool-card-arrow">
-                           Launch Tool
-                           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                               <path d="M5 12h14M12 5l7 7-7 7"/>
-                           </svg>
-                       </div>
-                   </a>
-             </div>
+                        <div class="tool-card-icon">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                             <path d="M15 12h-5" />
+                             <path d="M15 8h-5" />
+                             <path d="M19 17V5a2 2 0 0 0-2-2H4" />
+                             <path
+                                 d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3" />
+                         </svg>
+                        </div>
+                        <h3 class="tool-card-title">Log Reader</h3>
+                        <p class="tool-card-desc">Read and search large log files with pagination. Handles files up to 10GB entirely in your browser.</p>
+                        <div class="tool-card-arrow">
+                            Launch Tool
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </div>
+                    </a>
+
+                    <a href="./tools/token-speed-visualizer/index.html" class="tool-card" style="animation-delay: 0.65s;" aria-label="Open Token Speed Visualizer tool for visualizing tokens per second output rate">
+                        <div class="tool-card-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                            </svg>
+                        </div>
+                        <h3 class="tool-card-title">Token Speed Visualizer</h3>
+                        <p class="tool-card-desc">Visualize how fast tokens appear at a given tokens-per-second rate. Adjust TPS and watch the stream.</p>
+                        <div class="tool-card-arrow">
+                            Launch Tool
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </div>
+                    </a>
+              </div>
          </div>
      </main>
 
@@ -215,6 +231,7 @@
         .tool-card:nth-child(5) { animation-delay: 200ms; }
         .tool-card:nth-child(6) { animation-delay: 250ms; }
         .tool-card:nth-child(7) { animation-delay: 300ms; }
+        .tool-card:nth-child(8) { animation-delay: 350ms; }
 
         @keyframes slideUp {
             from {
