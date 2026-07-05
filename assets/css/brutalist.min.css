@@ -868,6 +868,36 @@ img {
  letter-spacing:0.5px;
 }
 
+.footer-credit {
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ gap:10px;
+ margin:0 0 14px;
+ font-family:var(--font-mono);
+ font-size:13px;
+ color:var(--text-muted);
+ text-transform:uppercase;
+ letter-spacing:0.5px;
+}
+
+.footer-credit-link {
+ display:inline-flex;
+ line-height:0;
+ border:none;
+ border-radius:50%;
+ transition:transform var(--transition-fast);
+}
+
+.footer-credit-link:hover {
+ transform:scale(1.06);
+}
+
+.footer-credit-link img {
+ display:block;
+ border-radius:50%;
+}
+
 
 
 
