@@ -898,6 +898,10 @@ img {
  border-radius:50%;
 }
 
+.footer-credit-link:hover img {
+ filter:brightness(1.15);
+}
+
 
 
 
