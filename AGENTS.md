@@ -2,12 +2,14 @@
 
 ## Build/Run/Test Commands
 
-This project uses static HTML/CSS/JavaScript with no build process, linting tools, or automated testing framework. All tools run directly in the browser with no compilation step.
+This project uses pnpm for dependency management and tooling scripts. The tools themselves are static HTML/CSS/JavaScript with no build process — they run directly in the browser.
 
-- **Run locally:** `python3 -m http.server` (serves on http://localhost:8000) or `npx http-server`
+- **Prerequisites:** Node.js >=26 and pnpm. Install pnpm with `npm install -g pnpm`, then run `pnpm install`.
+- **Run locally:** `pnpm dev` (serves on http://localhost:8000, opens browser)
 - **Deploy to GitHub Pages:** Push to `main` branch and enable GitHub Pages in repository settings
 - **No build commands required** - tools run directly in browser
-- **Performance testing:** `npx lighthouse http://localhost:8000/index.html --output=json --output-path=lighthouse-result.json --quiet`
+- **Performance testing:** `pnpm run lighthouse` (auto-starts local server, runs Lighthouse, tears down)
+- **Performance targets:** Aim for 90+ Lighthouse Performance score, <2.5s LCP, <300KB bundle size
 - **Performance targets:** Aim for 90+ Lighthouse Performance score, <2.5s LCP, <300KB bundle size
 - **Manual testing:** Open tool in browser after running local server. Test functionality, responsive design, and edge cases manually.
 - **Running a single test:** Navigate to `http://localhost:8000/tools/tool-name/` and verify expected behavior.

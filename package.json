@@ -1,0 +1,22 @@
+{
+  "name": "web-tools-hub",
+  "version": "1.0.0",
+  "description": "A collection of lightweight, open-source browser utilities. All tools run entirely in your browser.",
+  "private": true,
+  "homepage": "https://toolbox.kaising.net",
+  "license": "AGPL-3.0",
+  "engines": {
+    "node": ">=26"
+  },
+  "packageManager": "pnpm@11.10.0",
+  "scripts": {
+    "dev": "http-server . -p 8000 -c-1 -o",
+    "preview": "http-server . -p 8000 -c-1",
+    "lighthouse": "start-server-and-test preview http://localhost:8000 \"lighthouse http://localhost:8000/index.html --output=json --output-path=lighthouse-result.json --quiet\""
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "lighthouse": "^13.4.0",
+    "start-server-and-test": "^3.0.11"
+  }
+}

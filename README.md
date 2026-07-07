@@ -112,19 +112,21 @@ Since these tools are client-side only, you don't need a complex backend to run 
     cd toolbox
     ```
 
-3.  **Run locally:**
-    Because the tools use ES modules or strict CORS policies in some browsers, it is best to use a local server.
-    -   **Using Python 3:**
-        ```bash
-        python3 -m http.server
-        ```
-    -   **Using Node.js (http-server):**
-        ```bash
-        npx http-server
-        ```
-    -   **Using VS Code:** Install the "Live Server" extension and click "Go Live".
+3.  **Install dependencies:**
+    ```bash
+    npm install -g pnpm
+    pnpm install
+    ```
+    Requires Node.js >=26.
 
-4.  Open your browser to `http://localhost:8000` (or the port provided by your server).
+4.  **Run locally:**
+    Because the tools use ES modules or strict CORS policies in some browsers, it is best to use a local server.
+    ```bash
+    pnpm dev
+    ```
+    This serves the site on `http://localhost:8000` and opens it in your browser.
+
+5.  Open your browser to `http://localhost:8000`.
 
 ## 🤝 Contributing
 
