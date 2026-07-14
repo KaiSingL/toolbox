@@ -2,6 +2,7 @@
 const grid = document.getElementById('symbol-grid');
 const searchInput = document.getElementById('search-input');
 const searchClear = document.getElementById('search-clear');
+const emojiToggle = document.getElementById('emoji-toggle');
 const categoryNav = document.getElementById('category-nav');
 const noResults = document.getElementById('no-results');
 const toast = document.getElementById('toast');
@@ -10,6 +11,9 @@ const categories = window.CATEGORIES || [];
 let toastTimer = null;
 let sectionObserver = null;
 let isSearchActive = false;
+let showEmoji = false;
+
+const EMOJI_RE = /\p{Extended_Pictographic}/u;
 
 // Format derivation
 function getCodepoint(char) {
@@ -127,6 +131,7 @@ function createCard(sym, categoryIndex, symIndex) {
     card.dataset.name = sym.n.toLowerCase();
     card.dataset.code = formats.code.toLowerCase();
     card.dataset.categoryIndex = categoryIndex;
+    card.dataset.isEmoji = EMOJI_RE.test(sym.c) ? 'true' : 'false';
 
     // Glyph (click to copy character)
     const glyph = document.createElement('div');
@@ -266,38 +271,32 @@ function initScrollSpy() {
     sections.forEach(s => sectionObserver.observe(s));
 }
 
-// Search
-function performSearch(query) {
-    query = query.trim().toLowerCase();
+// Filters (search + emoji toggle)
+function applyFilters() {
+    const query = searchInput.value.trim().toLowerCase();
+    const hasQuery = query.length > 0;
 
-    if (!query) {
-        isSearchActive = false;
-        // Show all
-        document.querySelectorAll('.symbol-card').forEach(c => {
-            c.style.display = '';
-        });
-        document.querySelectorAll('.category-section').forEach(s => {
-            s.style.display = '';
-        });
-        noResults.hidden = true;
+    isSearchActive = hasQuery;
+    if (hasQuery) {
+        categoryNav.style.display = 'none';
+    } else {
         categoryNav.style.display = '';
-        initScrollSpy();
-        return;
     }
 
-    isSearchActive = true;
-    categoryNav.style.display = 'none';
     let visibleCount = 0;
 
     document.querySelectorAll('.category-section').forEach(section => {
         let sectionVisible = false;
         const cards = section.querySelectorAll('.symbol-card');
         cards.forEach(card => {
-            const matches = card.dataset.name.includes(query) ||
-                            card.dataset.code.includes(query) ||
-                            card.dataset.char === query;
-            card.style.display = matches ? '' : 'none';
-            if (matches) {
+            const matchesSearch = !hasQuery ||
+                card.dataset.name.includes(query) ||
+                card.dataset.code.includes(query) ||
+                card.dataset.char === query;
+            const passesEmoji = showEmoji || card.dataset.isEmoji !== 'true';
+            const visible = matchesSearch && passesEmoji;
+            card.style.display = visible ? '' : 'none';
+            if (visible) {
                 sectionVisible = true;
                 visibleCount++;
             }
@@ -306,19 +305,23 @@ function performSearch(query) {
     });
 
     noResults.hidden = visibleCount > 0;
+
+    if (!hasQuery) {
+        initScrollSpy();
+    }
 }
 
 // Event listeners
 searchInput.addEventListener('input', () => {
     const value = searchInput.value;
     searchClear.hidden = !value;
-    performSearch(value);
+    applyFilters();
 });
 
 searchClear.addEventListener('click', () => {
     searchInput.value = '';
     searchClear.hidden = true;
-    performSearch('');
+    applyFilters();
     searchInput.focus();
 });
 
@@ -326,13 +329,21 @@ searchInput.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
         searchInput.value = '';
         searchClear.hidden = true;
-        performSearch('');
+        applyFilters();
         searchInput.blur();
     }
+});
+
+emojiToggle.addEventListener('click', () => {
+    showEmoji = !showEmoji;
+    emojiToggle.setAttribute('aria-pressed', showEmoji);
+    emojiToggle.textContent = showEmoji ? 'Hide emoji' : 'Show emoji';
+    applyFilters();
 });
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
     renderCategoryNav();
     renderAll();
+    applyFilters();
 });

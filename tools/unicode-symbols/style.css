@@ -53,6 +53,31 @@
     color: var(--accent);
 }
 
+/* Emoji toggle */
+.emoji-toggle {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    padding: 8px 16px;
+    background: var(--bg-surface);
+    border: var(--border-thin);
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all var(--transition-fast);
+    margin-bottom: 16px;
+}
+
+.emoji-toggle:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+}
+
+.emoji-toggle[aria-pressed="true"] {
+    background: var(--accent);
+    color: var(--bg-primary);
+    border-color: var(--accent);
+}
+
 /* Category nav */
 .category-nav {
     display: flex;
