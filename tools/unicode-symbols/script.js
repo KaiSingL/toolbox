@@ -235,6 +235,9 @@ function renderAll() {
 function renderCategoryOverlay() {
     categoryOverlay.innerHTML = '';
     categories.forEach((cat, i) => {
+        const section = document.getElementById('cat-' + slugify(cat.name));
+        if (!section || section.style.display === 'none') return;
+
         const item = document.createElement('button');
         item.className = 'overlay-item';
         item.type = 'button';
@@ -244,18 +247,20 @@ function renderCategoryOverlay() {
             closeOverlay();
             const target = document.getElementById('cat-' + slugify(cat.name));
             if (target) {
-                const offset = 60;
+                const offset = 140;
                 const top = target.getBoundingClientRect().top + window.scrollY - offset;
                 window.scrollTo({ top: top, behavior: 'smooth' });
             }
         });
         categoryOverlay.appendChild(item);
     });
+    updateOverlayActive();
 }
 
 function openOverlay() {
     overlayOpen = true;
-    categoryOverlay.hidden = false;
+    renderCategoryOverlay();
+    categoryOverlay.classList.add('open');
     categoryPill.setAttribute('aria-expanded', 'true');
 
     const backdrop = document.createElement('div');
@@ -269,7 +274,7 @@ function openOverlay() {
 
 function closeOverlay() {
     overlayOpen = false;
-    categoryOverlay.hidden = true;
+    categoryOverlay.classList.remove('open');
     categoryPill.setAttribute('aria-expanded', 'false');
     const backdrop = document.getElementById('overlay-backdrop');
     if (backdrop) backdrop.remove();
@@ -390,7 +395,6 @@ document.addEventListener('keydown', (e) => {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    renderCategoryOverlay();
     renderAll();
     applyFilters();
 });

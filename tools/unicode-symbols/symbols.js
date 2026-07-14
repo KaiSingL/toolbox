@@ -393,8 +393,8 @@ const CATEGORIES = [
         ]
     },
     {
-        name: "Emoji",
-        note: "Lucide: Emoji (45) — smileys U+1F600+, emoticons U+2639–263B",
+        name: "Faces",
+        note: "Lucide: Faces (45) — smileys U+1F600+, emoticons U+2639–263B",
         symbols: [
             { c: "😀", n: "Grinning Face" },
             { c: "😃", n: "Smiling With Open Mouth" },
