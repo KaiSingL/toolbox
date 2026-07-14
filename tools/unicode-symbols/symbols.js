@@ -1467,6 +1467,31 @@ const CATEGORIES = [
             { c: "💧", n: "Droplet" },
             { c: "⌚", n: "Watch" }
         ]
+    },
+    {
+        name: "Dingbats",
+        note: "Marks & ballot symbols (U+2600–27BF) — check, cross, checkbox, suits",
+        symbols: [
+            { c: "✓", n: "Check Mark" },
+            { c: "✔", n: "Heavy Check Mark" },
+            { c: "✗", n: "Ballot X" },
+            { c: "✕", n: "Multiplication X" },
+            { c: "✖", n: "Heavy Multiplication X" },
+            { c: "☐", n: "Ballot Box" },
+            { c: "☑", n: "Ballot Box With Check" },
+            { c: "☒", n: "Ballot Box With X" },
+            { c: "♥", n: "Black Heart Suit" },
+            { c: "♡", n: "White Heart Suit" },
+            { c: "♦", n: "Black Diamond Suit" },
+            { c: "♣", n: "Black Club Suit" },
+            { c: "♠", n: "Black Spade Suit" },
+            { c: "⚪", n: "Medium White Circle" },
+            { c: "⚫", n: "Medium Black Circle" },
+            { c: "☜", n: "White Left Pointing Index" },
+            { c: "☞", n: "White Right Pointing Index" },
+            { c: "⚐", n: "White Flag" },
+            { c: "⚑", n: "Black Flag" }
+        ]
     }
 ];
 
