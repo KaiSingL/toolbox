@@ -3,7 +3,9 @@ const grid = document.getElementById('symbol-grid');
 const searchInput = document.getElementById('search-input');
 const searchClear = document.getElementById('search-clear');
 const emojiToggle = document.getElementById('emoji-toggle');
-const categoryNav = document.getElementById('category-nav');
+const categoryPill = document.getElementById('category-pill');
+const categoryPillLabel = document.getElementById('category-pill-label');
+const categoryOverlay = document.getElementById('category-overlay');
 const noResults = document.getElementById('no-results');
 const toast = document.getElementById('toast');
 const categories = window.CATEGORIES || [];
@@ -12,6 +14,8 @@ let toastTimer = null;
 let sectionObserver = null;
 let isSearchActive = false;
 let showEmoji = false;
+let overlayOpen = false;
+let currentCategoryIndex = -1;
 
 const EMOJI_RE = /\p{Extended_Pictographic}/u;
 
@@ -228,24 +232,54 @@ function renderAll() {
     initScrollSpy();
 }
 
-function renderCategoryNav() {
-    categoryNav.innerHTML = '';
+function renderCategoryOverlay() {
+    categoryOverlay.innerHTML = '';
     categories.forEach((cat, i) => {
-        const chip = document.createElement('a');
-        chip.className = 'category-chip';
-        chip.href = '#cat-' + slugify(cat.name);
-        chip.textContent = cat.name;
-        chip.dataset.categoryIndex = i;
-        chip.addEventListener('click', (e) => {
-            e.preventDefault();
+        const item = document.createElement('button');
+        item.className = 'overlay-item';
+        item.type = 'button';
+        item.textContent = cat.name;
+        item.dataset.categoryIndex = i;
+        item.addEventListener('click', () => {
+            closeOverlay();
             const target = document.getElementById('cat-' + slugify(cat.name));
             if (target) {
-                const offset = 80;
+                const offset = 60;
                 const top = target.getBoundingClientRect().top + window.scrollY - offset;
                 window.scrollTo({ top: top, behavior: 'smooth' });
             }
         });
-        categoryNav.appendChild(chip);
+        categoryOverlay.appendChild(item);
+    });
+}
+
+function openOverlay() {
+    overlayOpen = true;
+    categoryOverlay.hidden = false;
+    categoryPill.setAttribute('aria-expanded', 'true');
+
+    const backdrop = document.createElement('div');
+    backdrop.className = 'overlay-backdrop';
+    backdrop.id = 'overlay-backdrop';
+    backdrop.addEventListener('click', closeOverlay);
+    document.body.appendChild(backdrop);
+
+    updateOverlayActive();
+}
+
+function closeOverlay() {
+    overlayOpen = false;
+    categoryOverlay.hidden = true;
+    categoryPill.setAttribute('aria-expanded', 'false');
+    const backdrop = document.getElementById('overlay-backdrop');
+    if (backdrop) backdrop.remove();
+}
+
+function updateOverlayActive() {
+    const items = categoryOverlay.querySelectorAll('.overlay-item');
+    items.forEach(item => {
+        item.classList.toggle('active',
+            parseInt(item.dataset.categoryIndex) === currentCategoryIndex);
     });
 }
 
@@ -254,19 +288,21 @@ function initScrollSpy() {
     if (sectionObserver) sectionObserver.disconnect();
 
     const sections = document.querySelectorAll('.category-section');
-    const chips = categoryNav.querySelectorAll('.category-chip');
 
     sectionObserver = new IntersectionObserver((entries) => {
         if (isSearchActive) return;
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                const idx = entry.target.dataset.categoryIndex;
-                chips.forEach(c => {
-                    c.classList.toggle('active', c.dataset.categoryIndex === idx);
-                });
+                const idx = parseInt(entry.target.dataset.categoryIndex);
+                currentCategoryIndex = idx;
+                const cat = categories[idx];
+                if (cat) {
+                    categoryPillLabel.textContent = cat.name;
+                    if (overlayOpen) updateOverlayActive();
+                }
             }
         });
-    }, { rootMargin: '-80px 0px -70% 0px' });
+    }, { rootMargin: '-60px 0px -70% 0px' });
 
     sections.forEach(s => sectionObserver.observe(s));
 }
@@ -277,11 +313,8 @@ function applyFilters() {
     const hasQuery = query.length > 0;
 
     isSearchActive = hasQuery;
-    if (hasQuery) {
-        categoryNav.style.display = 'none';
-    } else {
-        categoryNav.style.display = '';
-    }
+    categoryPill.style.display = hasQuery ? 'none' : '';
+    if (overlayOpen) closeOverlay();
 
     let visibleCount = 0;
 
@@ -341,9 +374,23 @@ emojiToggle.addEventListener('click', () => {
     applyFilters();
 });
 
+categoryPill.addEventListener('click', () => {
+    if (overlayOpen) {
+        closeOverlay();
+    } else {
+        openOverlay();
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && overlayOpen) {
+        closeOverlay();
+    }
+});
+
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    renderCategoryNav();
+    renderCategoryOverlay();
     renderAll();
     applyFilters();
 });

@@ -10,11 +10,24 @@
     max-width: 600px;
 }
 
-/* Search bar */
+/* Toolbar */
+.toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    background: var(--bg-primary);
+    padding: 12px 0;
+    margin-bottom: 16px;
+    border-bottom: var(--border-thin);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .search-bar {
     position: relative;
-    margin-bottom: 24px;
-    max-width: 600px;
+    flex: 1;
+    min-width: 0;
 }
 
 .search-icon {
@@ -53,18 +66,17 @@
     color: var(--accent);
 }
 
-/* Emoji toggle */
 .emoji-toggle {
     font-family: var(--font-mono);
-    font-size: 13px;
-    padding: 8px 16px;
+    font-size: 14px;
+    padding: 12px 14px;
     background: var(--bg-surface);
     border: var(--border-thin);
     color: var(--text-muted);
     cursor: pointer;
     border-radius: 2px;
     transition: all var(--transition-fast);
-    margin-bottom: 16px;
+    white-space: nowrap;
 }
 
 .emoji-toggle:hover {
@@ -78,41 +90,100 @@
     border-color: var(--accent);
 }
 
-/* Category nav */
-.category-nav {
+/* Category pill */
+.category-pill {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    padding: 12px 12px;
+    background: var(--bg-surface);
+    border: var(--border-thin);
+    color: var(--text-primary);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all var(--transition-fast);
+    white-space: nowrap;
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    background: var(--bg-primary);
-    padding: 16px 0;
-    margin-bottom: 16px;
-    border-bottom: var(--border-thin);
+    align-items: center;
+    gap: 6px;
+    max-width: 200px;
 }
 
-.category-chip {
+.category-pill:hover {
+    border-color: var(--accent);
+}
+
+.category-pill[aria-expanded="true"] {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.category-pill span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.category-pill svg {
+    flex-shrink: 0;
+    transition: transform var(--transition-fast);
+}
+
+.category-pill[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+}
+
+.category-overlay[hidden] {
+    display: none;
+}
+
+/* Category overlay */
+.category-overlay {
+    position: fixed;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(700px, 92vw);
+    max-height: 60vh;
+    overflow-y: auto;
+    background: var(--bg-surface);
+    border: var(--border-medium, 2px solid var(--accent));
+    border-radius: 2px;
+    z-index: 30;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 6px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+}
+
+.overlay-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 25;
+}
+
+.overlay-item {
     font-family: var(--font-mono);
     font-size: 12px;
-    padding: 6px 12px;
-    background: var(--bg-surface);
+    padding: 8px 12px;
+    background: var(--bg-primary);
     border: var(--border-thin);
     color: var(--text-muted);
     cursor: pointer;
     border-radius: 2px;
     transition: all var(--transition-fast);
+    text-align: left;
     white-space: nowrap;
-    text-decoration: none;
-    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-.category-chip:hover {
+.overlay-item:hover {
     border-color: var(--accent);
     color: var(--text-primary);
 }
 
-.category-chip.active {
+.overlay-item.active {
     background: var(--accent);
     color: var(--bg-primary);
     border-color: var(--accent);
@@ -276,7 +347,7 @@
         margin: 32px 0 12px 0;
     }
 
-    .symbol-grid {
+    .category-section {
         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 8px;
     }
@@ -285,18 +356,17 @@
         font-size: 32px;
     }
 
-    .category-nav {
-        padding: 12px 0;
+    .category-pill {
+        max-width: 130px;
     }
 
-    .category-chip {
-        font-size: 11px;
-        padding: 5px 10px;
+    .category-overlay {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     }
 }
 
 @media (max-width: 480px) {
-    .symbol-grid {
+    .category-section {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
     }
@@ -316,5 +386,24 @@
 
     .symbol-card.selected {
         border-color: var(--accent);
+    }
+
+    .toolbar {
+        flex-wrap: wrap;
+    }
+
+    .search-bar {
+        flex: 1 1 100%;
+        order: 1;
+    }
+
+    .emoji-toggle {
+        order: 2;
+    }
+
+    .category-pill {
+        order: 3;
+        max-width: none;
+        flex: 1;
     }
 }

@@ -35,21 +35,28 @@
             <h1 class="section-title">Unicode Symbol Collection</h1>
             <p class="tool-description">Browse Unicode symbols mapped to Lucide icon categories. Click any glyph to copy the character, or use the format chips to copy codepoint, HTML entity, CSS, or JS escapes.</p>
 
-            <div class="search-bar">
-                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-                </svg>
-                <input type="text" id="search-input" class="input-brutal search-input" placeholder="Search by name or codepoint (e.g. arrow, U+2192, 1F600)..." autocomplete="off" aria-label="Search symbols">
-                <button id="search-clear" class="search-clear" aria-label="Clear search" hidden>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <path d="M18 6 6 18M6 6l12 12"/>
+            <div class="toolbar">
+                <div class="search-bar">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                    </svg>
+                    <input type="text" id="search-input" class="input-brutal search-input" placeholder="Search by name or codepoint..." autocomplete="off" aria-label="Search symbols">
+                    <button id="search-clear" class="search-clear" aria-label="Clear search" hidden>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M18 6 6 18M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <button id="emoji-toggle" class="emoji-toggle" aria-pressed="false">Show emoji</button>
+                <button id="category-pill" class="category-pill" aria-haspopup="true" aria-expanded="false">
+                    <span id="category-pill-label">All categories</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="m6 9 6 6 6-6"/>
                     </svg>
                 </button>
             </div>
 
-            <button id="emoji-toggle" class="emoji-toggle" aria-pressed="false">Show emoji</button>
-
-            <nav id="category-nav" class="category-nav" aria-label="Category navigation"></nav>
+            <div id="category-overlay" class="category-overlay" hidden></div>
 
             <div id="symbol-grid" class="symbol-grid"></div>
 
