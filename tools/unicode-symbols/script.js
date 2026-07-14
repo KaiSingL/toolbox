@@ -116,7 +116,7 @@ function renderCategory(cat, categoryIndex) {
 
     const title = document.createElement('h2');
     title.className = 'category-title';
-    title.innerHTML = cat.name + '<span class="category-note">' + cat.note + '</span>';
+    title.textContent = cat.name;
     section.appendChild(title);
 
     cat.symbols.forEach((sym, symIndex) => {

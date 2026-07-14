@@ -225,14 +225,6 @@
     margin-top: 0;
 }
 
-.category-note {
-    font-family: var(--font-mono);
-    font-size: 11px;
-    color: var(--text-muted);
-    margin-left: 12px;
-    font-weight: 400;
-}
-
 /* Symbol card */
 .symbol-card {
     position: relative;
