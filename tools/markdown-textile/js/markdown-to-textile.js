@@ -140,7 +140,7 @@ class MarkdownToTextile {
       }
     });
     
-    return result.trim() + '\n';
+    return result.trim() + '\n\n';
   }
   
   /**

@@ -154,14 +154,20 @@ describe('MarkdownToTextile', () => {
     describe('tables', () => {
         it('converts a simple table with left alignment', () => {
             const input = '| h1 | h2 |\n|----|----|\n| a  | b  |';
-            const expected = '|_. h1|_. h2|\n|a|b|\n';
+            const expected = '|_. h1|_. h2|\n|a|b|\n\n';
             assert.strictEqual(converter.convert(input), expected);
         });
 
         it('parses center and right alignment from separator', () => {
             const input = '| h1 | h2 | h3 |\n|:---|:--:|---:|\n| a  | b  | c  |';
             const result = converter.convert(input);
-            assert.strictEqual(result, '|_. h1|_=. h2|_>. h3|\n|a|=. b|>. c|\n');
+            assert.strictEqual(result, '|_. h1|_=. h2|_>. h3|\n|a|=. b|>. c|\n\n');
+        });
+
+        it('separates a table from a following header with a blank line', () => {
+            const input = '| k | v |\n|---|---|\n| a | b |\n### Next section';
+            const expected = '|_. k|_. v|\n|a|b|\n\nh3. Next section\n\n';
+            assert.strictEqual(converter.convert(input), expected);
         });
     });
 
