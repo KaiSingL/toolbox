@@ -10,13 +10,13 @@ describe('MarkdownToTextile', () => {
     });
 
     describe('headers', () => {
-        it('converts h1 through h6', () => {
-            assert.strictEqual(converter.convert('# H1'), 'h1. H1\n');
-            assert.strictEqual(converter.convert('## H2'), 'h2. H2\n');
-            assert.strictEqual(converter.convert('### H3'), 'h3. H3\n');
-            assert.strictEqual(converter.convert('#### H4'), 'h4. H4\n');
-            assert.strictEqual(converter.convert('##### H5'), 'h5. H5\n');
-            assert.strictEqual(converter.convert('###### H6'), 'h6. H6\n');
+        it('converts h1 through h6 with a blank line after', () => {
+            assert.strictEqual(converter.convert('# H1'), 'h1. H1\n\n');
+            assert.strictEqual(converter.convert('## H2'), 'h2. H2\n\n');
+            assert.strictEqual(converter.convert('### H3'), 'h3. H3\n\n');
+            assert.strictEqual(converter.convert('#### H4'), 'h4. H4\n\n');
+            assert.strictEqual(converter.convert('##### H5'), 'h5. H5\n\n');
+            assert.strictEqual(converter.convert('###### H6'), 'h6. H6\n\n');
         });
     });
 
@@ -101,6 +101,18 @@ describe('MarkdownToTextile', () => {
         it('converts fenced code block with language', () => {
             const input = '```js\nconsole.log(1)\n```';
             assert.strictEqual(converter.convert(input), '<pre><code class="js">\nconsole.log(1)\n</code></pre>\n');
+        });
+
+        it('converts multi-line fenced code block with special characters', () => {
+            const input = '```css\n  html[dir="rtl"] .chevron-icon,\n  html[dir="rtl"] .location-breadcrumb-sep,\n  html[dir="rtl"] .arrow-icon {\n    transform: scaleX(-1);\n  }\n```';
+            const expected = '<pre><code class="css">\n  html[dir="rtl"] .chevron-icon,\n  html[dir="rtl"] .location-breadcrumb-sep,\n  html[dir="rtl"] .arrow-icon {\n    transform: scaleX(-1);\n  }\n</code></pre>\n';
+            assert.strictEqual(converter.convert(input), expected);
+        });
+
+        it('handles CRLF line endings in fenced code blocks', () => {
+            const input = '```css\r\n  html[dir="rtl"] .x {\r\n    transform: scaleX(-1);\r\n  }\r\n```';
+            const expected = '<pre><code class="css">\n  html[dir="rtl"] .x {\n    transform: scaleX(-1);\n  }\n</code></pre>\n';
+            assert.strictEqual(converter.convert(input), expected);
         });
     });
 

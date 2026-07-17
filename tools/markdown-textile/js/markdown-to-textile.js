@@ -5,12 +5,12 @@ class MarkdownToTextile {
   constructor() {
     this.rules = [
       // Headers
-      { pattern: /^# (.+)$/gm, replacement: 'h1. $1\n' },
-      { pattern: /^## (.+)$/gm, replacement: 'h2. $1\n' },
-      { pattern: /^### (.+)$/gm, replacement: 'h3. $1\n' },
-      { pattern: /^#### (.+)$/gm, replacement: 'h4. $1\n' },
-      { pattern: /^##### (.+)$/gm, replacement: 'h5. $1\n' },
-      { pattern: /^###### (.+)$/gm, replacement: 'h6. $1\n' },
+      { pattern: /^# (.+)$/gm, replacement: 'h1. $1\n\n' },
+      { pattern: /^## (.+)$/gm, replacement: 'h2. $1\n\n' },
+      { pattern: /^### (.+)$/gm, replacement: 'h3. $1\n\n' },
+      { pattern: /^#### (.+)$/gm, replacement: 'h4. $1\n\n' },
+      { pattern: /^##### (.+)$/gm, replacement: 'h5. $1\n\n' },
+      { pattern: /^###### (.+)$/gm, replacement: 'h6. $1\n\n' },
       
       // Emphasis (bold uses placeholder \x00 to prevent italic re-matching)
       { pattern: /\*\*([^*]+)\*\*/g, replacement: '\x00$1\x00' },  // Bold -> placeholder
@@ -48,7 +48,8 @@ class MarkdownToTextile {
       // Code blocks (must come before inline code)
       { pattern: /```(\w+)?\n([\s\S]+?)\n```/gm, replacement: function(match, lang, code) {
         const langClass = lang || 'text';
-        return `<pre><code class="${langClass}">\n${code.trim()}\n</code></pre>\n`;
+        const trimmed = code.replace(/^\n+|\n+$/g, '');
+        return `<pre><code class="${langClass}">\n${trimmed}\n</code></pre>\n`;
       }},
 
       // Inline code
@@ -162,7 +163,7 @@ class MarkdownToTextile {
       throw new Error(`Input exceeds maximum length of ${MarkdownToTextile.MAX_INPUT_LENGTH} characters`);
     }
 
-    let textileText = markdownText;
+    let textileText = markdownText.replace(/\r\n|\r/g, '\n');
 
     // Apply each conversion rule
     this.rules.forEach(rule => {
