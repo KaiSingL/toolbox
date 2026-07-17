@@ -11,6 +11,8 @@ const turndown = new TurndownService({
     bulletListMarker: '-'
 });
 
+turndown.use(turndownPluginGfm.gfm);
+
 turndown.addRule('fencedCodeBlock', {
     filter: function (node, options) {
         return options.codeBlockStyle === 'fenced' &&
