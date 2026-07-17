@@ -1,0 +1,101 @@
+.tool-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.tool-hero {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.tool-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.converter-input {
+  width: 100%;
+  resize: vertical;
+  min-height: 320px;
+  font-family: var(--font-mono);
+  line-height: 1.6;
+  tab-size: 2;
+}
+
+.converter-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 20px;
+  padding: 0 4px;
+}
+
+.converter-actions .btn-primary,
+.converter-actions .btn-secondary {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.converter-actions .btn-primary svg {
+  flex: 0 0 auto;
+}
+
+/* Desktop: convert buttons anchor to the far ends, copy floats centered */
+@media (min-width: 769px) {
+  .converter-actions {
+    padding: 0 8px;
+  }
+
+  #to-textile {
+    margin-right: auto;
+  }
+
+  #copy-btn {
+    margin: 0 auto;
+  }
+
+  #to-markdown {
+    margin-left: auto;
+  }
+}
+
+/* Mobile: convert buttons share one row (half width each), Copy full width below */
+@media (max-width: 768px) {
+  .tool-container {
+    padding: 24px 16px;
+  }
+
+  .converter-actions {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 0;
+  }
+
+  .converter-actions .btn-primary,
+  .converter-actions .btn-secondary {
+    justify-content: center;
+  }
+
+  #to-textile,
+  #to-markdown {
+    order: 1;
+    flex: 1 1 calc(50% - 6px);
+    width: auto;
+  }
+
+  #copy-btn {
+    order: 2;
+    flex: 1 1 100%;
+    width: 100%;
+  }
+}
