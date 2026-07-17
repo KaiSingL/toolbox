@@ -34,7 +34,7 @@ class MarkdownToTextile {
         const level = Math.floor(indent.length / 2) + 1;
         return '*'.repeat(level) + ' ' + text;
       }},
-      { pattern: /^(\s*)(\d+)\. (.+)$/gm, replacement: (match, indent, num, text) => {
+      { pattern: /^(\s*)(\d+)[.)] (.+)$/gm, replacement: (match, indent, num, text) => {
         const level = Math.floor(indent.length / 2) + 1;
         return '#'.repeat(level) + ' ' + text;
       }},
@@ -47,20 +47,14 @@ class MarkdownToTextile {
       
       // Code blocks (must come before inline code)
       { pattern: /```(\w+)?\n([\s\S]+?)\n```/gm, replacement: function(match, lang, code) {
-        if (lang) {
-          return `bc(${lang}). ${code.trim()}\n`;
-        } else {
-          return `bc. ${code.trim()}\n`;
-        }
+        const langClass = lang || 'text';
+        return `<pre><code class="${langClass}">\n${code.trim()}\n</code></pre>\n`;
       }},
 
       // Inline code
       { pattern: /`([^`]+)`/g, replacement: '@$1@' },
       
-      // Blockquotes (nested: >> -> bq.. with depth, single: > -> bq.)
-      { pattern: /^(>{2,}) (.+)$/gm, replacement: (match, arrows, text) => {
-        return 'bq(' + arrows.length + '). ' + text;
-      }},
+      // Blockquotes (single > -> bq.; Redmine reads >> natively, so pass through)
       { pattern: /^> (.+)$/gm, replacement: 'bq. $1' },
 
       // Footnotes
@@ -71,7 +65,7 @@ class MarkdownToTextile {
       { pattern: /^([^\n]+)\n: (.+)$/gm, replacement: '- $1 := $2' },
 
       // Horizontal rule
-      { pattern: /^---$/gm, replacement: '---' },
+      { pattern: /^([-*_])\1{2,}$/gm, replacement: '----' },
 
       // Strikethrough
       { pattern: /~~(.+?)~~/g, replacement: '-$1-' },
@@ -127,9 +121,9 @@ class MarkdownToTextile {
     // Header row with textile formatting
     result += '|' + headers.map((header, i) => {
       const align = alignments[i] || 'left';
-      if (align === 'center') return `=. ${header}`;
-      if (align === 'right') return `>. ${header}`;
-      return `_. ${header}`; // left-aligned header
+      if (align === 'center') return `_=. ${header}`;
+      if (align === 'right') return `_>. ${header}`;
+      return `_. ${header}`;
     }).join('|') + '|\n';
     
     // Data rows

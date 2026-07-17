@@ -46,8 +46,9 @@ describe('MarkdownToTextile', () => {
             assert.strictEqual(converter.convert('* item'), '* item');
         });
 
-        it('converts ordered lists', () => {
+        it('converts ordered lists (both 1. and 1) forms)', () => {
             assert.strictEqual(converter.convert('1. item'), '# item');
+            assert.strictEqual(converter.convert('1) item'), '# item');
         });
 
         it('handles nested unordered lists by indentation', () => {
@@ -94,12 +95,12 @@ describe('MarkdownToTextile', () => {
 
         it('converts fenced code block without language', () => {
             const input = '```\nplain code\n```';
-            assert.strictEqual(converter.convert(input), 'bc. plain code\n');
+            assert.strictEqual(converter.convert(input), '<pre><code class="text">\nplain code\n</code></pre>\n');
         });
 
         it('converts fenced code block with language', () => {
             const input = '```js\nconsole.log(1)\n```';
-            assert.strictEqual(converter.convert(input), 'bc(js). console.log(1)\n');
+            assert.strictEqual(converter.convert(input), '<pre><code class="js">\nconsole.log(1)\n</code></pre>\n');
         });
     });
 
@@ -108,9 +109,9 @@ describe('MarkdownToTextile', () => {
             assert.strictEqual(converter.convert('> quote'), 'bq. quote');
         });
 
-        it('converts nested blockquotes by arrow count', () => {
-            assert.strictEqual(converter.convert('>> deep quote'), 'bq(2). deep quote');
-            assert.strictEqual(converter.convert('>>> deeper quote'), 'bq(3). deeper quote');
+        it('passes nested blockquotes through for Redmine', () => {
+            assert.strictEqual(converter.convert('>> deep quote'), '>> deep quote');
+            assert.strictEqual(converter.convert('>>> deeper quote'), '>>> deeper quote');
         });
     });
 
@@ -131,8 +132,10 @@ describe('MarkdownToTextile', () => {
     });
 
     describe('horizontal rule', () => {
-        it('passes through horizontal rule', () => {
-            assert.strictEqual(converter.convert('---'), '---');
+        it('converts horizontal rules to Textile four-dash form', () => {
+            assert.strictEqual(converter.convert('---'), '----');
+            assert.strictEqual(converter.convert('***'), '----');
+            assert.strictEqual(converter.convert('___'), '----');
         });
     });
 
@@ -146,7 +149,7 @@ describe('MarkdownToTextile', () => {
         it('parses center and right alignment from separator', () => {
             const input = '| h1 | h2 | h3 |\n|:---|:--:|---:|\n| a  | b  | c  |';
             const result = converter.convert(input);
-            assert.strictEqual(result, '|_. h1|=. h2|>. h3|\n|a|=. b|>. c|');
+            assert.strictEqual(result, '|_. h1|_=. h2|_>. h3|\n|a|=. b|>. c|');
         });
     });
 

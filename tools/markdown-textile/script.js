@@ -11,6 +11,20 @@ const turndown = new TurndownService({
     bulletListMarker: '-'
 });
 
+turndown.addRule('fencedCodeBlock', {
+    filter: function (node, options) {
+        return options.codeBlockStyle === 'fenced' &&
+            node.nodeName === 'PRE' &&
+            node.firstChild &&
+            node.firstChild.nodeName === 'CODE';
+    },
+    replacement: function (content, node, options) {
+        const codeEl = node.firstChild;
+        const fenceBlock = formatFencedCode(codeEl.getAttribute('class') || '', codeEl.textContent, options.fence);
+        return '\n\n' + fenceBlock + '\n\n';
+    }
+});
+
 function showError(message) {
     errorEl.textContent = message;
     errorEl.classList.remove('hidden');
