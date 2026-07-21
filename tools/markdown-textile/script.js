@@ -63,7 +63,7 @@ function convertToMarkdown() {
         return;
     }
     try {
-        const html = textile(source);
+        const html = normalizeTableHtml(textile(source));
         const result = turndown.turndown(html);
         inputEl.value = result;
         inputEl.focus();
