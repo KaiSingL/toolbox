@@ -9,3 +9,5 @@ These libraries are vendored locally (off-CDN) for the Markdown ↔ Textile tool
 | turndown-plugin-gfm | 1.0.2 | https://cdn.jsdelivr.net/npm/turndown-plugin-gfm@1.0.2/dist/turndown-plugin-gfm.min.js | MIT |
 
 All expose browser globals when loaded via `<script>`: `window.textile`, `TurndownService`, and `turndownPluginGfm` (with `.gfm`, `.tables`, `.strikethrough`, `.taskListItems`).
+
+A one-line CommonJS export shim has been appended to `turndown.min.js` and `turndown-plugin-gfm.min.js` so they can be `require()`d from Node.js (for the conversion-correctness test suite). The shim does not affect browser loading.

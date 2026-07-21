@@ -5,28 +5,6 @@ const toMarkdownBtn = document.getElementById('to-markdown');
 const copyBtn = document.getElementById('copy-btn');
 const errorEl = document.getElementById('error');
 
-const turndown = new TurndownService({
-    headingStyle: 'atx',
-    codeBlockStyle: 'fenced',
-    bulletListMarker: '-'
-});
-
-turndown.use(turndownPluginGfm.gfm);
-
-turndown.addRule('fencedCodeBlock', {
-    filter: function (node, options) {
-        return options.codeBlockStyle === 'fenced' &&
-            node.nodeName === 'PRE' &&
-            node.firstChild &&
-            node.firstChild.nodeName === 'CODE';
-    },
-    replacement: function (content, node, options) {
-        const codeEl = node.firstChild;
-        const fenceBlock = formatFencedCode(codeEl.getAttribute('class') || '', codeEl.textContent, options.fence);
-        return '\n\n' + fenceBlock + '\n\n';
-    }
-});
-
 function showError(message) {
     errorEl.textContent = message;
     errorEl.classList.remove('hidden');
@@ -63,8 +41,7 @@ function convertToMarkdown() {
         return;
     }
     try {
-        const html = normalizeTableHtml(textile(source));
-        const result = turndown.turndown(html);
+        const result = convertTextileToMarkdown(source);
         inputEl.value = result;
         inputEl.focus();
     } catch (err) {

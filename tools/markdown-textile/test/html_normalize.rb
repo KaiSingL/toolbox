@@ -21,6 +21,7 @@ module HtmlNormalize
     s.gsub!(%r{</?(thead|tbody|tfoot)\b[^>]*>}i, '')
 
     s = normalize_pre_code(s)
+    s = normalize_table_cells(s)
 
     s.gsub!(/\sclass="external"/i, '')
 
@@ -54,6 +55,16 @@ module HtmlNormalize
       m = Regexp.last_match
       attr = m[1].to_s.gsub(/\s(class|lang|id)\s*=\s*"[^"]*"/i, '')
       "<pre#{attr}>#{m[2].to_s.strip}</pre>"
+    end
+    s
+  end
+
+  def normalize_table_cells(s)
+    s = s.gsub(/<(td|th)\b([^>]*)>(.*?)<\/\1>/im) do |_m|
+      m = Regexp.last_match
+      attr = m[2].to_s
+      inner = m[3].to_s.strip
+      "<td#{attr}>#{inner}</td>"
     end
     s
   end

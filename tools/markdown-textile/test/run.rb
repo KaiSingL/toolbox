@@ -1,18 +1,22 @@
 #!/usr/bin/env ruby
-# Conversion-correctness suite for the Markdown -> Textile converter.
+# Conversion-correctness suite for the Markdown <-> Textile converter.
 #
-# For each case in cases.rb it renders the original markdown to HTML via
-# CommonMarker, runs the JS converter to produce Textile, renders that
-# Textile to HTML via vendored RedCloth3 (Redmine's formatter), then asserts
-# the two normalized HTML strings are equal.
+# Forward direction (Markdown -> Textile):
+#   For each case, CommonMarker renders the markdown to HTML (expected),
+#   the JS converter produces Textile, RedCloth3 renders that Textile to
+#   HTML (actual), and the two normalized HTML strings are compared.
 #
-# See README.md for scope (what is and is not covered).
+# Reverse direction (Textile -> Markdown):
+#   For each hand-written textile fixture and each auto-paired case (derived
+#   from the forward direction), RedCloth3 renders the textile to HTML
+#   (expected), the JS converter produces Markdown, CommonMarker renders
+#   that Markdown to HTML (actual), and the two are compared.
+#
+# See README.md for scope.
 
-require 'English'
 require 'open3'
 
 VENDOR_DIR = File.expand_path('../vendor/redmine', __dir__)
-TEST_DIR   = File.expand_path('..', __dir__)
 TOOL_DIR   = File.expand_path('..', __dir__)
 
 require_relative '../vendor/redmine/polyfills'
@@ -35,7 +39,8 @@ unless system('node --version > NUL')
   exit 1
 end
 
-CONVERTER_JS = File.expand_path('../js/markdown-to-textile.js', __dir__)
+FORWARD_CONVERTER_JS  = File.expand_path('../js/markdown-to-textile.js', __dir__)
+REVERSE_CONVERTER_JS  = File.expand_path('../js/convert-textile-to-markdown.js', __dir__)
 
 MARKDOWN_OPTIONS = {
   render: { hardbreaks: false },
@@ -54,66 +59,129 @@ end
 def convert_to_textile(markdown)
   script = <<~JS
     const fs = require('fs');
-    const M = require("#{CONVERTER_JS}");
+    const M = require("#{FORWARD_CONVERTER_JS}");
     const input = fs.readFileSync(0, 'utf8');
     process.stdout.write(new M().convert(input));
   JS
   output, status = Open3.capture2('node', '-e', script, stdin_data: markdown)
-  raise "node converter failed (exit #{status.exitstatus}): #{output}" unless status.success?
+  raise "node forward converter failed (exit #{status.exitstatus}): #{output}" unless status.success?
   output
 end
 
-require 'open3'
-
-def run_case(test_case)
-  md_html = render_markdown(test_case[:markdown])
-  textile = convert_to_textile(test_case[:markdown])
-  tx_html = render_textile(textile)
-  [md_html, textile, tx_html]
+def convert_to_markdown(textile)
+  script = <<~JS
+    const fs = require('fs');
+    const m = require("#{REVERSE_CONVERTER_JS}");
+    const input = fs.readFileSync(0, 'utf8');
+    process.stdout.write(m.convertTextileToMarkdown(input));
+  JS
+  output, status = Open3.capture2('node', '-e', script, stdin_data: textile)
+  raise "node reverse converter failed (exit #{status.exitstatus}): #{output}" unless status.success?
+  output
 end
 
-def show_diff(name, expected, actual, textile, md_html)
-  warn "FAIL: #{name}"
-  warn "  converted textile:  #{textile.inspect}"
-  warn "  expected md html:   #{expected.inspect}"
-  warn "  actual textile html: #{actual.inspect}"
-  warn ""
+def check_case(name, expected_html, actual_html, context = {})
+  expected = HtmlNormalize.normalize_html(expected_html)
+  actual   = HtmlNormalize.normalize_html(actual_html)
+  if expected == actual
+    puts "PASS"
+    return true
+  else
+    puts "FAIL"
+    warn "  expected: #{expected.inspect}"
+    warn "  actual:   #{actual.inspect}"
+    context.each { |k, v| warn "  #{k}: #{v.inspect}" } unless context.empty?
+    warn ""
+    return false
+  end
 end
 
-def generate_report(passes, fails)
-  total = passes + fails
-  puts ''
-  puts "#{passes}/#{total} pass; #{fails} fail"
-  fails.zero? ? 0 : 1
-end
+# --- Forward direction ---
+puts "=== Forward (Markdown -> Textile) ==="
+forward_passes = 0
+forward_fails  = 0
+forward_textiles = []
 
-passes = 0
-fails  = 0
-failures = []
-
-CASES.each do |test_case|
-  name = test_case[:name]
+CASES.each do |tc|
+  name = tc[:name]
   $stdout.print "  #{name} ... "
   $stdout.flush
   begin
-    md_html, textile, tx_html = run_case(test_case)
-    expected = HtmlNormalize.normalize_html(md_html)
-    actual   = HtmlNormalize.normalize_html(tx_html)
-    if expected == actual
-      puts "PASS"
-      passes += 1
+    md_html   = render_markdown(tc[:markdown])
+    textile   = convert_to_textile(tc[:markdown])
+    tx_html   = render_textile(textile)
+    forward_textiles << { name: name, textile: textile }
+    if check_case(name, md_html, tx_html)
+      forward_passes += 1
     else
-      puts "FAIL"
-      show_diff(name, expected, actual, textile, md_html)
-      fails += 1
-      failures << name
+      forward_fails += 1
     end
   rescue StandardError => e
     puts "ERR: #{e.message}"
-    fails += 1
-    failures << name
+    forward_fails += 1
   end
   $stdout.flush
 end
 
-exit generate_report(passes, fails)
+# --- Reverse direction: hand-written fixtures ---
+puts ""
+puts "=== Reverse: hand-written (Textile -> Markdown) ==="
+reverse_passes = 0
+reverse_fails  = 0
+
+REVERSE_CASES.each do |tc|
+  name = tc[:name]
+  $stdout.print "  #{name} ... "
+  $stdout.flush
+  begin
+    tx_html   = render_textile(tc[:textile])
+    markdown  = convert_to_markdown(tc[:textile])
+    md_html   = render_markdown(markdown)
+    if check_case(name, tx_html, md_html, { markdown: markdown })
+      reverse_passes += 1
+    else
+      reverse_fails += 1
+    end
+  rescue StandardError => e
+    puts "ERR: #{e.message}"
+    reverse_fails += 1
+  end
+  $stdout.flush
+end
+
+# --- Reverse direction: auto-paired (from forward cases) ---
+puts ""
+puts "=== Reverse: auto-paired (Textile -> Markdown) ==="
+auto_passes = 0
+auto_fails  = 0
+
+forward_textiles.each do |ft|
+  name = "auto: #{ft[:name]}"
+  $stdout.print "  #{name} ... "
+  $stdout.flush
+  begin
+    tx_html   = render_textile(ft[:textile])
+    markdown  = convert_to_markdown(ft[:textile])
+    md_html   = render_markdown(markdown)
+    if check_case(name, tx_html, md_html, { markdown: markdown })
+      auto_passes += 1
+    else
+      auto_fails += 1
+    end
+  rescue StandardError => e
+    puts "ERR: #{e.message}"
+    auto_fails += 1
+  end
+  $stdout.flush
+end
+
+# --- Summary ---
+puts ""
+puts "Forward:           #{forward_passes}/#{forward_passes + forward_fails} pass"
+puts "Reverse hand-written: #{reverse_passes}/#{reverse_passes + reverse_fails} pass"
+puts "Reverse auto-paired:  #{auto_passes}/#{auto_passes + auto_fails} pass"
+total_pass = forward_passes + reverse_passes + auto_passes
+total_fail = forward_fails + reverse_fails + auto_fails
+puts "Total:             #{total_pass}/#{total_pass + total_fail} pass; #{total_fail} fail"
+
+exit(total_fail.zero? ? 0 : 1)

@@ -105,3 +105,47 @@ CASES = [
     | Confidential access | 30 minutes |
   MD
 ].freeze
+
+# Hand-written Redmine Textile fixtures for the reverse direction.
+# These test constructs that are native to Textile / Redmine and may not have
+# a direct Markdown equivalent in the forward direction.
+REVERSE_CASES = [
+  { name: 'tx: heading', textile: 'h1. Heading' },
+  { name: 'tx: h2 + paragraph', textile: "h2. Heading\n\nThis is a paragraph." },
+  { name: 'tx: bold and italic', textile: 'This is *bold* and _italic_.' },
+  { name: 'tx: strikethrough', textile: 'This is -deleted-.' },
+  { name: 'tx: inline code', textile: 'Use @code@ here.' },
+  { name: 'tx: link', textile: '"Example":https://example.com' },
+  { name: 'tx: image', textile: '!https://example.com/img.png(Alt text)!' },
+  { name: 'tx: blockquote', textile: 'bq. A quoted paragraph.' },
+  { name: 'tx: unordered list', textile: "* Apple\n* Banana\n* Orange" },
+  { name: 'tx: ordered list', textile: "# First\n# Second\n# Third" },
+  { name: 'tx: horizontal rule', textile: '----' },
+  { name: 'tx: simple table', textile: "|_. Name |_. Status |\n| API | Active |\n| Web | Inactive |" },
+  { name: 'tx: table with formatting', textile: "|_. Service |_. Status |\n| API | *Active* |\n| Worker | -Stopped- |" },
+  { name: 'tx: table with code', textile: "|_. Action |_. Command |\n| Test | @npm test@ |\n| Build | @npm run build@ |" },
+  { name: 'tx: paragraph with link and image', textile: 'Visit "Example":https://example.com and view !https://example.com/logo.png(Logo)!.' },
+  { name: 'tx: mixed document', textile: <<~TX },
+    h1. Release Report
+
+    The *release completed* with one _warning_.
+
+    h2. Summary
+
+    |_. Component |_. Status |_. Details |
+    | API | *Passed* | See "report":https://example.com |
+    | Web | *Passed* | Run @npm test@ |
+
+    h2. Next Steps
+
+    # Review the failed job
+    # Update the configuration
+  TX
+  { name: 'tx: bold-header table (Redmine idiom)', textile: <<~TX },
+    | *Component* | *Lifetime* |
+    | Login session | Normal |
+    | TOTP secret | Until reset |
+    | OTP code | 30 seconds |
+    | Confidential access | 30 minutes |
+  TX
+].freeze

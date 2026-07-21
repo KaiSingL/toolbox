@@ -11,7 +11,18 @@ logic (`MarkdownToTextile.convert`), not the UI.
 
 ## Scope
 
-Covers the Markdown → Textile direction only:
+Covers both conversion directions:
+
+**Forward (Markdown → Textile):** for each markdown case, CommonMarker renders
+the markdown to HTML (expected), the JS converter produces Textile, RedCloth3
+renders that Textile to HTML (actual), and the two normalized HTML strings are
+compared.
+
+**Reverse (Textile → Markdown):** for each hand-written Textile fixture and each
+auto-paired case (derived from the forward direction's converter output),
+RedCloth3 renders the Textile to HTML (expected), the JS converter produces
+Markdown, CommonMarker renders that Markdown to HTML (actual), and the two are
+compared.
 
 - inline syntax (bold, italic, strikethrough, code, links, images)
 - block syntax (headings, blockquotes, ordered/unordered lists, horizontal rules)
@@ -19,13 +30,12 @@ Covers the Markdown → Textile direction only:
 - combined documents (headings + paragraphs + lists + tables)
 - code blocks (fenced, with and without a language)
 - the user-reported 2FA 30-minute expiry table case
+- Redmine-specific Textile idioms (`|_. |` tables, `@code@`, `"text":url`, `!img(alt)!`, `bq.`, `----`)
 
 ## Out of scope (explicit)
 
 The suite does **not** cover:
 
-- **The Textile → Markdown direction** (the reverse convertToMarkdown path in
-  `script.js`).
 - **UI behavior**: button click handlers, the textarea swap, error overlay, the
   Copy button, responsive layout, mobile rendering.
 - **`table-normalize.js` and `code-block.js`** internals that do not surface as
@@ -33,8 +43,11 @@ The suite does **not** cover:
 - **Task list markers** (`- [x]` / `- [ ]`): GFM renders them as
   `<input type="checkbox">`, our converter produces Redmine-style colored text
   `{color:green}(/){color}`. They are semantically different by design and cannot
-  round-trip via raw HTML comparison. They are exercised as string-level
-  converter tests (now removed) but deliberately omitted here.
+  round-trip via raw HTML comparison.
+- **Link syntax inside Textile table cells** (`| "text":url |`): both textile-js
+  and RedCloth3 produce malformed table HTML for this construct (all cells merge
+  into one row with a stray `\n` cell). This is a parser-level issue, not a
+  converter bug. Links in table cells are validated in the forward direction.
 - **Inputs not encoded as cases** in `cases.rb`.
 
 ## Setup
