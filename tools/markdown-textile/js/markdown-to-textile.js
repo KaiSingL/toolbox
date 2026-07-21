@@ -20,21 +20,21 @@ class MarkdownToTextile {
       { pattern: /\x00([^\x00]+)\x00/g, replacement: '*$1*' },     // Placeholder -> Textile bold
 
       // Task lists (must come before general lists)
-      { pattern: /^(\s*)[-*] \[x\] (.+)$/gmi, replacement: (match, indent, text) => {
+      { pattern: /^([ \t]*)[-*] \[x\] (.+)$/gmi, replacement: (match, indent, text) => {
         const level = Math.floor(indent.length / 2) + 1;
         return '*'.repeat(level) + ' {color:green}(/){color} ' + text;
       }},
-      { pattern: /^(\s*)[-*] \[ \] (.+)$/gm, replacement: (match, indent, text) => {
+      { pattern: /^([ \t]*)[-*] \[ \] (.+)$/gm, replacement: (match, indent, text) => {
         const level = Math.floor(indent.length / 2) + 1;
         return '*'.repeat(level) + ' {color:red}(x){color} ' + text;
       }},
 
       // Lists (nested + flat)
-      { pattern: /^(\s*)[-*] (.+)$/gm, replacement: (match, indent, text) => {
+      { pattern: /^([ \t]*)[-*] (.+)$/gm, replacement: (match, indent, text) => {
         const level = Math.floor(indent.length / 2) + 1;
         return '*'.repeat(level) + ' ' + text;
       }},
-      { pattern: /^(\s*)(\d+)[.)] (.+)$/gm, replacement: (match, indent, num, text) => {
+      { pattern: /^([ \t]*)(\d+)[.)] (.+)$/gm, replacement: (match, indent, num, text) => {
         const level = Math.floor(indent.length / 2) + 1;
         return '#'.repeat(level) + ' ' + text;
       }},
@@ -130,7 +130,7 @@ class MarkdownToTextile {
     // Data rows
     dataRows.forEach(row => {
       if (row.trim()) {
-        const cells = row.split('|').slice(1, -1).map(c => c.trim());
+        const cells = row.split('|').slice(1, -1).map(c => this.normalizeTableCell(c.trim()));
         result += '|' + cells.map((cell, i) => {
           const align = alignments[i] || 'left';
           if (align === 'center') return `=. ${cell}`;
@@ -141,6 +141,18 @@ class MarkdownToTextile {
     });
     
     return result.trim() + '\n\n';
+  }
+
+  /**
+   * Apply inline conversions that table cells need but the line-anchored
+   * rules miss (task markers, etc.). Runs on already-trimmed cell text.
+   * @param {string} cell - The trimmed cell content.
+   * @return {string} - The normalized cell content.
+   */
+  normalizeTableCell(cell) {
+    return cell
+      .replace(/\[x\]\s+/g, '{color:green}(/){color} ')
+      .replace(/\[ \]\s+/g, '{color:red}(x){color} ');
   }
   
   /**
@@ -169,6 +181,9 @@ class MarkdownToTextile {
     this.rules.forEach(rule => {
       textileText = textileText.replace(rule.pattern, rule.replacement);
     });
+
+    // Collapse 3+ consecutive newlines to 2 (bounds between blocks).
+    textileText = textileText.replace(/\n{3,}/g, '\n\n');
 
     return textileText;
   }

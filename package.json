@@ -13,6 +13,7 @@
     "dev": "http-server . -p 8000 -c-1 -o",
     "preview": "http-server . -p 8000 -c-1",
     "test": "node --test",
+    "test:conversion": "ruby tools/markdown-textile/test/run.rb",
     "test:watch": "node --test --watch",
     "lighthouse": "start-server-and-test preview http://localhost:8000 \"lighthouse http://localhost:8000/index.html --output=json --output-path=lighthouse-result.json --quiet\""
   },
