@@ -2,6 +2,20 @@
     padding: 48px 24px;
 }
 
+/* Prevent horizontal scroll: clamp flex children so long content can shrink */
+.toolbar,
+.search-bar,
+.category-pill,
+.symbol-grid,
+.category-section,
+.container {
+    min-width: 0;
+}
+
+body {
+    overflow-x: hidden;
+}
+
 .tool-description {
     font-family: var(--font-mono);
     font-size: 15px;
@@ -44,6 +58,7 @@
     padding-left: 42px;
     padding-right: 40px;
     box-sizing: border-box;
+    font-size: 16px;
 }
 
 .search-clear {
@@ -118,8 +133,11 @@
 }
 
 .category-pill span {
+    min-width: 0;
+    flex: 1 1 auto;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .category-pill svg {
@@ -342,13 +360,23 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+    .tool-content {
+        padding: 24px 16px;
+    }
+
+    /* Override .container's 24px side padding from brutalist.min.css so it
+       doesn't stack with .tool-content padding on narrow phones. */
+    .container {
+        padding: 0;
+    }
+
     .category-title {
         font-size: 18px;
         margin: 32px 0 12px 0;
     }
 
     .category-section {
-        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr));
         gap: 8px;
     }
 
@@ -361,13 +389,13 @@
     }
 
     .category-overlay {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(min(120px, 100%), 1fr));
     }
 }
 
 @media (max-width: 480px) {
     .category-section {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 8px;
     }
 
