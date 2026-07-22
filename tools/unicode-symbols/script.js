@@ -20,6 +20,31 @@ let currentCategoryIndex = -1;
 
 const EMOJI_RE = /\p{Extended_Pictographic}/u;
 
+const TEXT_SYMBOL_CODEPOINTS = new Set([
+    0x2194, 0x2195, 0x2196, 0x2197, 0x2198, 0x2199,
+    0x21A9, 0x21AA,
+    0x25AA, 0x25AB, 0x25B6, 0x25C0, 0x25FB, 0x25FC,
+    0x2600, 0x2602, 0x2603, 0x2604, 0x260E,
+    0x2611, 0x2618,
+    0x2620, 0x2622, 0x2623, 0x262A,
+    0x2639, 0x263A,
+    0x265F,
+    0x2660, 0x2663, 0x2665, 0x2666,
+    0x2692, 0x2695, 0x269B,
+    0x26A0,
+    0x2702, 0x2708, 0x2709, 0x270F, 0x2712,
+    0x2714, 0x2716,
+    0x2733, 0x2734,
+    0x2744, 0x2747,
+    0x27A1,
+    0x2122,
+    0x00A9, 0x00AE,
+]);
+
+function isEmojiChar(c) {
+    return EMOJI_RE.test(c) && !TEXT_SYMBOL_CODEPOINTS.has(c.codePointAt(0));
+}
+
 // Format derivation
 function getCodepoint(char) {
     const cp = char.codePointAt(0);
@@ -136,7 +161,7 @@ function createCard(sym, categoryIndex, symIndex) {
     card.dataset.name = sym.n.toLowerCase();
     card.dataset.code = formats.code.toLowerCase();
     card.dataset.categoryIndex = categoryIndex;
-    card.dataset.isEmoji = EMOJI_RE.test(sym.c) ? 'true' : 'false';
+    card.dataset.isEmoji = isEmojiChar(sym.c) ? 'true' : 'false';
 
     // Glyph (click to copy character)
     const glyph = document.createElement('div');
