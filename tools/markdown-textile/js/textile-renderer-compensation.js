@@ -18,9 +18,45 @@ function compensateRendererDiffs(html) {
     return html;
 }
 
+function compensateBlockquotes(textile) {
+    if (typeof textile !== 'string' || !/^>/m.test(textile)) return textile;
+
+    return textile.replace(/(^>+([^\n]*?)(\n|$))+/m, (match) => {
+        const lines = match.split('\n').filter(l => l.length > 0);
+        let result = '';
+        let indent = 0;
+
+        for (const line of lines) {
+            const lineMatch = line.match(/^([> ]+)(.*)$/);
+            if (!lineMatch) continue;
+
+            const bq = lineMatch[1];
+            const content = lineMatch[2];
+            const level = (bq.match(/>/g) || []).length;
+
+            if (level !== indent) {
+                if (level > indent) {
+                    result += '<blockquote>'.repeat(level - indent);
+                } else {
+                    result += '</blockquote>'.repeat(indent - level);
+                }
+                indent = level;
+            }
+
+            if (content.trim()) {
+                result += '<p>' + content + '</p>';
+            }
+        }
+
+        result += '</blockquote>'.repeat(indent);
+        return result;
+    });
+}
+
 if (typeof window !== 'undefined') {
     window.compensateRendererDiffs = compensateRendererDiffs;
+    window.compensateBlockquotes = compensateBlockquotes;
 }
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { compensateRendererDiffs };
+    module.exports = { compensateRendererDiffs, compensateBlockquotes };
 }

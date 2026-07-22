@@ -24,6 +24,12 @@ RedCloth3 renders the Textile to HTML (expected), the JS converter produces
 Markdown, CommonMarker renders that Markdown to HTML (actual), and the two are
 compared.
 
+**Output sanity:** the converter's raw Markdown output is also checked for
+known-bad patterns that don't affect rendering (and are thus invisible to
+HTML-equivalence comparison). First pattern: escaped digit-dot in headings
+(`## 4\. Data` → `## 4. Data`), caused by turndown over-escaping. Patterns are
+declared in `sanity_check.rb`.
+
 - inline syntax (bold, italic, strikethrough, code, links, images)
 - block syntax (headings, blockquotes, ordered/unordered lists, horizontal rules)
 - tables (simple, empty cells, alignment, formatted headers, formatted cells, images/links in cells)
@@ -85,8 +91,9 @@ missing it exits immediately with an install hint.
 | File | Purpose |
 |------|---------|
 | `run.rb` | test runner: loads `cases.rb` and runs each case |
-| `cases.rb` | the list of `{ name:, markdown: }` test cases |
+| `cases.rb` | the list of `{ name:, markdown: }` test cases and `{ name:, textile: }` reverse fixtures |
 | `html_normalize.rb` | HTML normalizer (collapses the stylistic differences between CommonMarker and RedCloth3 output) |
+| `sanity_check.rb` | declarative bad-pattern registry checking raw converter output for cosmetic bugs invisible to HTML comparison |
 | `../vendor/redmine/` | vendored Redmine Textile formatter (`redcloth3.rb` etc.) — see that folder's README |
 
 ## Adding a case

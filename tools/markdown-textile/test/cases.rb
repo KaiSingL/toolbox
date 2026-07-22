@@ -148,4 +148,15 @@ REVERSE_CASES = [
     | OTP code | 30 seconds |
     | Confidential access | 30 minutes |
   TX
+  { name: 'tx: >> blockquote separated by blank lines', textile: <<~TX },
+    >> Rails is a full-stack framework for developing database-backed web applications according to the Model-View-Control pattern.
+
+    >> To go live, all you need to add is a database and a web server.
+
+    > Great!
+  TX
+  { name: 'tx: >> consecutive with > no blank line', textile: <<~TX },
+    >> Rails is a full-stack framework for developing database-backed web applications according to the Model-View-Control pattern.
+    > To go live, all you need to add is a database and a web server.
+  TX
 ].freeze

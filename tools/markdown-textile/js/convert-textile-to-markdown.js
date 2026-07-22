@@ -1,5 +1,5 @@
 (function () {
-    let textileLib, TurndownServiceLib, turndownPluginGfmLib, normalizeTableHtmlLib, compensateRendererDiffsLib, formatFencedCodeLib;
+    let textileLib, TurndownServiceLib, turndownPluginGfmLib, normalizeTableHtmlLib, compensateRendererDiffsLib, compensateBlockquotesLib, formatFencedCodeLib;
 
     if (typeof module !== 'undefined' && module.exports) {
         const path = require('path');
@@ -20,6 +20,7 @@
         normalizeTableHtmlLib = tableNormalize.normalizeTableHtml;
         const compensation = require(path.join(__dirname, 'textile-renderer-compensation.js'));
         compensateRendererDiffsLib = compensation.compensateRendererDiffs;
+        compensateBlockquotesLib = compensation.compensateBlockquotes;
         const codeBlock = require(path.join(__dirname, 'code-block.js'));
         formatFencedCodeLib = codeBlock.formatFencedCode;
     } else {
@@ -28,6 +29,7 @@
         turndownPluginGfmLib = window.turndownPluginGfm;
         normalizeTableHtmlLib = window.normalizeTableHtml;
         compensateRendererDiffsLib = window.compensateRendererDiffs;
+        compensateBlockquotesLib = window.compensateBlockquotes;
         formatFencedCodeLib = window.formatFencedCode;
     }
 
@@ -56,12 +58,20 @@
         return turndown;
     }
 
+    function unescapeMarkdownOutput(markdown) {
+        return markdown
+            .replace(/^(#{1,6}\s+\d+)\\\./gm, '$1.')
+            .replace(/^\\>/gm, '>');
+    }
+
     function convertTextileToMarkdown(textileText) {
-        const rawHtml = textileLib(textileText);
+        const blockquoteCompensated = compensateBlockquotesLib(textileText);
+        const rawHtml = textileLib(blockquoteCompensated);
         const compensated = compensateRendererDiffsLib(rawHtml);
         const normalized = normalizeTableHtmlLib(compensated);
         const turndown = createTurndownService();
-        return turndown.turndown(normalized);
+        const markdown = turndown.turndown(normalized);
+        return unescapeMarkdownOutput(markdown);
     }
 
     if (typeof window !== 'undefined') {

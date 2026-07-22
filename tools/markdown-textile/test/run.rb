@@ -7,13 +7,17 @@
 #   HTML (actual), and the two normalized HTML strings are compared.
 #
 # Reverse direction (Textile -> Markdown):
-#   For each hand-written textile fixture and each auto-paired case (derived
+#   For each hand-written Textile fixture and each auto-paired case (derived
 #   from the forward direction), RedCloth3 renders the textile to HTML
 #   (expected), the JS converter produces Markdown, CommonMarker renders
 #   that Markdown to HTML (actual), and the two are compared.
 #
+# Output sanity checks the raw converter output for cosmetic bugs invisible
+# to HTML comparison.
+#
 # See README.md for scope.
 
+require 'json'
 require 'open3'
 
 VENDOR_DIR = File.expand_path('../vendor/redmine', __dir__)
@@ -23,6 +27,7 @@ require_relative '../vendor/redmine/polyfills'
 require_relative '../vendor/redmine/url'
 require_relative '../vendor/redmine/redcloth3'
 require_relative 'html_normalize'
+require_relative 'sanity_check'
 require_relative 'cases'
 
 begin
@@ -39,8 +44,8 @@ unless system('node --version > NUL')
   exit 1
 end
 
-FORWARD_CONVERTER_JS  = File.expand_path('../js/markdown-to-textile.js', __dir__)
-REVERSE_CONVERTER_JS  = File.expand_path('../js/convert-textile-to-markdown.js', __dir__)
+FORWARD_CONVERTER_JS = File.expand_path('../js/markdown-to-textile.js', __dir__)
+REVERSE_CONVERTER_JS = File.expand_path('../js/convert-textile-to-markdown.js', __dir__)
 
 MARKDOWN_OPTIONS = {
   render: { hardbreaks: false },
@@ -56,28 +61,30 @@ def render_textile(textile)
   RedCloth3.new(textile).to_html
 end
 
-def convert_to_textile(markdown)
+def batch_convert_to_textile(markdowns)
   script = <<~JS
     const fs = require('fs');
     const M = require("#{FORWARD_CONVERTER_JS}");
-    const input = fs.readFileSync(0, 'utf8');
-    process.stdout.write(new M().convert(input));
+    const inputs = JSON.parse(fs.readFileSync(0, 'utf8'));
+    const outputs = inputs.map(i => new M().convert(i));
+    process.stdout.write(JSON.stringify(outputs));
   JS
-  output, status = Open3.capture2('node', '-e', script, stdin_data: markdown)
-  raise "node forward converter failed (exit #{status.exitstatus}): #{output}" unless status.success?
-  output
+  output, status = Open3.capture2('node', '-e', script, stdin_data: JSON.generate(markdowns))
+  raise "node forward batch failed (exit #{status.exitstatus}): #{output}" unless status.success?
+  JSON.parse(output)
 end
 
-def convert_to_markdown(textile)
+def batch_convert_to_markdown(textiles)
   script = <<~JS
     const fs = require('fs');
     const m = require("#{REVERSE_CONVERTER_JS}");
-    const input = fs.readFileSync(0, 'utf8');
-    process.stdout.write(m.convertTextileToMarkdown(input));
+    const inputs = JSON.parse(fs.readFileSync(0, 'utf8'));
+    const outputs = inputs.map(i => m.convertTextileToMarkdown(i));
+    process.stdout.write(JSON.stringify(outputs));
   JS
-  output, status = Open3.capture2('node', '-e', script, stdin_data: textile)
-  raise "node reverse converter failed (exit #{status.exitstatus}): #{output}" unless status.success?
-  output
+  output, status = Open3.capture2('node', '-e', script, stdin_data: JSON.generate(textiles))
+  raise "node reverse batch failed (exit #{status.exitstatus}): #{output}" unless status.success?
+  JSON.parse(output)
 end
 
 def check_case(name, expected_html, actual_html, context = {})
@@ -96,21 +103,34 @@ def check_case(name, expected_html, actual_html, context = {})
   end
 end
 
+# --- Pre-compute all conversions in two node batches ---
+puts "Converting (forward batch)..."
+forward_markdowns = CASES.map { |tc| tc[:markdown] }
+forward_textiles  = batch_convert_to_textile(forward_markdowns)
+
+reverse_handwritten_textiles = REVERSE_CASES.map { |tc| tc[:textile] }
+auto_paired_textiles = CASES.each_with_index.map { |tc, i| forward_textiles[i] }
+all_reverse_textiles = reverse_handwritten_textiles + auto_paired_textiles
+
+puts "Converting (reverse batch)..."
+all_reverse_markdowns = batch_convert_to_markdown(all_reverse_textiles)
+reverse_hw_markdowns  = all_reverse_markdowns.first(reverse_handwritten_textiles.length)
+auto_paired_markdowns = all_reverse_markdowns.drop(reverse_handwritten_textiles.length)
+
 # --- Forward direction ---
+puts ""
 puts "=== Forward (Markdown -> Textile) ==="
 forward_passes = 0
 forward_fails  = 0
-forward_textiles = []
 
-CASES.each do |tc|
-  name = tc[:name]
+CASES.each_with_index do |tc, i|
+  name   = tc[:name]
+  textile = forward_textiles[i]
   $stdout.print "  #{name} ... "
   $stdout.flush
   begin
-    md_html   = render_markdown(tc[:markdown])
-    textile   = convert_to_textile(tc[:markdown])
-    tx_html   = render_textile(textile)
-    forward_textiles << { name: name, textile: textile }
+    md_html = render_markdown(tc[:markdown])
+    tx_html = render_textile(textile)
     if check_case(name, md_html, tx_html)
       forward_passes += 1
     else
@@ -128,15 +148,17 @@ puts ""
 puts "=== Reverse: hand-written (Textile -> Markdown) ==="
 reverse_passes = 0
 reverse_fails  = 0
+reverse_outputs = []
 
-REVERSE_CASES.each do |tc|
-  name = tc[:name]
+REVERSE_CASES.each_with_index do |tc, i|
+  name     = tc[:name]
+  markdown = reverse_hw_markdowns[i]
   $stdout.print "  #{name} ... "
   $stdout.flush
   begin
-    tx_html   = render_textile(tc[:textile])
-    markdown  = convert_to_markdown(tc[:textile])
-    md_html   = render_markdown(markdown)
+    tx_html = render_textile(tc[:textile])
+    md_html = render_markdown(markdown)
+    reverse_outputs << { name: name, markdown: markdown }
     if check_case(name, tx_html, md_html, { markdown: markdown })
       reverse_passes += 1
     else
@@ -155,14 +177,16 @@ puts "=== Reverse: auto-paired (Textile -> Markdown) ==="
 auto_passes = 0
 auto_fails  = 0
 
-forward_textiles.each do |ft|
-  name = "auto: #{ft[:name]}"
+CASES.each_with_index do |tc, i|
+  name     = "auto: #{tc[:name]}"
+  markdown = auto_paired_markdowns[i]
+  textile  = forward_textiles[i]
   $stdout.print "  #{name} ... "
   $stdout.flush
   begin
-    tx_html   = render_textile(ft[:textile])
-    markdown  = convert_to_markdown(ft[:textile])
-    md_html   = render_markdown(markdown)
+    tx_html = render_textile(textile)
+    md_html = render_markdown(markdown)
+    reverse_outputs << { name: name, markdown: markdown }
     if check_case(name, tx_html, md_html, { markdown: markdown })
       auto_passes += 1
     else
@@ -175,13 +199,33 @@ forward_textiles.each do |ft|
   $stdout.flush
 end
 
+# --- Output sanity (reverse direction) ---
+puts ""
+puts "=== Output sanity (reverse direction) ==="
+sanity_passes = 0
+sanity_fails  = 0
+reverse_outputs.each do |o|
+  issues = SanityCheck.issues(:reverse, o[:markdown])
+  $stdout.print "  #{o[:name]} ... "
+  $stdout.flush
+  if issues.empty?
+    puts "OK"
+    sanity_passes += 1
+  else
+    puts "ISSUES"
+    issues.each { |i| warn "    - #{i}" }
+    sanity_fails += 1
+  end
+end
+
 # --- Summary ---
 puts ""
-puts "Forward:           #{forward_passes}/#{forward_passes + forward_fails} pass"
+puts "Forward:              #{forward_passes}/#{forward_passes + forward_fails} pass"
 puts "Reverse hand-written: #{reverse_passes}/#{reverse_passes + reverse_fails} pass"
 puts "Reverse auto-paired:  #{auto_passes}/#{auto_passes + auto_fails} pass"
-total_pass = forward_passes + reverse_passes + auto_passes
-total_fail = forward_fails + reverse_fails + auto_fails
-puts "Total:             #{total_pass}/#{total_pass + total_fail} pass; #{total_fail} fail"
+puts "Output sanity:        #{sanity_passes}/#{sanity_passes + sanity_fails} pass"
+total_pass = forward_passes + reverse_passes + auto_passes + sanity_passes
+total_fail = forward_fails + reverse_fails + auto_fails + sanity_fails
+puts "Total:                #{total_pass}/#{total_pass + total_fail} pass; #{total_fail} fail"
 
 exit(total_fail.zero? ? 0 : 1)
