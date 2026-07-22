@@ -26,6 +26,7 @@ CASES = [
   { name: 'h2', markdown: '## Heading' },
   { name: 'h3', markdown: '### Heading' },
   { name: 'blockquote', markdown: '> Quote' },
+  { name: 'nested blockquote', markdown: "> > Rails is a full-stack framework for developing database-backed web applications according to the Model-View-Control pattern.\n> \n> To go live, all you need to add is a database and a web server." },
   { name: 'unordered list', markdown: "- Apple\n- Banana\n- Orange" },
   { name: 'ordered list', markdown: "1. First\n2. Second\n3. Third" },
   { name: 'horizontal rule', markdown: '---' },

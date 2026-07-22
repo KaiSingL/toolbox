@@ -54,6 +54,15 @@ The suite does **not** cover:
   and RedCloth3 produce malformed table HTML for this construct (all cells merge
   into one row with a stray `\n` cell). This is a parser-level issue, not a
   converter bug. Links in table cells are validated in the forward direction.
+- **Same-level multi-paragraph blockquotes** (`> Para 1\n>\n> Para 2`): Textile's
+  `>` blockquote syntax doesn't support paragraph continuation within a single
+  blockquote — RedCloth3 merges continuation lines into one `<p>`. Markdown
+  uses `>` continuation lines to keep paragraphs separate. The converter removes
+  empty continuation lines (so `>` lines stay consecutive for RedCloth3), which
+  causes same-level multi-paragraph blockquotes to merge. Nested blockquotes
+  with level changes (`> > ` → `> `) work correctly because the level change
+  causes RedCloth3 to close and open `<blockquote>` elements, naturally
+  producing separate `<p>` wrappers.
 - **Inputs not encoded as cases** in `cases.rb`.
 
 ## Setup

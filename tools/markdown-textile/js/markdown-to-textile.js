@@ -55,8 +55,10 @@ class MarkdownToTextile {
       // Inline code
       { pattern: /`([^`]+)`/g, replacement: '@$1@' },
       
-      // Blockquotes (single > -> bq.; Redmine reads >> natively, so pass through)
-      { pattern: /^> (.+)$/gm, replacement: 'bq. $1' },
+      // Blockquotes: pass > markers through as-is (RedCloth3 handles > natively).
+      // Collapse empty continuation lines (> with no content) so consecutive
+      // > lines stay grouped as one composite blockquote in RedCloth3.
+      { pattern: /^>+\s*\n/gm, replacement: '' },
 
       // Footnotes
       { pattern: /\[\^(\d+)\]:\s*(.+)$/gm, replacement: 'fn$1. $2' },
