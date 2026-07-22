@@ -22,6 +22,11 @@ module SanityCheck
         name: 'escaped greater-than at line start',
         check: ->(md) { md.match?(/^\\>/) },
         detail: ->(md) { md.scan(/^\\>.*/).flatten }
+      },
+      {
+        name: 'single-tilde strikethrough (should be ~~)',
+        check: ->(md) { md.match?(/(?<!~)~[^\s~][^~]*~(?!~)/) },
+        detail: ->(md) { md.scan(/(?<!~)~[^\s~][^~]*~(?!~)/).flatten }
       }
     ],
     forward: [].freeze

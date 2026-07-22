@@ -42,6 +42,10 @@
             bulletListMarker: '-'
         });
         turndown.use(turndownPluginGfmLib.gfm);
+        turndown.addRule('strikethrough', {
+            filter: ['del', 's', 'strike'],
+            replacement: function (content) { return '~~' + content + '~~'; }
+        });
         turndown.addRule('fencedCodeBlock', {
             filter: function (node, options) {
                 return options.codeBlockStyle === 'fenced' &&
