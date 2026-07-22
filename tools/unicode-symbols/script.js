@@ -13,7 +13,8 @@ const categories = window.CATEGORIES || [];
 let toastTimer = null;
 let sectionObserver = null;
 let isSearchActive = false;
-let showEmoji = false;
+// 'hide' → filter emoji out, 'only' → show only emoji, 'all' → show everything
+let emojiFilter = 'hide';
 let overlayOpen = false;
 let currentCategoryIndex = -1;
 
@@ -331,7 +332,10 @@ function applyFilters() {
                 card.dataset.name.includes(query) ||
                 card.dataset.code.includes(query) ||
                 card.dataset.char === query;
-            const passesEmoji = showEmoji || card.dataset.isEmoji !== 'true';
+            const isEmoji = card.dataset.isEmoji === 'true';
+            const passesEmoji = emojiFilter === 'all' ||
+                (emojiFilter === 'hide' && !isEmoji) ||
+                (emojiFilter === 'only' && isEmoji);
             const visible = matchesSearch && passesEmoji;
             card.style.display = visible ? '' : 'none';
             if (visible) {
@@ -372,10 +376,14 @@ searchInput.addEventListener('keydown', (e) => {
     }
 });
 
+const NEXT_FILTER = { hide: 'only', only: 'all', all: 'hide' };
+const FILTER_LABEL = { hide: 'Hide emoji', only: 'Emoji only', all: 'Show all' };
+
 emojiToggle.addEventListener('click', () => {
-    showEmoji = !showEmoji;
-    emojiToggle.setAttribute('aria-pressed', showEmoji);
-    emojiToggle.textContent = showEmoji ? 'Hide emoji' : 'Show emoji';
+    emojiFilter = NEXT_FILTER[emojiFilter];
+    emojiToggle.dataset.state = emojiFilter;
+    emojiToggle.textContent = FILTER_LABEL[emojiFilter];
+    emojiToggle.setAttribute('aria-label', FILTER_LABEL[emojiFilter]);
     applyFilters();
 });
 

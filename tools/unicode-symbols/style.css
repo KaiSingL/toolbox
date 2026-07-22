@@ -99,9 +99,15 @@ body {
     color: var(--text-primary);
 }
 
-.emoji-toggle[aria-pressed="true"] {
+.emoji-toggle[data-state="hide"] {
     background: var(--accent);
     color: var(--bg-primary);
+    border-color: var(--accent);
+}
+
+.emoji-toggle[data-state="only"] {
+    background: transparent;
+    color: var(--accent);
     border-color: var(--accent);
 }
 
