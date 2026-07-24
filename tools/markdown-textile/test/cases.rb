@@ -91,6 +91,8 @@ CASES = [
   # --- code blocks ---
   { name: 'fenced code block no lang', markdown: "```\nplain code\n```" },
   { name: 'fenced code block with lang', markdown: "```js\nconst x = 1;\n```" },
+  { name: 'fenced code block with leading spaces', markdown: "  ```js\nconst x = 1;\n  ```" },
+  { name: 'fenced code block indented close only', markdown: "```js\nconst x = 1;\n  ```" },
 
   # --- user-reported case ---
   { name: 'user-reported 2FA table', markdown: <<~MD }    ## 7. 2FA 30-Minute Expiry

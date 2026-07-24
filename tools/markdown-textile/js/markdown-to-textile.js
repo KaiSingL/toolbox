@@ -46,7 +46,7 @@ class MarkdownToTextile {
       { pattern: /\[([^\]]+)\]\(([^)]+)\)/g, replacement: '"$1":$2' },
       
       // Code blocks (must come before inline code)
-      { pattern: /```(\w+)?\n([\s\S]+?)\n```/gm, replacement: function(match, lang, code) {
+      { pattern: /^[ \t]*```(\w+)?\n([\s\S]+?)\n[ \t]*```/gm, replacement: function(match, lang, code) {
         const langClass = lang || 'text';
         const trimmed = code.replace(/^\n+|\n+$/g, '');
         return `<pre><code class="${langClass}">\n${trimmed}\n</code></pre>\n`;
