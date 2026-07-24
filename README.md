@@ -4,7 +4,7 @@ A collection of lightweight, open-source browser utilities. All tools run entire
 
 ## 🚀 Live Demo
 
-Check out the live site here: **[https://kaisingl.github.io/toolbox/](https://kaisingl.github.io/toolbox/)**
+Check out the live site here: **[https://toolbox.kaising.net/](https://toolbox.kaising.net/)**
 
 ## 🛠️ Available Tools
 
@@ -30,6 +30,14 @@ Resize icons to multiple standard sizes at once. Perfect for web and mobile deve
   - Download as ZIP file
   - Drag & drop support
 - **Tech:** HTML5 Canvas, Vanilla JavaScript, JSZip, FileSaver.js
+
+### Markdown ⇄ Textile
+Convert between Markdown and Redmine Textile markup in both directions with one click.
+- **Features:**
+  - Bidirectional conversion (Markdown → Textile, Textile → Markdown)
+  - Redmine-specific syntax support
+  - One-click copy output to clipboard
+- **Tech:** Vanilla JavaScript
 
 ### QR Code Generator
 Generate QR codes for various types. Supports WiFi networks, URLs, text, and more.
@@ -81,6 +89,14 @@ View and search large log files directly in your browser. Handles files up to 10
   - Match navigation with keyboard shortcuts
 - **Tech:** Vanilla JavaScript, Web Workers
 
+### Token Speed Visualizer
+Visualize how fast tokens appear at a given tokens-per-second rate. Adjust TPS and watch the stream.
+- **Features:**
+  - Adjustable tokens-per-second rate
+  - Real-time token visualization streaming
+  - Start/stop controls
+- **Tech:** Vanilla JavaScript
+
 ### Gif Frame Grabber
 Extract frames from animated GIFs as PNG images.
 - **Features:**
@@ -88,6 +104,14 @@ Extract frames from animated GIFs as PNG images.
   - Download individual frames
   - Bulk download all frames as ZIP
 - **Tech:** HTML5 Canvas, Vanilla JavaScript, JSZip, FileSaver.js
+
+### Unicode Symbols
+Browse and copy Unicode symbols mapped to Lucide icon categories. Copy characters, codepoints, HTML entities, CSS and JS escapes.
+- **Features:**
+  - Category-based browsing (arrows, math, currency, shapes, etc.)
+  - Copy character, codepoint, HTML entity, CSS escape, or JS escape
+  - Search by character or category name
+- **Tech:** Vanilla JavaScript
 
 ## 🛠️ Tech Stack
 
@@ -155,4 +179,4 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 ---
 
-Made with ❤️ by [KaisingL](https://github.com/kaisingl)
+Made with ❤️ by [Kai Sing](https://kaising.net/)
