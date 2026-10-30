@@ -10,8 +10,12 @@
     let uploadedImage = null;
     let baseName = 'icon';
     let generatedBlobs = [];
+    let generatedUrls = [];
     let currentUrl = null;
     let customSizes = [];
+
+    const MAX_PREVIEW_SIZE = 80;
+    const PIXELATED_THRESHOLD = 32;
 
     function saveCustomSizes() {
       try {
@@ -68,6 +72,17 @@
       });
     }
 
+    function revokeGeneratedUrls() {
+      generatedUrls.forEach(url => URL.revokeObjectURL(url));
+      generatedUrls = [];
+    }
+
+    function clearResults() {
+      revokeGeneratedUrls();
+      iconsList.innerHTML = '';
+      generatedBlobs = [];
+    }
+
     function handleFile(file) {
       if (!file || !file.type.startsWith('image/')) {
         alert('Please select or drop a valid image file.');
@@ -88,8 +103,7 @@
       uploadedImage.src = url;
 
       results.classList.add('hidden');
-      iconsList.innerHTML = '';
-      generatedBlobs = [];
+      clearResults();
     }
 
     upload.addEventListener('change', (e) => {
@@ -165,17 +179,73 @@
         return;
       }
 
-      const selectedSizes = Array.from(checkboxes).map(cb => parseInt(cb.value));
+      // Dedupe (a custom size can match a preset) and draw small icons first
+      const selectedSizes = Array.from(new Set(
+        Array.from(checkboxes).map(cb => parseInt(cb.value))
+      )).sort((a, b) => a - b);
 
-      iconsList.innerHTML = '';
-      generatedBlobs = [];
+      const standardSizes = new Set(
+        Array.from(document.querySelectorAll('.size-options input[type="checkbox"]'))
+          .map(cb => parseInt(cb.value))
+      );
+
+      clearResults();
       results.classList.remove('hidden');
 
-      const loadingCard = document.createElement('div');
-      loadingCard.className = 'icon-result';
-      loadingCard.id = 'loading-card';
-      loadingCard.innerHTML = '<p>Generating icons...</p>';
-      iconsList.appendChild(loadingCard);
+      const originalLabel = generate.innerHTML;
+      generate.disabled = true;
+      generate.textContent = 'Generating…';
+
+      // Build every card up front so icons always appear in size order, even
+      // though canvas.toBlob callbacks can resolve out of order
+      const cards = new Map();
+
+      selectedSizes.forEach(size => {
+        const displaySize = Math.min(size, MAX_PREVIEW_SIZE);
+
+        const card = document.createElement('div');
+        card.className = 'icon-result';
+
+        const stage = document.createElement('div');
+        stage.className = 'icon-stage';
+
+        const img = document.createElement('img');
+        img.className = 'checkerboard';
+        img.width = displaySize;
+        img.height = displaySize;
+        img.alt = `Generated icon at ${size}×${size}`;
+        img.style.setProperty('--checker-size', `${Math.max(4, Math.round(displaySize / 8))}px`);
+        if (displaySize <= PIXELATED_THRESHOLD) {
+          img.dataset.small = 'true';
+        }
+
+        stage.appendChild(img);
+
+        const meta = document.createElement('div');
+        meta.className = 'icon-meta';
+
+        const label = document.createElement('p');
+        label.textContent = standardSizes.has(size) ? `${size}×${size}` : `Custom: ${size}×${size}`;
+
+        const note = document.createElement('span');
+        note.className = 'icon-meta-note';
+        note.textContent = displaySize < size ? `shown at ${displaySize}px` : 'actual size';
+
+        meta.appendChild(label);
+        meta.appendChild(note);
+
+        const link = document.createElement('a');
+        link.textContent = 'Download';
+        link.download = `${baseName}-${size}x${size}.png`;
+        link.style.visibility = 'hidden';
+
+        card.appendChild(stage);
+        card.appendChild(meta);
+        card.appendChild(link);
+        iconsList.appendChild(card);
+
+        cards.set(size, { img, link });
+      });
 
       let completedCount = 0;
 
@@ -193,35 +263,23 @@
 
         canvas.toBlob(blob => {
           completedCount++;
-          if (completedCount === 1) {
-            const loadingCardEl = document.getElementById('loading-card');
-            if (loadingCardEl) loadingCardEl.remove();
+
+          if (blob) {
+            const objUrl = URL.createObjectURL(blob);
+            generatedUrls.push(objUrl);
+
+            const { img, link } = cards.get(size);
+            img.src = objUrl;
+            link.href = objUrl;
+            link.style.visibility = 'visible';
+
+            generatedBlobs.push({ name: link.download, blob });
           }
 
-          const objUrl = URL.createObjectURL(blob);
-
-          const card = document.createElement('div');
-          card.className = 'icon-result';
-
-          const img = document.createElement('img');
-          img.src = objUrl;
-          img.className = 'checkerboard';
-
-          const label = document.createElement('p');
-          const isCustomSize = customSizes.includes(size);
-          label.textContent = isCustomSize ? `Custom: ${size}×${size}` : `${size}×${size}`;
-
-          const link = document.createElement('a');
-          link.href = objUrl;
-          link.download = `${baseName}-${size}x${size}.png`;
-          link.textContent = 'Download';
-
-          card.appendChild(img);
-          card.appendChild(label);
-          card.appendChild(link);
-          iconsList.appendChild(card);
-
-          generatedBlobs.push({ name: link.download, blob });
+          if (completedCount === selectedSizes.length) {
+            generate.disabled = false;
+            generate.innerHTML = originalLabel;
+          }
         }, 'image/png');
       });
     });
