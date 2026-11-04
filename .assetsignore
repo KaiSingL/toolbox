@@ -1,0 +1,13 @@
+node_modules
+.git
+tools
+package.json
+pnpm-lock.yaml
+package-lock.json
+AGENTS.md
+README.md
+LICENSE
+lighthouse-result.json
+.nvmrc
+wrangler.toml
+.assetsignore
